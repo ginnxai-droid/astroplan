@@ -6,11 +6,13 @@ from app.api.routes import build_router
 from app.config import Settings, get_settings
 from app.core.ephemeris import configure
 from app.core.observability import structured_observability_middleware
+from app.db import crypto
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     configure(settings)
+    crypto.configure(settings.field_encryption_keys, settings.env)
     app = FastAPI(
         title="Astroplan (KUF) v3.6",
         version="3.6.0",

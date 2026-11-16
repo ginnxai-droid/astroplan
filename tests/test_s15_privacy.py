@@ -1,4 +1,6 @@
+import json
 from datetime import UTC, date, datetime, time, timedelta
+from pathlib import Path
 
 import pytest
 from cryptography.fernet import Fernet
@@ -86,3 +88,50 @@ def test_telemetry_90_day_retention_purge_enforced() -> None:
     summary = repo.telemetry_summary()
     assert summary["daily_panchang_opened"] == 1  # type: ignore[index]
     assert "life_area_viewed" not in summary  # type: ignore[operator]
+
+
+def test_create_app_wires_configured_field_encryption_keys(tmp_path: Path) -> None:
+    """G5: configured Fernet keys must encrypt PII at rest and survive restarts."""
+    from fastapi.testclient import TestClient
+
+    from app.config import Settings
+    from app.main import create_app
+
+    key = Fernet.generate_key().decode()
+    db_url = f"sqlite+pysqlite:///{(tmp_path / 'keys.db').as_posix()}"
+    settings = Settings(
+        env="test",
+        database_url=db_url,
+        allow_draft_rules=True,
+        geocode_provider="manual_only",
+        field_encryption_keys=key,
+    )
+    client = TestClient(create_app(settings))
+    res = client.post(
+        "/v1/user/chart",
+        headers={"X-User-Id": "U_KEYS"},
+        json={
+            "user_id": "U_KEYS",
+            "chart_id": "C_KEYS",
+            "details": {
+                "name": "Asha Keys",
+                "birth_date": "1990-05-15",
+                "birth_time": "08:45:00",
+                "place_name": "Pune",
+                "latitude": 18.5204,
+                "longitude": 73.8567,
+                "timezone_override": "Asia/Kolkata",
+            },
+            "dpdp_consent_granted": True,
+            "age_verified_18_plus": True,
+        },
+    )
+    assert res.status_code == 200, res.text
+
+    raw_name, _ = PrivacyRepo(db_url).get_raw_ciphertext("C_KEYS")
+    assert Fernet(key.encode()).decrypt(raw_name).decode() == "Asha Keys"
+
+    restarted = TestClient(create_app(settings))
+    export = restarted.get("/v1/privacy/export", headers={"X-User-Id": "U_KEYS"})
+    assert export.status_code == 200
+    assert "Asha Keys" in json.dumps(export.json())
