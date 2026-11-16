@@ -1,0 +1,16 @@
+{
+  "@@locale": "en",
+  "appTitle": "Astroplan",
+  "simpleLabel": "Simple",
+  "proLabel": "Pro",
+  "whyThisLabel": "Why this?",
+  "tabToday": "Today",
+  "tabChartAreas": "Chart & Areas",
+  "tabMatching": "Matching",
+  "tabLedger": "Ledger",
+  "dailyHeading": "Daily Insight & Sunrise Panchang",
+  "offlineCachedBadge": "Offline Cached Panchang Ready",
+  "chartAreasHeading": "4 Life Areas & Yogas (D1 + D9)",
+  "matchingHeading": "36-Point Ashtakoota Matching (Partner Consent Verified)",
+  "ledgerHeading": "Prediction Ledger v0 & Brier Calibration"
+}

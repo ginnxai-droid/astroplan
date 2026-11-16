@@ -58,8 +58,15 @@ def _static(step: str) -> list[tuple[str, list[str]]]:
 def _run(
     label: str, cmd: list[str], cwd: str = ".", env: dict[str, str] | None = None
 ) -> dict[str, object]:
-    if shutil.which(cmd[0]) is None and cmd[0] != PY:
+    resolved = shutil.which(cmd[0])
+    if resolved is None and cmd[0] != PY:
         return {"check": label, "status": "FAIL", "detail": f"tool not found: {cmd[0]}"}
+    if resolved is not None:
+        # Windows: .bat/.cmd shims (e.g. flutter) cannot be launched by CreateProcess.
+        if resolved.lower().endswith((".bat", ".cmd")):
+            cmd = ["cmd.exe", "/c", resolved, *cmd[1:]]
+        else:
+            cmd = [resolved, *cmd[1:]]
     proc = subprocess.run(
         cmd,
         cwd=ROOT / cwd,

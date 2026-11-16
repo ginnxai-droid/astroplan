@@ -1,0 +1,16 @@
+{
+  "@@locale": "mr",
+  "appTitle": "एस्ट्रोप्लान",
+  "simpleLabel": "सोपे",
+  "proLabel": "सखोल",
+  "whyThisLabel": "हे का?",
+  "tabToday": "आज",
+  "tabChartAreas": "कुंडली व क्षेत्रे",
+  "tabMatching": "गुणमिलन",
+  "tabLedger": "प्रेडिक्शन लेजर",
+  "dailyHeading": "दैनंदिन अंतर्दृष्टी आणि सूर्योदय पंचांग",
+  "offlineCachedBadge": "ऑफलाइन पंचांग कॅश उपलब्ध",
+  "chartAreasHeading": "4 जीवन क्षेत्रे आणि योग (D1 + D9)",
+  "matchingHeading": "36-गुण अष्टकूट गुणमिलन (संमती सत्यापित)",
+  "ledgerHeading": "प्रेडिक्शन लेजर v0 आणि कॅलिब्रेशन"
+}

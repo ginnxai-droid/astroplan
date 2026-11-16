@@ -1,0 +1,29 @@
+name: astroplan
+description: Astroplan (KUF) v3.6 Vedic Astrology Mobile Client
+publish_to: "none"
+version: 3.6.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  flutter_local_notifications: ^19.0.0
+  timezone: ^0.10.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true

@@ -1,0 +1,551 @@
+from __future__ import annotations
+
+import calendar
+import hashlib
+import hmac
+from datetime import UTC, date, datetime, time
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Response
+from pydantic import BaseModel, TypeAdapter
+
+from app.api.deps import make_auth_dependency
+from app.api.schemas import (
+    AnnualForecastResponse,
+    BirthDetailsInput,
+    ChartResponse,
+    ConsentGrantRequest,
+    ExplainedStatement,
+    LanguageCode,
+    MatchingInput,
+    StrengthGrade,
+    TelemetryEventInput,
+    UserChartSaveRequest,
+)
+from app.config import Settings
+from app.core.chart import calculate_chart
+from app.core.dasha import calculate_vimshottari_dasha
+from app.core.errors import (
+    AmbiguousLocationError,
+    GeocoderUnavailableError,
+    UnknownTimezoneError,
+)
+from app.core.festivals import compute_panchang_vrats_for_range, load_festivals
+from app.core.geocode import make_provider
+from app.core.matching import calculate_ashtakoota_match
+from app.core.notifications import collect_due_notification_users
+from app.core.panchang import calculate_daily_panchang
+from app.core.share_token import ShareTokenManager
+from app.core.timeutil import load_zone
+from app.core.transits import evaluate_current_transits
+from app.core.yogas import detect_yogas_and_doshas
+from app.db.repo import PrivacyRepo
+from app.interpretation.forecast import generate_annual_forecast_report
+from app.interpretation.language import Catalog
+from app.interpretation.readings import generate_daily_insight, generate_life_area_readings
+from app.interpretation.rules import load_rules
+from app.ledger.service import OutcomeMark, PredictionLedgerService
+
+_STRENGTH_ADAPTER: TypeAdapter[StrengthGrade] = TypeAdapter(StrengthGrade)
+
+
+class LedgerCreateRequest(BaseModel):
+    entry_id: str
+    user_id: str
+    statement_id: str
+    rule_id: str
+    statement_text: str
+    confidence_grade: str
+    time_window: str
+    observable_outcome_criteria: str
+
+
+class LedgerMarkRequest(BaseModel):
+    outcome: OutcomeMark
+
+
+class ShareTokenCreateRequest(BaseModel):
+    consent_to_share: bool = False
+    ttl_seconds: int = 86400
+
+
+class NotificationPreferenceRequest(BaseModel):
+    notifications_muted: bool
+    notification_time: time | None = None
+
+
+def _today_in_tz(tz_name: str = "Asia/Kolkata") -> date:
+    return datetime.now(load_zone(tz_name)).date()
+
+
+def _enforce_ownership(requested_user_id: str | None, auth_user: str) -> str:
+    """M1 Fix: Prevents IDOR across user accounts."""
+    if requested_user_id is not None and requested_user_id != auth_user:
+        raise HTTPException(403, {"error": "forbidden_cross_user_access"})
+    return auth_user
+
+
+def _map(exc: Exception, catalog: Catalog, lang: LanguageCode = "en") -> HTTPException:
+    if isinstance(exc, HTTPException):
+        return exc
+    if isinstance(exc, UnknownTimezoneError):
+        return HTTPException(
+            422,
+            {"error": "unknown_timezone", "message": catalog.get("error.unknown_timezone", lang)},
+        )
+    if isinstance(exc, AmbiguousLocationError):
+        return HTTPException(
+            422,
+            {
+                "error": "ambiguous_location",
+                "message": catalog.get("error.ambiguous_location", lang),
+                "candidates": exc.candidates,
+            },
+        )
+    if isinstance(exc, GeocoderUnavailableError):
+        return HTTPException(
+            502,
+            {
+                "error": "geocoder_unavailable",
+                "message": catalog.get("error.geocoder_unavailable", lang),
+            },
+        )
+    return HTTPException(400, {"error": "bad_request", "detail": str(exc)})
+
+
+async def _resolve(details: BirthDetailsInput, settings: Settings) -> tuple[float, float, str]:
+    provider = make_provider(settings)
+    resolved = await provider.resolve(
+        details.place_name,
+        manual_lat=details.latitude,
+        manual_lon=details.longitude,
+        tz_override=details.timezone_override,
+    )
+    return resolved.latitude, resolved.longitude, resolved.timezone_iana
+
+
+def build_router(settings: Settings) -> APIRouter:
+    router = APIRouter(prefix="/v1")
+    repo = PrivacyRepo(settings.database_url)
+    ledger = PredictionLedgerService(session_factory=repo.session_factory)
+    share_mgr = ShareTokenManager(settings.share_token_secret, session_factory=repo.session_factory)
+    catalog = Catalog(settings.i18n_dir)
+    rules = load_rules(settings.rules_path, allow_draft=settings.allow_draft_rules)
+    festivals = load_festivals(settings.festivals_path, allow_draft=settings.allow_draft_rules)
+    current_user_dep = make_auth_dependency(settings)
+
+    def verify_operator(x_operator_key: str | None = Header(default=None)) -> None:
+        if not x_operator_key or not hmac.compare_digest(x_operator_key, settings.operator_api_key):
+            raise HTTPException(403, {"error": "operator_role_required"})
+
+    @router.get("/health")
+    async def health() -> dict[str, str]:
+        return {"status": "ok", "version": "3.6.0"}
+
+    @router.get("/geocode/search")
+    async def geocode_search(q: str, limit: int = 5) -> list[dict[str, object]]:
+        provider = make_provider(settings)
+        results = await provider.search_candidates(q, limit=limit)
+        return [
+            {
+                "display_name": r.display_name,
+                "latitude": r.latitude,
+                "longitude": r.longitude,
+                "timezone_iana": r.timezone_iana,
+            }
+            for r in results
+        ]
+
+    @router.post("/chart", response_model=ChartResponse)
+    async def chart(details: BirthDetailsInput) -> ChartResponse:
+        try:
+            lat, lon, tz = await _resolve(details, settings)
+            c = calculate_chart(details, lat, lon, tz)
+            c.disclaimer = catalog.get(c.disclaimer_key, details.language)
+            return c
+        except Exception as exc:
+            raise _map(exc, catalog, details.language) from exc
+
+    @router.post("/dasha")
+    async def standalone_dasha(
+        details: BirthDetailsInput, target_date: date | None = None
+    ) -> dict[str, object]:
+        try:
+            lat, lon, tz = await _resolve(details, settings)
+            eff_date = target_date or _today_in_tz(tz)
+            c = calculate_chart(details, lat, lon, tz)
+            moon = next(p for p in c.planets if p.planet == "Moon")
+            return calculate_vimshottari_dasha(details.birth_date, moon.longitude, eff_date)
+        except Exception as exc:
+            raise _map(exc, catalog, details.language) from exc
+
+    @router.post("/transits")
+    async def standalone_transits(
+        details: BirthDetailsInput, target_date: date | None = None
+    ) -> dict[str, object]:
+        try:
+            lat, lon, tz = await _resolve(details, settings)
+            eff_date = target_date or _today_in_tz(tz)
+            c = calculate_chart(details, lat, lon, tz)
+            return evaluate_current_transits(c, eff_date)
+        except Exception as exc:
+            raise _map(exc, catalog, details.language) from exc
+
+    @router.get("/panchang", response_model=None)
+    async def panchang(
+        response: Response,
+        target_date: date,
+        place_name: str = "Pune",
+        lat: float | None = None,
+        lon: float | None = None,
+        if_none_match: str | None = Header(default=None),
+    ) -> Response | dict[str, object]:
+        details = BirthDetailsInput(
+            birth_date=target_date,
+            birth_time=time(0, 0),
+            place_name=place_name,
+            latitude=lat,
+            longitude=lon,
+        )
+        try:
+            rlat, rlon, tz = await _resolve(details, settings)
+            etag_val = (
+                f'"{hashlib.sha256(f"{target_date}:{rlat}:{rlon}:{tz}".encode()).hexdigest()[:16]}"'
+            )
+            headers = {"Cache-Control": "public, max-age=86400", "ETag": etag_val}
+            if if_none_match == etag_val:
+                return Response(status_code=304, headers=headers)
+            data = calculate_daily_panchang(target_date, rlat, rlon, tz)
+            response.headers.update(headers)
+            return data
+        except Exception as exc:
+            raise _map(exc, catalog) from exc
+
+    @router.post("/readings/daily-insight", response_model=ExplainedStatement)
+    @router.post("/insights/daily", response_model=ExplainedStatement)
+    async def daily_insight(
+        details: BirthDetailsInput, target_date: date | None = None
+    ) -> ExplainedStatement:
+        try:
+            lat, lon, tz = await _resolve(details, settings)
+            eff_date = target_date or _today_in_tz(tz)
+            c = calculate_chart(details, lat, lon, tz)
+            p = calculate_daily_panchang(eff_date, lat, lon, tz)
+            t = evaluate_current_transits(c, eff_date)
+            return generate_daily_insight(c, p, t, catalog, details.language)
+        except Exception as exc:
+            raise _map(exc, catalog, details.language) from exc
+
+    @router.post("/readings/yogas-doshas", response_model=list[ExplainedStatement])
+    async def yogas_doshas(details: BirthDetailsInput) -> list[ExplainedStatement]:
+        try:
+            lat, lon, tz = await _resolve(details, settings)
+            c = calculate_chart(details, lat, lon, tz)
+            return detect_yogas_and_doshas(c, catalog, details.language, rules=rules)
+        except Exception as exc:
+            raise _map(exc, catalog, details.language) from exc
+
+    @router.post("/readings/life-areas")
+    async def life_areas(
+        details: BirthDetailsInput, target_date: date | None = None
+    ) -> dict[str, object]:
+        try:
+            lat, lon, tz = await _resolve(details, settings)
+            eff_date = target_date or _today_in_tz(tz)
+            c = calculate_chart(details, lat, lon, tz)
+            moon = next(p for p in c.planets if p.planet == "Moon")
+            d = calculate_vimshottari_dasha(details.birth_date, moon.longitude, eff_date)
+            t = evaluate_current_transits(c, eff_date)
+            areas = generate_life_area_readings(c, d, t, rules, catalog, details.language)
+            yogas = detect_yogas_and_doshas(c, catalog, details.language, rules=rules)
+            return {
+                "dasha_summary": d,
+                "transit_summary": t,
+                "life_areas": areas,
+                "yogas_and_doshas": yogas,
+                "professional_advice_disclaimer": catalog.get(
+                    "trust.professional_advice_disclaimer", details.language
+                ),
+            }
+        except Exception as exc:
+            raise _map(exc, catalog, details.language) from exc
+
+    @router.post("/reports/annual-forecast", response_model=AnnualForecastResponse)
+    async def annual(
+        details: BirthDetailsInput, forecast_year: int | None = None
+    ) -> AnnualForecastResponse:
+        try:
+            lat, lon, tz = await _resolve(details, settings)
+            eff_year = forecast_year or _today_in_tz(tz).year
+            c = calculate_chart(details, lat, lon, tz)
+            moon = next(p for p in c.planets if p.planet == "Moon")
+            d = calculate_vimshottari_dasha(
+                details.birth_date, moon.longitude, date(eff_year, 1, 15)
+            )
+            t = evaluate_current_transits(c, date(eff_year, 1, 15))
+            return generate_annual_forecast_report(
+                c, d, t, rules, catalog, eff_year, details.language
+            )
+        except Exception as exc:
+            raise _map(exc, catalog, details.language) from exc
+
+    @router.get("/reports/annual-forecast/pdf")
+    async def blocked_pdf() -> None:
+        raise HTTPException(
+            403,
+            "SCOPE GUARDRAIL: Annual Forecast is interactive in-app for MVP. "
+            "PDF export is a Premium V1 feature.",
+        )
+
+    @router.post("/matching/ashtakoota")
+    async def ashtakoota(payload: MatchingInput) -> dict[str, object]:
+        try:
+            al, ao, at = await _resolve(payload.profile_a, settings)
+            bl, bo, bt = await _resolve(payload.profile_b, settings)
+            ca = calculate_chart(payload.profile_a, al, ao, at)
+            cb = calculate_chart(payload.profile_b, bl, bo, bt)
+            return calculate_ashtakoota_match(ca, cb, settings.tables_path)
+        except Exception as exc:
+            raise _map(exc, catalog, payload.profile_a.language) from exc
+
+    @router.get("/glossary")
+    async def glossary(lang: LanguageCode = "en") -> dict[str, str]:
+        return catalog.glossary(lang)
+
+    @router.get("/trust/about-predictions")
+    async def about_predictions(lang: LanguageCode = "en") -> dict[str, object]:
+        return {
+            "calculations_note": catalog.get("trust.about_calculations", lang),
+            "interpretations_note": catalog.get("trust.about_interpretations", lang),
+            "ledger_methodology": catalog.get("trust.about_ledger", lang),
+            "professional_advice_disclaimer": catalog.get(
+                "trust.professional_advice_disclaimer", lang
+            ),
+            "grievance_officer": {
+                "name": settings.grievance_officer_name,
+                "email": settings.grievance_officer_email,
+                "response_sla_hours": settings.grievance_response_sla_hours,
+            },
+        }
+
+    @router.get("/festivals")
+    async def festivals_list(
+        year: int,
+        lat: float = 18.5204,
+        lon: float = 73.8567,
+        tz: str = "Asia/Kolkata",
+        include_computed_vrats: bool = False,
+    ) -> list[dict[str, str]]:
+        out = [
+            {
+                "name": f.name,
+                "date": f.date.isoformat(),
+                "type": f.category,
+                "tithi": f.tithi_rule,
+            }
+            for f in festivals
+            if f.date.year == year
+        ]
+        if include_computed_vrats:
+            days_in_year = 366 if calendar.isleap(year) else 365
+            out.extend(
+                compute_panchang_vrats_for_range(date(year, 1, 1), days_in_year, lat, lon, tz)
+            )
+        return out
+
+    @router.post("/privacy/consent")
+    async def grant_consent(
+        req: ConsentGrantRequest,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, object]:
+        target = _enforce_ownership(req.user_id, auth_user)
+        try:
+            return repo.record_consent(
+                user_id=target,
+                dpdp_consent_granted=req.dpdp_consent_granted,
+                age_verified_18_plus=req.age_verified_18_plus,
+                parental_consent_verified=req.parental_consent_verified,
+                preferred_language=req.preferred_language,
+            )
+        except Exception as exc:
+            raise _map(exc, catalog, req.preferred_language) from exc
+
+    @router.post("/user/chart")
+    async def save_user_chart(
+        req: UserChartSaveRequest,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, str]:
+        target = _enforce_ownership(req.user_id, auth_user)
+        try:
+            lat, lon, tz = await _resolve(req.details, settings)
+            repo.create_user_and_chart(
+                user_id=target,
+                chart_id=req.chart_id,
+                name=req.details.name,
+                birth_date=req.details.birth_date,
+                birth_time=req.details.birth_time,
+                place_name=req.details.place_name,
+                lat=lat,
+                lon=lon,
+                tz_iana=tz,
+                dpdp_consent_granted=req.dpdp_consent_granted,
+                age_verified_18_plus=req.age_verified_18_plus,
+                parental_consent_verified=req.parental_consent_verified,
+                is_third_party_chart=req.is_third_party_chart,
+                third_party_permission_confirmed=req.third_party_permission_confirmed,
+            )
+            return {"status": "saved", "chart_id": req.chart_id}
+        except Exception as exc:
+            raise _map(exc, catalog, req.details.language) from exc
+
+    @router.post("/user/notifications/preferences")
+    async def set_notification_preferences(
+        req: NotificationPreferenceRequest,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, object]:
+        try:
+            return repo.update_notification_preferences(
+                user_id=auth_user,
+                notifications_muted=req.notifications_muted,
+                notification_time=req.notification_time,
+            )
+        except KeyError as exc:
+            raise HTTPException(404, {"error": "user_not_found"}) from exc
+
+    @router.get("/privacy/export")
+    @router.get("/user/{user_id}/export")
+    async def export_user(
+        user_id: str | None = None,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, object]:
+        target = _enforce_ownership(user_id, auth_user)
+        data = repo.export_user_data(target)
+        if not data:
+            raise HTTPException(404, {"error": "user_not_found"})
+        return data
+
+    @router.delete("/privacy/delete")
+    @router.delete("/user/{user_id}")
+    async def erase_user(
+        user_id: str | None = None,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, str]:
+        target = _enforce_ownership(user_id, auth_user)
+        repo.delete_user(target)
+        return {"status": "erased", "user_id": target}
+
+    @router.post("/user/chart/{chart_id}/share-token")
+    async def create_chart_share_token(
+        chart_id: str,
+        body: ShareTokenCreateRequest | None = None,
+        consent_to_share: bool = False,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, str]:
+        effective_consent = (body.consent_to_share if body else False) or consent_to_share
+        if not effective_consent:
+            raise HTTPException(400, {"error": "share_consent_required"})
+        c_row = repo.get_chart_by_id(chart_id)
+        if c_row is None:
+            raise HTTPException(404, {"error": "chart_not_found"})
+        if c_row["user_id"] != auth_user:
+            raise HTTPException(403, {"error": "forbidden_cross_user_access"})
+        tok = share_mgr.create_token(chart_id=chart_id, user_id=auth_user)
+        return {"share_token": tok, "share_url": f"/share/{tok}"}
+
+    @router.post("/share/{token}/revoke")
+    async def revoke_shared_chart(
+        token: str,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, str]:
+        try:
+            payload = share_mgr.verify_token(token)
+        except ValueError as exc:
+            raise HTTPException(403, {"error": str(exc)}) from exc
+        if str(payload["user_id"]) != auth_user:
+            raise HTTPException(403, {"error": "forbidden_cross_user_access"})
+        share_mgr.revoke_token(token)
+        return {"status": "revoked"}
+
+    @router.get("/share/{token}")
+    async def resolve_shared_chart(token: str) -> dict[str, object]:
+        try:
+            payload = share_mgr.verify_token(token)
+        except ValueError as exc:
+            raise HTTPException(403, {"error": str(exc)}) from exc
+        c_row = repo.get_chart_by_id(str(payload["chart_id"]))
+        if c_row is None:
+            raise HTTPException(404, {"error": "chart_not_found"})
+        return {"shared_chart": c_row}
+
+    @router.post("/notifications/dispatch-due", dependencies=[Depends(verify_operator)])
+    async def dispatch_notifications(
+        target_hour: int = 7,
+        target_minute: int = 30,
+        window_minutes: int = 15,
+        target_date: date | None = None,
+    ) -> dict[str, object]:
+        eff_date = target_date or datetime.now(UTC).date()
+        due = collect_due_notification_users(
+            repo.session_factory,
+            time(target_hour, target_minute),
+            eff_date,
+            window_minutes=window_minutes,
+        )
+        return {"dispatched_count": len(due), "dispatched": due}
+
+    @router.post("/metrics/event")
+    async def record_metric_event(ev: TelemetryEventInput) -> dict[str, object]:
+        repo.record_telemetry(
+            event_type=ev.event_type,
+            category=ev.category,
+            rule_id=ev.rule_id,
+            language=ev.language,
+            cohort_hash=ev.cohort_hash,
+        )
+        return {"status": "recorded", "counts": repo.telemetry_summary()}
+
+    @router.post("/metrics/purge-expired", dependencies=[Depends(verify_operator)])
+    async def purge_expired_telemetry(retention_days: int = 90) -> dict[str, int]:
+        purged = repo.purge_telemetry_older_than(retention_days=retention_days)
+        return {"purged_count": purged}
+
+    @router.post("/ledger/register")
+    async def ledger_register(
+        req: LedgerCreateRequest,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, object]:
+        target = _enforce_ownership(req.user_id, auth_user)
+        try:
+            grade = _STRENGTH_ADAPTER.validate_python(req.confidence_grade)
+        except Exception as exc:
+            raise HTTPException(422, {"error": "invalid_confidence_grade"}) from exc
+        entry = ledger.register(
+            entry_id=req.entry_id,
+            user_id=target,
+            statement_id=req.statement_id,
+            rule_id=req.rule_id,
+            statement_text=req.statement_text,
+            confidence_grade=grade,
+            time_window=req.time_window,
+            observable_outcome_criteria=req.observable_outcome_criteria,
+        )
+        return entry.model_dump()
+
+    @router.post("/ledger/{entry_id}/mark")
+    async def ledger_mark(
+        entry_id: str,
+        req: LedgerMarkRequest,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, object]:
+        try:
+            existing = [e for e in ledger._all_entries(user_id=auth_user) if e.entry_id == entry_id]
+            if not existing:
+                raise HTTPException(403, {"error": "entry_not_found_or_forbidden"})
+            return ledger.mark_outcome(entry_id, req.outcome).model_dump()
+        except KeyError as exc:
+            raise HTTPException(404, {"error": "entry_not_found"}) from exc
+
+    @router.get("/ledger/calibration")
+    async def ledger_calibration(user_id: str | None = None) -> dict[str, object]:
+        return ledger.calibration_summary(user_id=user_id)
+
+    return router
