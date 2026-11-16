@@ -1,0 +1,35 @@
+- name: Makar Sankranti
+  date: "2026-01-14"
+  tradition: smarta_maharashtra_north
+  category: solar_ingress
+  tithi_rule: Sun ingress into Makara (Capricorn)
+  status: draft
+  reviewer: null
+  reviewed_at: null
+
+- name: Holi (Phalguna Purnima)
+  date: "2026-03-03"
+  tradition: smarta_maharashtra_north
+  category: major_festival
+  tithi_rule: Phalguna Shukla Purnima
+  status: draft
+  reviewer: null
+  reviewed_at: null
+
+- name: Ganesh Chaturthi
+  date: "2026-09-14"
+  tradition: smarta_maharashtra_north
+  category: major_festival
+  tithi_rule: Bhadrapada Shukla Chaturthi
+  status: draft
+  reviewer: null
+  reviewed_at: null
+
+- name: Diwali Lakshmi Puja (Kartika Amavasya)
+  date: "2026-11-08"
+  tradition: smarta_maharashtra_north
+  category: major_festival
+  tithi_rule: Ashvina/Kartika Amavasya Pradosh
+  status: draft
+  reviewer: null
+  reviewed_at: null

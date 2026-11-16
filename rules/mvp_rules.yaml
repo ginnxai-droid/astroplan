@@ -1,0 +1,87 @@
+- id: RULE_PARASHARI_CAREER_10H
+  category: career
+  text_key: career_10h_discipline
+  evidence_template: "Sun in {sun_sign} (House {sun_house}, D9 {sun_navamsa}); Dasha: {md}-{ad}"
+  classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 21 (Karma Bhava)"
+  tradition: Parashari
+  strength_grade: supported
+  reviewer: null
+  reviewed_at: null
+  status: draft
+
+- id: RULE_PARASHARI_REL_7H
+  category: relationships
+  text_key: relationships_7h_harmony
+  evidence_template: "Venus in {venus_sign} (House {venus_house}, D9 {venus_navamsa})"
+  classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 18 (Yuvati Bhava)"
+  tradition: Parashari
+  strength_grade: likely
+  reviewer: null
+  reviewed_at: null
+  status: draft
+
+- id: RULE_PARASHARI_FIN_2H_11H
+  category: finances
+  text_key: finances_2h_11h_prudence
+  evidence_template: "Jupiter in {jup_sign} (House {jup_house}); Transit Jupiter House {jup_transit} from Moon"
+  classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 13 & 22 (Dhana & Labha Bhava)"
+  tradition: Parashari
+  strength_grade: supported
+  reviewer: null
+  reviewed_at: null
+  status: draft
+
+- id: RULE_PARASHARI_HOME_4H
+  category: home
+  text_key: home_4h_stability
+  evidence_template: "Moon in {moon_sign} ({moon_nak} Pada {moon_pada}, House {moon_house})"
+  classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 15 (Sukha Bhava)"
+  tradition: Parashari
+  strength_grade: supported
+  reviewer: null
+  reviewed_at: null
+  status: draft
+
+- id: RULE_PARASHARI_YOGA_GAJAKESARI
+  category: yoga
+  text_key: yoga.gajakesari
+  evidence_template: "Jupiter in {jup_sign} ({jup_from_moon}th from Moon in {moon_sign})"
+  classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 36"
+  tradition: Parashari
+  strength_grade: supported
+  reviewer: null
+  reviewed_at: null
+  status: draft
+
+- id: RULE_PARASHARI_YOGA_BUDHADITYA
+  category: yoga
+  text_key: yoga.budhaditya
+  evidence_template: "Sun and Mercury conjoined in {sun_sign} (House {sun_house})"
+  classical_source: "Phaladeepika, Ch. 6"
+  tradition: Parashari
+  strength_grade: supported
+  reviewer: null
+  reviewed_at: null
+  status: draft
+
+- id: RULE_PARASHARI_YOGA_HAMSA
+  category: yoga
+  text_key: yoga.hamsa
+  evidence_template: "Jupiter in {jup_sign} (House {jup_house} Kendra in own/exalted sign)"
+  classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 75 (Pancha Mahapurusha)"
+  tradition: Parashari
+  strength_grade: likely
+  reviewer: null
+  reviewed_at: null
+  status: draft
+
+- id: RULE_PARASHARI_MANGAL_CONTEXT
+  category: dosha_context
+  text_key: dosha.mangal_context
+  evidence_template: "Mars in {mars_sign} (House {mars_house} from Lagna, House {mars_moon_house} from Moon)"
+  classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 80"
+  tradition: Parashari
+  strength_grade: contested
+  reviewer: null
+  reviewed_at: null
+  status: draft

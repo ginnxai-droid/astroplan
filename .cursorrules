@@ -1,0 +1,8 @@
+# Astroplan (KUF) v3.6 Cursor Guardrails
+1. SEPARATION OF CONCERNS: Steps S02–S08 (time, geocode, ephemeris, chart, dasha, transits, panchang, yogas, matching, festivals) are 100% deterministic Python. Never use an LLM for astronomical or dasha math.
+2. EXPLAIN EVERY STATEMENT: Every daily insight, yoga/dosha detection, life-area statement, and forecast item must carry `rule_id`, `placement_evidence`, `classical_source`, `strength_grade` (likely | supported | weak | contested), `simple_text`, `pro_text`, and `safety_verified=True` (set ONLY after `guardrails.verify_text` passes).
+3. MULTILINGUAL SAFETY FIRST: Never generate death, terminal illness, pregnancy loss, financial ruin, or curse statements. All English, Hindi, and Marathi text must pass `guardrails.verify_text`.
+4. HONEST CLAIMS: Never output "100% accurate", "guaranteed", "proven", "will definitely", or "know your future".
+5. NO HARDCODED USER PROSE IN PYTHON: All user-visible prose sentences must live in `i18n/{en,hi,mr}.json` or YAML rule files. `scripts/check_guardrails.py` (`G6-hardcoded`) fails the build if conversational prose (`"the "`, `"your "`, `"you "`) appears in `app/**/*.py`.
+6. DPDP PRIVACY, AUTH & CONSENT: `dpdp_consent_granted` and `third_party_permission_confirmed` default to `False`. Enforce `user_id == auth_user` on all user-scoped routes. Encrypt `name`, `place_name`, `latitude`, and `longitude` with Fernet (`G5`). Require `partner_consent_confirmed=True` on two-profile matching.
+7. VALIDATION GATE: Every step S00–S20 must end with `python scripts/validate_step.py Sxx` printing `PASS`. Never skip a failing check.

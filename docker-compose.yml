@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: astro
+      POSTGRES_PASSWORD: astro_dev_only
+      POSTGRES_DB: astroplan
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U astro -d astroplan"]
+      interval: 5s
+      retries: 10
+  api:
+    build: .
+    env_file: .env
+    environment:
+      ASTRO_DATABASE_URL: postgresql+psycopg://astro:astro_dev_only@db:5432/astroplan
+    depends_on:
+      db:
+        condition: service_healthy
+    ports: ["8000:8000"]
+    volumes: ["./ephe:/ephe:ro"]
+volumes:
+  pgdata: {}

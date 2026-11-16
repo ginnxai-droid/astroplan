@@ -1,0 +1,24 @@
+[
+  {
+    "id": "REF_1947_DELHI",
+    "reference_software": "Swiss Ephemeris swetest v2.10.03 / Jagannatha Hora 8.0 (Lahiri, Mean Node, Whole-Sign)",
+    "birth": {
+      "date": "1947-08-15",
+      "time": "00:00:00",
+      "place": "New Delhi",
+      "lat": 28.6139,
+      "lon": 77.2090,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.1282,
+      "lagna_sign": "Taurus",
+      "lagna_degree": 7.7286,
+      "moon_sign": "Cancer",
+      "moon_nakshatra": "Pushya",
+      "moon_pada": 1,
+      "planet_longitudes": {}
+    }
+  }
+]

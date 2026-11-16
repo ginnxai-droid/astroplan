@@ -1,0 +1,39 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: astro
+          POSTGRES_PASSWORD: astro_ci
+          POSTGRES_DB: astroplan
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U astro -d astroplan" --health-interval 5s --health-retries 10
+    env:
+      ASTRO_ENV: test
+      ASTRO_DATABASE_URL: postgresql+psycopg://astro:astro_ci@localhost:5432/astroplan
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: python scripts/generate_openapi.py
+      - run: python scripts/validate_step.py --all
+      - run: alembic upgrade head
+      # Gap 24: OpenAPI snapshot drift fails CI (regenerate via `make openapi`).
+      - run: make openapi-check
+  mobile:
+    runs-on: ubuntu-latest
+    if: ${{ hashFiles('mobile/pubspec.yaml') != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      # N3 follow-through: gen-l10n compiles the .arb files before analyze/test.
+      - run: cd mobile && flutter pub get && flutter gen-l10n && flutter analyze && flutter test
