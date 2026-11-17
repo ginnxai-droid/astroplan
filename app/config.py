@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     anthropic_model: str = "claude-3-5-haiku-latest"
     llm_monthly_call_cap: int = 1000
 
+    # Ask endpoint (routing over approved statements; off until the owner enables it)
+    ask_enabled: bool = False
+    ask_weekly_free_quota: int = 3
+    ask_lexicon_path: str = "rules/ask_lexicon.yaml"
+
     # Geocoding
     geocode_provider: Literal["nominatim", "manual_only"] = "nominatim"
     nominatim_url: str = "https://nominatim.openstreetmap.org"
