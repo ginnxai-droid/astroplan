@@ -92,6 +92,34 @@ class PredictionLedgerService:
                 )
         return entry
 
+    def register_or_get(
+        self,
+        *,
+        entry_id: str,
+        user_id: str,
+        statement_id: str,
+        rule_id: str,
+        statement_text: str,
+        confidence_grade: StrengthGrade,
+        time_window: str,
+        observable_outcome_criteria: str,
+        safety_category: str = "general",
+    ) -> PreRegisteredLedgerEntry:
+        for existing in self._all_entries(user_id=user_id):
+            if existing.entry_id == entry_id:
+                return existing
+        return self.register(
+            entry_id=entry_id,
+            user_id=user_id,
+            statement_id=statement_id,
+            rule_id=rule_id,
+            statement_text=statement_text,
+            confidence_grade=confidence_grade,
+            time_window=time_window,
+            observable_outcome_criteria=observable_outcome_criteria,
+            safety_category=safety_category,
+        )
+
     def mark_outcome(self, entry_id: str, outcome: OutcomeMark) -> PreRegisteredLedgerEntry:
         now = datetime.now(UTC)
         if self._sf is not None:
