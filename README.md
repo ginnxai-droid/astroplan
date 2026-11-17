@@ -1,0 +1,179 @@
+# Astroplan (KUF) v3.6
+
+An explainable Vedic astrology platform: a deterministic sidereal chart engine, a
+guardrailed interpretation layer over a reviewed rule library, and a prediction
+ledger that logs pre-registered outcomes so claims can be calibrated instead of
+asserted.
+
+Astrology content here is presented as tradition, not science. Nothing in this
+repository is medical, legal, or financial advice.
+
+## Status
+
+| Area | State |
+| --- | --- |
+| Backend blueprint S00–S20 | Implemented and validated (`scripts/validate_step.py --all`) |
+| Ask endpoint (question routing) | Implemented, ships **disabled** (`ASTRO_ASK_ENABLED=false`) |
+| Production deployment | Blocked by open blueprint gates (see [Guardrails](#guardrails)) |
+| Flutter client UI | Awaiting approval of the refined prototype before redesign |
+
+Two gates remain open and are intentionally not bypassed:
+
+- **G1 — reference charts**: the Swiss Ephemeris reference set is not yet frozen
+  at the required chart count.
+- **G2 — advisor sign-off**: all rules in `rules/mvp_rules.yaml` are still
+  `status: draft`; none has a named reviewer.
+
+Production settings fail fast while these are unresolved (`app/config.py`
+validates G0/G1/G2/G5 at startup when `ASTRO_ENV=production`).
+
+## What it does
+
+- **Chart engine** — sidereal positions with Lahiri ayanamsa and whole-sign
+  houses: lagna, planets, nakshatra and pada, D9 navamsa, retrograde flags, and
+  boundary warnings near sign edges.
+- **Time layers** — Vimshottari dasha, transits, daily panchang, and festivals.
+- **Readings** — daily insight, yogas/doshas, four life areas (career,
+  relationships, finances, home), and an annual forecast delivered in-app only
+  (no PDF export).
+- **"Why this?" on every statement** — rule id, placement evidence, classical
+  source, tradition, strength grade (`likely` / `supported` / `weak` /
+  `contested`), and method note.
+- **Prediction ledger** — statements are pre-registered with an assigned
+  probability and observable outcome criteria, then users mark hit/miss/
+  ambiguous; `GET /v1/ledger/calibration` reports a Brier score with an explicit
+  "calibration log, not validated accuracy" statement.
+- **Ask** — routes a free-form question to one of the four life areas before any
+  chart computation, answers only from approved statements, and abstains
+  honestly when coverage is zero or ambiguous (HTTP 200, no quota consumed,
+  `matched_terms: []`). A per-user weekly quota applies to answered questions.
+- **Guardrailed LLM rewording** — off by default. When enabled, the model only
+  ever sees the canonical statement (never the user's question), and every
+  candidate passes the same deterministic validator before display; rejected
+  candidates fall back to the canonical text. Prompt/output pairs are stored
+  encrypted in an audit log.
+- **Privacy (DPDP-aligned)** — explicit consent plus age or parental-consent
+  gate, field encryption, export and delete endpoints, revocable share tokens,
+  and no birth data in logs.
+
+## Architecture
+
+```
+Flutter app (mobile/)  ─┐
+Next.js share viewer   ├──►  FastAPI backend (app/)  ──►  PostgreSQL 16
+(web-share/)          ─┘         │                        (SQLite for dev/tests)
+                                 ├── pyswisseph (Lahiri, whole-sign)
+                                 ├── rules/mvp_rules.yaml + i18n (en/hi/mr)
+                                 └── prediction ledger + LLM audit log
+```
+
+Backend modules:
+
+| Path | Responsibility |
+| --- | --- |
+| `app/api/` | FastAPI app factory, routes, request/response schemas |
+| `app/core/` | Ephemeris, houses, dasha, transits, panchang primitives |
+| `app/interpretation/` | Rule loading, guardrails, readings, forecast, Ask routing, LLM rephrasing, audit |
+| `app/ledger/` | Pre-registered statements and Brier calibration |
+| `app/db/` | Models, repositories, quota and user-data handling |
+| `alembic/` | Migrations (`0001` baseline → `0003` Ask usage) |
+| `rules/`, `i18n/`, `data/` | Rule library, copy for en/hi/mr, festival and Ashtakoota tables |
+| `scripts/` | Guardrail scan, OpenAPI snapshot, per-step validation |
+| `validation/` | Step log recording every S00–S20 validation run |
+
+## Getting started
+
+Requires Python 3.12+ and PostgreSQL 16 for anything beyond local tests.
+
+```bash
+python -m venv .venv
+source .venv/Scripts/activate      # Windows; use .venv/bin/activate on Unix
+pip install -e ".[dev]"
+cp .env.example .env               # dev defaults: SQLite, dev auth, draft rules
+alembic upgrade head
+make run                           # uvicorn on :8000
+```
+
+Verify quality gates the same way CI does:
+
+```bash
+python -m pytest
+make lint types guardrails validate-all openapi-check
+```
+
+Mobile client (Flutter 3.4+):
+
+```bash
+cd mobile
+flutter pub get && flutter gen-l10n && flutter analyze && flutter test
+```
+
+Web share viewer (Next.js 14):
+
+```bash
+cd web-share && npm install && npm run dev
+```
+
+On the Pixel_10 emulator, launch with `flutter run --no-enable-impeller` — the
+guest GL stack hangs Impeller on first frame.
+
+## API
+
+`openapi.json` is committed and CI fails on drift; regenerate with
+`make openapi` after changing routes or schemas.
+
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /v1/chart` | Deterministic chart (non-interpretive) |
+| `POST /v1/dasha`, `POST /v1/transits`, `GET /v1/panchang` | Time layers |
+| `POST /v1/readings/daily-insight` | Daily statement with "why this" |
+| `POST /v1/readings/yogas-doshas`, `POST /v1/readings/life-areas` | Rule-based readings |
+| `POST /v1/readings/ask` | Question routing with abstention (disabled by default) |
+| `POST /v1/reports/annual-forecast` | Quarterly forecast, in-app only |
+| `POST /v1/matching/ashtakoota` | Compatibility (requires partner consent) |
+| `POST /v1/ledger/register`, `POST /v1/ledger/{id}/mark`, `GET /v1/ledger/calibration` | Prediction ledger |
+| `POST /v1/privacy/consent`, `GET /v1/privacy/export`, `DELETE /v1/privacy/delete` | DPDP consent and data rights |
+| `POST /v1/user/chart`, `POST /v1/user/chart/{id}/share-token` | Saved charts and revocable sharing |
+
+## Configuration
+
+Settings use the `ASTRO_` prefix (see `.env.example`). The ones that change
+behavior most:
+
+| Variable | Default | Effect |
+| --- | --- | --- |
+| `ASTRO_ENV` | `dev` | `production` activates the G0/G1/G2/G5 startup checks |
+| `ASTRO_DATABASE_URL` | SQLite file | PostgreSQL 16 (`postgresql+psycopg://…`) required in production |
+| `ASTRO_REQUIRE_SWISS_FILES` | `false` | Must be true in production; dev may use the Moshier fallback |
+| `ASTRO_LEGAL_GATE_APPROVED` | `false` | G0 legal / ephemeris licensing gate |
+| `ASTRO_ALLOW_DRAFT_RULES` | `true` in example | Must be false in production (G2) |
+| `ASTRO_AUTH_MODE` | `dev` | `firebase` required in production |
+| `ASTRO_FIELD_ENCRYPTION_KEYS` | empty | Required in production (Fernet keys) |
+| `ASTRO_ASK_ENABLED` | `false` | Dark-launch flag for the Ask endpoint |
+| `ASTRO_ASK_WEEKLY_FREE_QUOTA` | `3` | Free answered questions per user per ISO week (`<=0` = unlimited) |
+| `ASTRO_LLM_REPHRASE_ENABLED` | `false` | Optional LLM rewording; hard monthly call cap below |
+| `ASTRO_LLM_MONTHLY_CALL_CAP` | `1000` | Cost ceiling for rewording |
+
+## Guardrails
+
+`scripts/check_guardrails.py` enforces the project constraints on every run:
+
+- **G0** — legal and Swiss Ephemeris licensing sign-off recorded.
+- **G1** — reference chart set complete and environment-dependent checks.
+- **G2** — advisor-approved rule library (no draft rules in production).
+- **G3** — static scan of user-facing prose for prohibited claims.
+- **G5** — no birth data in logs, required encryption keys and contacts, guarded
+  share viewer.
+- **G6** — i18n parity across en/hi/mr and no hardcoded UI prose.
+- **G7** — scope lock: free-form chat and similar out-of-scope modules are
+  forbidden.
+
+Design records for the Ask endpoint live in
+`docs/superpowers/specs/2026-11-17-ask-endpoint-design.md` with the matching
+implementation plan under `docs/superpowers/plans/`.
+
+## License
+
+MIT — see [LICENSE](LICENSE). Note that Swiss Ephemeris carries its own
+AGPL/commercial licensing terms; the G0 gate exists so that is resolved before
+any production deployment.
