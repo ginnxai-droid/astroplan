@@ -19,7 +19,7 @@ QUESTION = "Will I change jobs before mid-2027?"
 
 
 def test_validate_rephrase_digit_behaviour_is_unchanged() -> None:
-    assert validate_rephrase("Progress in 2027.", "Progress in 2027 is supported.")
+    assert validate_rephrase("Progress in 2027.", "In 2027 progress continues.")
     with pytest.raises(GuardrailViolation, match="new digits"):
         validate_rephrase("Progress in 2027.", "Progress in 2028.")
     with pytest.raises(GuardrailViolation, match="new digits"):
