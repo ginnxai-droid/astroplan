@@ -25,6 +25,7 @@ class Rule:
     reviewer: str | None
     reviewed_at: str | None
     status: Status
+    observable_outcome_criteria: str = ""
 
 
 def load_rules(path: str | Path, *, allow_draft: bool) -> list[Rule]:
@@ -43,6 +44,9 @@ def load_rules(path: str | Path, *, allow_draft: bool) -> list[Rule]:
                 reviewer=entry.get("reviewer"),
                 reviewed_at=entry.get("reviewed_at"),
                 status=entry.get("status", "draft"),
+                observable_outcome_criteria=str(
+                    entry.get("observable_outcome_criteria") or ""
+                ).strip(),
             )
         except KeyError as exc:
             raise RuleSchemaError(f"rule {entry.get('id', '?')}: missing {exc}") from exc
@@ -52,5 +56,9 @@ def load_rules(path: str | Path, *, allow_draft: bool) -> list[Rule]:
             raise RuleSchemaError(f"G2: rule {rule.id} draft but allow_draft false")
         if rule.status == "approved" and not (rule.reviewer and rule.reviewed_at):
             raise RuleSchemaError(f"G2: approved rule {rule.id} missing reviewer/reviewed_at")
+        if rule.status == "approved" and not rule.observable_outcome_criteria:
+            raise RuleSchemaError(
+                f"G2: approved rule {rule.id} missing observable_outcome_criteria"
+            )
         out.append(rule)
     return out

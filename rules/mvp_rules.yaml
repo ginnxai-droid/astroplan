@@ -8,6 +8,7 @@
   reviewer: null
   reviewed_at: null
   status: draft
+  observable_outcome_criteria: "Job role, title, or workplace changed by the stated window end."
 
 - id: RULE_PARASHARI_REL_7H
   category: relationships
@@ -19,6 +20,7 @@
   reviewer: null
   reviewed_at: null
   status: draft
+  observable_outcome_criteria: "Partnership status or a joint commitment changed by the stated window end."
 
 - id: RULE_PARASHARI_FIN_2H_11H
   category: finances
@@ -30,6 +32,7 @@
   reviewer: null
   reviewed_at: null
   status: draft
+  observable_outcome_criteria: "Household savings or monthly income moved by the stated window end."
 
 - id: RULE_PARASHARI_HOME_4H
   category: home
@@ -41,6 +44,7 @@
   reviewer: null
   reviewed_at: null
   status: draft
+  observable_outcome_criteria: "Residence or living arrangement changed by the stated window end."
 
 - id: RULE_PARASHARI_YOGA_GAJAKESARI
   category: yoga
