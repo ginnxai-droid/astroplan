@@ -1,5 +1,9 @@
 {
   "chart.disclaimer": "Calculations are astronomically verifiable for stated settings. Interpretations follow traditional Parashari Jyotish rules and are not scientifically validated.",
+  "area.career": "Career",
+  "area.relationships": "Relationships",
+  "area.finances": "Finances",
+  "area.home": "Home",
   "career_10h_discipline.simple": "Steady professional progress is supported through structured planning and consistent effort.",
   "career_10h_discipline.pro": "10th-house karmic indicators and Saturn/Jupiter transit alignment support methodical career consolidation.",
   "relationships_7h_harmony.simple": "Clear communication and mutual patience strengthen partnerships during this period.",
@@ -43,5 +47,11 @@
   "trust.professional_advice_disclaimer": "Astroplan readings are for cultural and reflective guidance only. Always consult qualified medical, financial, legal, or mental-health professionals for important life decisions.",
   "error.unknown_timezone": "Unrecognized timezone identifier.",
   "error.ambiguous_location": "Location could not be uniquely resolved; please select a city candidate or enter manual coordinates.",
-  "error.geocoder_unavailable": "Place lookup service is temporarily unreachable; please provide manual latitude and longitude."
+  "error.geocoder_unavailable": "Place lookup service is temporarily unreachable; please provide manual latitude and longitude.",
+  "ask.coverage.uncovered_title": "No reviewed answer for this area yet.",
+  "ask.coverage.uncovered_body": "Astroplan currently interprets four life areas from advisor-reviewed rules: {areas}. This question falls outside them, so we will not improvise an answer.",
+  "ask.coverage.suggestion": "Try asking about career, money, home, or relationships.",
+  "error.ask_question_invalid": "Please enter a question between 3 and 280 characters.",
+  "error.ask_quota_exhausted": "Your three free questions for this week are used. They reset on Monday.",
+  "error.ask_disabled": "Ask is not available right now."
 }
