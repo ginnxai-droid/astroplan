@@ -78,7 +78,10 @@ def infer_target_date(question: str, *, today: date) -> date | None:
     if len(years) != 1:
         return None
     candidate = date(years[0], 1, 15)
-    upper = date(today.year + 3, today.month, today.day)
+    try:
+        upper = date(today.year + 3, today.month, today.day)
+    except ValueError:  # 29 February has no counterpart three years on
+        upper = date(today.year + 3, today.month, 28)
     return min(max(candidate, today), upper)
 
 

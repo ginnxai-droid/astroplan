@@ -68,6 +68,10 @@ def test_target_year_inference_and_clamping() -> None:
     assert infer_target_date("Will I change jobs?", today=today) is None
 
 
+def test_target_year_inference_survives_leap_day() -> None:
+    assert infer_target_date("2027", today=date(2028, 2, 29)) == date(2028, 2, 29)
+
+
 def test_iso_week_start_is_monday() -> None:
     assert iso_week_start(date(2026, 11, 17)) == date(2026, 11, 16)
 
