@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import hashlib
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
 
 import yaml
 
-from app.api.schemas import LifeAreaCategory
+from app.api.schemas import ExplainedStatement, LanguageCode, LifeAreaCategory
+from app.interpretation.guardrails import validate_answer
+from app.interpretation.llm import LLMClientProtocol, SafeRephraser
+from app.interpretation.rules import Rule
 
 AREA_ORDER: tuple[LifeAreaCategory, ...] = ("career", "relationships", "finances", "home")
 
@@ -87,3 +92,101 @@ def infer_target_date(question: str, *, today: date) -> date | None:
 
 def iso_week_start(day: date) -> date:
     return day - timedelta(days=day.weekday())
+
+
+@dataclass(frozen=True)
+class AskResolution:
+    area: LifeAreaCategory | None
+    matched_terms: tuple[str, ...]
+    canonical: ExplainedStatement | None
+    display: ExplainedStatement | None
+    context: tuple[ExplainedStatement, ...]
+    llm_used: bool
+    fallback_reason: str | None
+
+
+def bundle_hash_for(statement: ExplainedStatement) -> str:
+    payload = "|".join(
+        (
+            statement.statement_id,
+            statement.why_this.rule_id,
+            statement.why_this.strength_grade,
+            statement.time_window,
+        )
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:32]
+
+
+def compose_answer(
+    *,
+    question: str,
+    lang: LanguageCode,
+    lexicon: AreaLexicon,
+    statements_by_area: Mapping[str, list[ExplainedStatement]],
+    daily_insight: ExplainedStatement | None,
+    rephraser: SafeRephraser | None = None,
+    llm_client: LLMClientProtocol | None = None,
+) -> AskResolution:
+    area, matched = classify_question(question, lexicon)
+    if area is None:
+        return AskResolution(None, (), None, None, (), False, None)
+    candidates = statements_by_area.get(area) or []
+    if not candidates:
+        return AskResolution(area, tuple(matched), None, None, (), False, None)
+    canonical = candidates[0]
+    context: tuple[ExplainedStatement, ...] = (
+        (daily_insight,) if daily_insight and is_present_time_question(question, lexicon) else ()
+    )
+    display = canonical
+    llm_used = False
+    fallback_reason: str | None = None
+    if rephraser is not None and llm_client is not None:
+
+        def check(reference: str, candidate: str) -> None:
+            validate_answer(
+                bundle=reference,
+                question=question,
+                area=area,
+                answer=candidate,
+                lang=lang,
+                lexicon=lexicon,
+            )
+
+        outcome = rephraser.rephrase_detailed(
+            canonical.simple_text,
+            lang=lang,
+            client=llm_client,
+            validator=check,
+            prompt_version="ask-answer-v1",
+            bundle_hash=bundle_hash_for(canonical),
+            question_area=area,
+        )
+        llm_used = outcome.accepted
+        fallback_reason = outcome.fallback_reason
+        if outcome.accepted:
+            display = canonical.model_copy(update={"simple_text": outcome.text})
+    return AskResolution(
+        area=area,
+        matched_terms=tuple(matched),
+        canonical=canonical,
+        display=display,
+        context=context,
+        llm_used=llm_used,
+        fallback_reason=fallback_reason,
+    )
+
+
+def ask_ledger_entry_id(user_id: str, statement: ExplainedStatement) -> str:
+    payload = f"{user_id}|{statement.statement_id}|{statement.time_window}"
+    return "ASK-" + hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+def outcome_criteria_for(statement: ExplainedStatement, rules: list[Rule]) -> str:
+    return next(
+        (
+            rule.observable_outcome_criteria
+            for rule in rules
+            if rule.id == statement.why_this.rule_id
+        ),
+        "",
+    )
