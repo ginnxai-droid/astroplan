@@ -1,0 +1,7 @@
+name: w-meta
+on: [push, pull_request]
+jobs:
+  meta:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo meta-ok
