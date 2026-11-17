@@ -1,8 +1,0 @@
-name: w-mobile
-on: [push, pull_request]
-jobs:
-  mobile:
-    runs-on: ubuntu-latest
-    if: ${{ hashFiles('mobile/pubspec.yaml') != '' }}
-    steps:
-      - run: echo mobile-ok
