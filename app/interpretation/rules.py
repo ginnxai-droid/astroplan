@@ -52,6 +52,8 @@ def load_rules(path: str | Path, *, allow_draft: bool) -> list[Rule]:
             raise RuleSchemaError(f"rule {entry.get('id', '?')}: missing {exc}") from exc
         verify_text(rule.classical_source)
         verify_text(rule.evidence_template)
+        if rule.observable_outcome_criteria:
+            verify_text(rule.observable_outcome_criteria)
         if rule.status == "draft" and not allow_draft:
             raise RuleSchemaError(f"G2: rule {rule.id} draft but allow_draft false")
         if rule.status == "approved" and not (rule.reviewer and rule.reviewed_at):

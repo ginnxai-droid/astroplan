@@ -1,3 +1,5 @@
+import pytest
+
 from app.db.session import make_engine_and_session
 from app.ledger.service import PredictionLedgerService
 
@@ -29,3 +31,15 @@ def test_register_or_get_preserves_a_logged_outcome() -> None:
     again = svc.register_or_get(**FIELDS)
     assert again.user_outcome == "hit"
     assert len(svc._all_entries(user_id="U1")) == 1
+
+
+def test_register_or_get_rejects_entry_id_owned_by_another_user() -> None:
+    _, sf = make_engine_and_session("sqlite+pysqlite:///:memory:")
+    svc = PredictionLedgerService(session_factory=sf)
+    first = svc.register_or_get(**FIELDS)
+    before = {e.entry_id: e for e in svc._all_entries()}["ASK-DEDUPE"]
+    with pytest.raises(ValueError, match="entry id belongs to another user"):
+        svc.register_or_get(**{**FIELDS, "user_id": "U2"})
+    after = {e.entry_id: e for e in svc._all_entries()}["ASK-DEDUPE"]
+    assert after.user_id == first.user_id
+    assert after.registered_at_utc == before.registered_at_utc

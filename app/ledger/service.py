@@ -105,9 +105,11 @@ class PredictionLedgerService:
         observable_outcome_criteria: str,
         safety_category: str = "general",
     ) -> PreRegisteredLedgerEntry:
-        for existing in self._all_entries(user_id=user_id):
+        for existing in self._all_entries():
             if existing.entry_id == entry_id:
-                return existing
+                if existing.user_id == user_id:
+                    return existing
+                raise ValueError("entry id belongs to another user")
         return self.register(
             entry_id=entry_id,
             user_id=user_id,

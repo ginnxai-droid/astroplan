@@ -180,6 +180,7 @@ class PrivacyRepo:
     def delete_user(self, user_id: str) -> None:
         with self._session_factory() as s, s.begin():
             s.execute(delete(LedgerEntryRow).where(LedgerEntryRow.user_id == user_id))
+            s.execute(delete(AskUsageRow).where(AskUsageRow.user_id == user_id))
             s.execute(delete(BirthChartRow).where(BirthChartRow.user_id == user_id))
             s.execute(delete(UserRow).where(UserRow.user_id == user_id))
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import calendar
 import hashlib
 import hmac
+import logging
 from datetime import UTC, date, datetime, time
 from uuid import uuid4
 
@@ -63,6 +64,8 @@ from app.interpretation.llm import SafeRephraser
 from app.interpretation.readings import generate_daily_insight, generate_life_area_readings
 from app.interpretation.rules import load_rules
 from app.ledger.service import OutcomeMark, PredictionLedgerService
+
+logger = logging.getLogger(__name__)
 
 _STRENGTH_ADAPTER: TypeAdapter[StrengthGrade] = TypeAdapter(StrengthGrade)
 
@@ -356,6 +359,7 @@ def build_router(settings: Settings) -> APIRouter:
                 daily = generate_daily_insight(c, p, t, catalog, lang)
         except Exception as exc:
             # G5: never echo exception text (it can contain birth details) to the caller.
+            logger.exception("ask chart computation failed")
             raise HTTPException(502, {"error": "chart_unavailable"}) from exc
 
         resolution = compose_answer(

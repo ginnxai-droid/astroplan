@@ -1,6 +1,6 @@
 import pytest
 
-from app.interpretation.errors import RuleSchemaError
+from app.interpretation.errors import GuardrailViolation, RuleSchemaError
 from app.interpretation.rules import load_rules
 
 
@@ -32,4 +32,28 @@ def test_approved_rule_without_criteria_fails(tmp_path) -> None:
         encoding="utf-8",
     )
     with pytest.raises(RuleSchemaError, match="observable_outcome_criteria"):
+        load_rules(path, allow_draft=False)
+
+
+def test_outcome_criteria_tripping_verify_text_fails_loading(tmp_path) -> None:
+    path = tmp_path / "rules.yaml"
+    path.write_text(
+        "\n".join(
+            [
+                "- id: RULE_Y",
+                "  category: career",
+                "  text_key: career_10h_discipline",
+                "  evidence_template: Sun in {sun_sign}",
+                "  classical_source: BPHS",
+                "  tradition: Parashari",
+                "  strength_grade: supported",
+                "  reviewer: advisor",
+                "  reviewed_at: 2026-11-17",
+                "  status: approved",
+                "  observable_outcome_criteria: A guaranteed promotion is certain to arrive.",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(GuardrailViolation, match="absolute-claim pattern"):
         load_rules(path, allow_draft=False)
