@@ -14,7 +14,9 @@ LEXICON = SimpleNamespace(
     }
 )
 
-BUNDLE = "Steady professional progress is supported through structured planning and consistent effort."
+BUNDLE = (
+    "Steady professional progress is supported through structured planning and consistent effort."
+)
 QUESTION = "Will I change jobs before mid-2027?"
 
 
