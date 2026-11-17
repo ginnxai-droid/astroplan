@@ -7,7 +7,13 @@ from sqlalchemy import CursorResult, delete, func, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.db.crypto import decrypt_str, encrypt_str
-from app.db.models import BirthChartRow, LedgerEntryRow, TelemetryEventRow, UserRow
+from app.db.models import (
+    AskUsageRow,
+    BirthChartRow,
+    LedgerEntryRow,
+    TelemetryEventRow,
+    UserRow,
+)
 from app.db.session import make_engine_and_session
 
 
@@ -226,3 +232,16 @@ class PrivacyRepo:
                 ),
             )
         return int(result.rowcount or 0)
+
+    def consume_ask_quota(self, *, user_id: str, week_start: date, limit: int) -> bool:
+        if limit <= 0:
+            return True
+        with self._session_factory() as s, s.begin():
+            row = s.get(AskUsageRow, (user_id, week_start))
+            if row is None:
+                s.add(AskUsageRow(user_id=user_id, week_start_utc=week_start, questions_used=1))
+                return True
+            if row.questions_used >= limit:
+                return False
+            row.questions_used += 1
+            return True

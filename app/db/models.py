@@ -78,6 +78,14 @@ class LedgerEntryRow(Base):
     )
 
 
+class AskUsageRow(Base):
+    __tablename__ = "ask_usage"
+
+    user_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    week_start_utc: Mapped[date] = mapped_column(Date, primary_key=True)
+    questions_used: Mapped[int] = mapped_column(Integer, default=0)
+
+
 class TelemetryEventRow(Base):
     __tablename__ = "telemetry_events"
 
