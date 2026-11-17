@@ -98,16 +98,16 @@ def test_invented_month_is_rejected() -> None:
 
 
 @pytest.mark.parametrize(
-    "answer",
+    ("answer", "match"),
     [
-        "Career progress is supported?",
-        "As an AI, career progress is supported.",
-        "Supported.",
-        "- career progress\n- supported effort",
+        ("Career progress is supported?", "shape"),
+        ("As an AI, career progress is supported.", "echoes instruction text"),
+        ("Supported.", "shape"),
+        ("- career progress\n- supported effort", "shape"),
     ],
 )
-def test_bad_shape_and_meta_are_rejected(answer: str) -> None:
-    with pytest.raises(GuardrailViolation):
+def test_bad_shape_and_meta_are_rejected(answer: str, match: str) -> None:
+    with pytest.raises(GuardrailViolation, match=match):
         validate_answer(
             bundle=BUNDLE,
             question=QUESTION,
