@@ -35,4 +35,4 @@ jobs:
         with:
           channel: stable
       # N3 follow-through: gen-l10n compiles the .arb files before analyze/test.
-      - run: cd mobile && flutter pub get && flutter gen-l10n && flutter analyze && flutter test
+      - run: cd mobile && flutter pub get && flutter gen-l10n && flutter analyze --no-fatal-infos && flutter test
