@@ -113,3 +113,7 @@ class LLMAuditRow(Base):
     prompt_ciphertext: Mapped[bytes] = mapped_column(LargeBinary)
     output_ciphertext: Mapped[bytes] = mapped_column(LargeBinary)
     fallback_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    prompt_version: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    model: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    bundle_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    question_area: Mapped[str | None] = mapped_column(String(32), nullable=True)

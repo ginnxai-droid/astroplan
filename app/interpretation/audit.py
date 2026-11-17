@@ -17,6 +17,10 @@ class LLMAuditEvent:
     prompt_ciphertext: bytes
     output_ciphertext: bytes
     fallback_reason: str | None
+    prompt_version: str | None = None
+    model: str | None = None
+    bundle_hash: str | None = None
+    question_area: str | None = None
 
     def decrypted_prompt_and_output(self) -> tuple[str, str]:
         return decrypt_str(self.prompt_ciphertext), decrypt_str(self.output_ciphertext)
@@ -34,6 +38,10 @@ class LLMAuditLog:
         prompt: str,
         output: str,
         fallback_reason: str | None = None,
+        prompt_version: str | None = None,
+        model: str | None = None,
+        bundle_hash: str | None = None,
+        question_area: str | None = None,
     ) -> None:
         now = datetime.now(UTC)
         p_enc = encrypt_str(prompt)
@@ -45,6 +53,10 @@ class LLMAuditLog:
             prompt_ciphertext=p_enc,
             output_ciphertext=o_enc,
             fallback_reason=fallback_reason,
+            prompt_version=prompt_version,
+            model=model,
+            bundle_hash=bundle_hash,
+            question_area=question_area,
         )
         self.events.append(ev)
         if self._sf is not None:
@@ -59,6 +71,10 @@ class LLMAuditLog:
                         prompt_ciphertext=p_enc,
                         output_ciphertext=o_enc,
                         fallback_reason=fallback_reason,
+                        prompt_version=prompt_version,
+                        model=model,
+                        bundle_hash=bundle_hash,
+                        question_area=question_area,
                     )
                 )
 
