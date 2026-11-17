@@ -4,6 +4,7 @@ import calendar
 import hashlib
 import hmac
 from datetime import UTC, date, datetime, time
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Response
 from pydantic import BaseModel, TypeAdapter
@@ -11,11 +12,16 @@ from pydantic import BaseModel, TypeAdapter
 from app.api.deps import make_auth_dependency
 from app.api.schemas import (
     AnnualForecastResponse,
+    AskCoverage,
+    AskRequest,
+    AskResponse,
     BirthDetailsInput,
     ChartResponse,
     ConsentGrantRequest,
     ExplainedStatement,
     LanguageCode,
+    LifeAreaCategory,
+    LLMProvenance,
     MatchingInput,
     StrengthGrade,
     TelemetryEventInput,
@@ -39,8 +45,21 @@ from app.core.timeutil import load_zone
 from app.core.transits import evaluate_current_transits
 from app.core.yogas import detect_yogas_and_doshas
 from app.db.repo import PrivacyRepo
+from app.interpretation.ask import (
+    AREA_ORDER,
+    ask_ledger_entry_id,
+    classify_question,
+    compose_answer,
+    infer_target_date,
+    is_present_time_question,
+    iso_week_start,
+    load_area_lexicon,
+    outcome_criteria_for,
+)
+from app.interpretation.audit import LLMAuditLog
 from app.interpretation.forecast import generate_annual_forecast_report
 from app.interpretation.language import Catalog
+from app.interpretation.llm import SafeRephraser
 from app.interpretation.readings import generate_daily_insight, generate_life_area_readings
 from app.interpretation.rules import load_rules
 from app.ledger.service import OutcomeMark, PredictionLedgerService
@@ -131,6 +150,8 @@ def build_router(settings: Settings) -> APIRouter:
     catalog = Catalog(settings.i18n_dir)
     rules = load_rules(settings.rules_path, allow_draft=settings.allow_draft_rules)
     festivals = load_festivals(settings.festivals_path, allow_draft=settings.allow_draft_rules)
+    ask_lexicon = load_area_lexicon(settings.ask_lexicon_path)
+    rephraser = SafeRephraser(settings, LLMAuditLog(session_factory=repo.session_factory))
     current_user_dep = make_auth_dependency(settings)
 
     def verify_operator(x_operator_key: str | None = Header(default=None)) -> None:
@@ -268,6 +289,142 @@ def build_router(settings: Settings) -> APIRouter:
             }
         except Exception as exc:
             raise _map(exc, catalog, details.language) from exc
+
+    @router.post("/readings/ask", response_model=AskResponse)
+    async def ask(
+        req: AskRequest,
+        auth_user: str = Depends(current_user_dep),
+    ) -> AskResponse:
+        lang = req.details.language
+        if not settings.ask_enabled:
+            raise HTTPException(
+                503,
+                {
+                    "error": "ask_disabled",
+                    "message": catalog.get("error.ask_disabled", lang),
+                },
+            )
+        question = req.question.strip()
+        if len(question) < 3 or "\x00" in question:
+            raise HTTPException(
+                422,
+                {
+                    "error": "ask_question_invalid",
+                    "message": catalog.get("error.ask_question_invalid", lang),
+                },
+            )
+
+        def uncovered(area: LifeAreaCategory | None, matched: list[str]) -> AskResponse:
+            return AskResponse(
+                request_id=str(uuid4()),
+                coverage=AskCoverage(
+                    status="uncovered",
+                    area=area,
+                    matched_terms=matched,
+                    available_areas=list(AREA_ORDER),
+                ),
+                statement=None,
+                context=[],
+                ledger_entry_id=None,
+                llm=LLMProvenance(used=False),
+                disclaimer=catalog.get("trust.professional_advice_disclaimer", lang),
+            )
+
+        area, _matched = classify_question(question, ask_lexicon)
+        if area is None:
+            repo.record_telemetry(
+                event_type="ask_uncovered",
+                category=None,
+                rule_id=None,
+                language=lang,
+                cohort_hash=None,
+            )
+            return uncovered(None, [])
+
+        try:
+            lat, lon, tz = await _resolve(req.details, settings)
+            today = _today_in_tz(tz)
+            eff_date = req.target_date or infer_target_date(question, today=today) or today
+            c = calculate_chart(req.details, lat, lon, tz)
+            moon = next(p for p in c.planets if p.planet == "Moon")
+            d = calculate_vimshottari_dasha(req.details.birth_date, moon.longitude, eff_date)
+            t = evaluate_current_transits(c, eff_date)
+            areas = generate_life_area_readings(c, d, t, rules, catalog, lang)
+            daily = None
+            if is_present_time_question(question, ask_lexicon):
+                p = calculate_daily_panchang(eff_date, lat, lon, tz)
+                daily = generate_daily_insight(c, p, t, catalog, lang)
+        except Exception as exc:
+            # G5: never echo exception text (it can contain birth details) to the caller.
+            raise HTTPException(502, {"error": "chart_unavailable"}) from exc
+
+        resolution = compose_answer(
+            question=question,
+            lang=lang,
+            lexicon=ask_lexicon,
+            statements_by_area=areas,
+            daily_insight=daily,
+            rephraser=rephraser,
+            llm_client=None,
+        )
+        if resolution.canonical is None or resolution.display is None:
+            return uncovered(area, list(resolution.matched_terms))
+
+        if not repo.consume_ask_quota(
+            user_id=auth_user,
+            week_start=iso_week_start(today),
+            limit=settings.ask_weekly_free_quota,
+        ):
+            raise HTTPException(
+                429,
+                {
+                    "error": "ask_quota_exhausted",
+                    "message": catalog.get("error.ask_quota_exhausted", lang),
+                },
+            )
+
+        statement = resolution.canonical
+        entry_id: str | None = None
+        criteria = outcome_criteria_for(statement, rules)
+        if criteria:
+            entry = ledger.register_or_get(
+                entry_id=ask_ledger_entry_id(auth_user, statement),
+                user_id=auth_user,
+                statement_id=statement.statement_id,
+                rule_id=statement.why_this.rule_id,
+                statement_text=statement.simple_text,
+                confidence_grade=statement.why_this.strength_grade,
+                time_window=statement.time_window,
+                observable_outcome_criteria=criteria,
+                safety_category="life_area",
+            )
+            entry_id = entry.entry_id
+
+        repo.record_telemetry(
+            event_type="ask_answered",
+            category=area,
+            rule_id=statement.why_this.rule_id,
+            language=lang,
+            cohort_hash=None,
+        )
+        return AskResponse(
+            request_id=str(uuid4()),
+            coverage=AskCoverage(
+                status="answered",
+                area=area,
+                matched_terms=list(resolution.matched_terms),
+                available_areas=list(AREA_ORDER),
+            ),
+            statement=resolution.display,
+            context=list(resolution.context),
+            ledger_entry_id=entry_id,
+            llm=LLMProvenance(
+                used=resolution.llm_used,
+                model=settings.anthropic_model if resolution.llm_used else None,
+                fallback_reason=resolution.fallback_reason,
+            ),
+            disclaimer=catalog.get("trust.professional_advice_disclaimer", lang),
+        )
 
     @router.post("/reports/annual-forecast", response_model=AnnualForecastResponse)
     async def annual(

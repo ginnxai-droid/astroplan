@@ -84,6 +84,149 @@
         "title": "AnnualForecastResponse",
         "type": "object"
       },
+      "AskCoverage": {
+        "properties": {
+          "area": {
+            "anyOf": [
+              {
+                "enum": [
+                  "career",
+                  "relationships",
+                  "finances",
+                  "home"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area"
+          },
+          "available_areas": {
+            "items": {
+              "enum": [
+                "career",
+                "relationships",
+                "finances",
+                "home"
+              ],
+              "type": "string"
+            },
+            "title": "Available Areas",
+            "type": "array"
+          },
+          "matched_terms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Matched Terms",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "answered",
+              "uncovered"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "area",
+          "matched_terms",
+          "available_areas"
+        ],
+        "title": "AskCoverage",
+        "type": "object"
+      },
+      "AskRequest": {
+        "properties": {
+          "details": {
+            "$ref": "#/components/schemas/BirthDetailsInput"
+          },
+          "question": {
+            "maxLength": 280,
+            "minLength": 3,
+            "title": "Question",
+            "type": "string"
+          },
+          "target_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Date"
+          }
+        },
+        "required": [
+          "details",
+          "question"
+        ],
+        "title": "AskRequest",
+        "type": "object"
+      },
+      "AskResponse": {
+        "properties": {
+          "context": {
+            "items": {
+              "$ref": "#/components/schemas/ExplainedStatement"
+            },
+            "title": "Context",
+            "type": "array"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/AskCoverage"
+          },
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "ledger_entry_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ledger Entry Id"
+          },
+          "llm": {
+            "$ref": "#/components/schemas/LLMProvenance"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "statement": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExplainedStatement"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "request_id",
+          "coverage",
+          "statement",
+          "llm",
+          "disclaimer"
+        ],
+        "title": "AskResponse",
+        "type": "object"
+      },
       "BirthDetailsInput": {
         "properties": {
           "birth_date": {
@@ -380,6 +523,41 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "LLMProvenance": {
+        "properties": {
+          "fallback_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fallback Reason"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "used": {
+            "title": "Used",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "used"
+        ],
+        "title": "LLMProvenance",
+        "type": "object"
+      },
       "LedgerCreateRequest": {
         "properties": {
           "confidence_grade": {
@@ -607,7 +785,9 @@
               "annual_forecast_completed",
               "life_area_viewed",
               "daily_panchang_opened",
-              "daily_insight_opened"
+              "daily_insight_opened",
+              "ask_answered",
+              "ask_uncovered"
             ],
             "title": "Event Type",
             "type": "string"
@@ -1917,6 +2097,78 @@
           }
         },
         "summary": "Export User"
+      }
+    },
+    "/v1/readings/ask": {
+      "post": {
+        "operationId": "ask_v1_readings_ask_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask"
       }
     },
     "/v1/readings/daily-insight": {

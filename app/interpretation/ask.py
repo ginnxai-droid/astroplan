@@ -122,7 +122,7 @@ def compose_answer(
     question: str,
     lang: LanguageCode,
     lexicon: AreaLexicon,
-    statements_by_area: Mapping[str, list[ExplainedStatement]],
+    statements_by_area: Mapping[LifeAreaCategory, list[ExplainedStatement]],
     daily_insight: ExplainedStatement | None,
     rephraser: SafeRephraser | None = None,
     llm_client: LLMClientProtocol | None = None,

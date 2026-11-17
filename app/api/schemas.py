@@ -16,6 +16,8 @@ TelemetryEventType = Literal[
     "life_area_viewed",
     "daily_panchang_opened",
     "daily_insight_opened",
+    "ask_answered",
+    "ask_uncovered",
 ]
 
 
@@ -160,3 +162,32 @@ class MatchingInput(BaseModel):
         if not self.partner_consent_confirmed:
             raise ValueError("partner_consent_required")
         return self
+
+
+class AskRequest(BaseModel):
+    details: BirthDetailsInput
+    question: str = Field(..., min_length=3, max_length=280)
+    target_date: date | None = None
+
+
+class AskCoverage(BaseModel):
+    status: Literal["answered", "uncovered"]
+    area: LifeAreaCategory | None
+    matched_terms: list[str]
+    available_areas: list[LifeAreaCategory]
+
+
+class LLMProvenance(BaseModel):
+    used: bool
+    model: str | None = None
+    fallback_reason: str | None = None
+
+
+class AskResponse(BaseModel):
+    request_id: str
+    coverage: AskCoverage
+    statement: ExplainedStatement | None
+    context: list[ExplainedStatement] = Field(default_factory=list)
+    ledger_entry_id: str | None = None
+    llm: LLMProvenance
+    disclaimer: str
