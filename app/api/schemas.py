@@ -22,16 +22,33 @@ TelemetryEventType = Literal[
 
 
 class BirthDetailsInput(BaseModel):
-    name: str = "User"
+    name: str = Field(..., max_length=120)
     birth_date: date
     birth_time: time
     place_name: str = Field(..., min_length=2)
+    country: str = Field(..., max_length=80)
     latitude: float | None = Field(None, ge=-90.0, le=90.0)
     longitude: float | None = Field(None, ge=-180.0, le=180.0)
     timezone_override: str | None = None
     uncertainty_minutes: int = Field(0, ge=0, le=120)
     node_type: NodeType = "MEAN"
     language: LanguageCode = "en"
+
+    @field_validator("name")
+    @classmethod
+    def _require_name(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("name_required")
+        return cleaned
+
+    @field_validator("country")
+    @classmethod
+    def _require_country(cls, value: str) -> str:
+        cleaned = value.strip()
+        if len(cleaned) < 2:
+            raise ValueError("country_required")
+        return cleaned
 
     @field_validator("birth_date")
     @classmethod

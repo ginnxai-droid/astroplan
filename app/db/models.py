@@ -47,6 +47,7 @@ class BirthChartRow(Base):
     birth_time: Mapped[time] = mapped_column(Time)
     name_encrypted: Mapped[bytes] = mapped_column(LargeBinary)
     place_name_encrypted: Mapped[bytes] = mapped_column(LargeBinary)
+    country_encrypted: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     latitude_encrypted: Mapped[bytes] = mapped_column(LargeBinary)
     longitude_encrypted: Mapped[bytes] = mapped_column(LargeBinary)
     timezone_iana: Mapped[str] = mapped_column(String(64))

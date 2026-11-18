@@ -193,12 +193,14 @@ Future<void> tapVisible(WidgetTester tester, Finder finder) async {
 }
 
 Future<void> fillBirth(WidgetTester tester,
-    {String name = 'Test Person', bool partner = false}) async {
+    {String name = 'Test Person', String country = 'India',
+    bool partner = false}) async {
   for (final entry in {
     'name': name,
     'birth_date': '1990-01-02',
     'birth_time': '08:15',
     'place_name': 'Pune',
+    'country': country,
     'latitude': '18.5204',
     'longitude': '73.8567',
     'timezone_override': 'Asia/Kolkata',
@@ -276,6 +278,7 @@ void main() {
       expect(h.at(path), hasLength(1));
       final body = jsonDecode(h.at(path).single.body);
       expect(body['birth_time'], '08:15');
+      expect(body['country'], 'India');
       expect(body['uncertainty_minutes'], 10);
       expect(body['node_type'], 'MEAN');
     }
@@ -302,6 +305,19 @@ void main() {
       expect(prefs.get(key).toString(), isNot(contains('Test Person')));
       expect(prefs.get(key).toString(), isNot(contains('1990-01-02')));
     }
+  });
+
+  testWidgets('country is mandatory and blocks chart calculation',
+      (tester) async {
+    final h = ApiHarness();
+    await tester.pumpWidget(
+        AstroplanApp(api: h.api, notifier: RecordingNotifier()));
+    await tester.pumpAndSettle();
+    await tapVisible(tester, find.byKey(const Key('profile_button')));
+    await fillBirth(tester, country: '');
+    await tapVisible(tester, find.byKey(const Key('calculate_chart')));
+    expect(h.at('/chart'), isEmpty);
+    expect(find.text('Enter a valid value.'), findsOneWidget);
   });
 
   testWidgets('safe statement opens exact evidence and rejects unsafe text',

@@ -13,7 +13,9 @@ def test_shape() -> None:
     inp = BirthDetailsInput(
         birth_date=date(1990, 1, 1),
         birth_time=time(12, 0),
+        name="Test Person",
         place_name="Pune",
+        country="India",
         latitude=18.5204,
         longitude=73.8567,
     )

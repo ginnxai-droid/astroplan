@@ -17,7 +17,9 @@ def test_annual_forecast_is_interactive_and_pdf_disabled() -> None:
     inp = BirthDetailsInput(
         birth_date=date(1992, 5, 10),
         birth_time=time(14, 30),
+        name="Test Person",
         place_name="Pune",
+        country="India",
         latitude=18.5204,
         longitude=73.8567,
     )

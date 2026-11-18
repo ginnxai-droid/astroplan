@@ -13,14 +13,18 @@ def test_matching_score_breakdown_and_partner_consent_gate() -> None:
     p1 = BirthDetailsInput(
         birth_date=date(1994, 3, 21),
         birth_time=time(9, 15),
+        name="Partner A",
         place_name="Pune",
+        country="India",
         latitude=18.5204,
         longitude=73.8567,
     )
     p2 = BirthDetailsInput(
         birth_date=date(1996, 8, 12),
         birth_time=time(18, 45),
+        name="Partner B",
         place_name="Mumbai",
+        country="India",
         latitude=19.0760,
         longitude=72.8777,
     )

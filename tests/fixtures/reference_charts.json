@@ -7,9 +7,10 @@
       "time": "00:00:00",
       "place": "New Delhi",
       "lat": 28.6139,
-      "lon": 77.2090,
+      "lon": 77.209,
       "tz": "Asia/Kolkata",
-      "node_type": "MEAN"
+      "node_type": "MEAN",
+      "country": "India"
     },
     "expected": {
       "ayanamsa_value": 23.1282,

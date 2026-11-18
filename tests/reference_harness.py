@@ -29,9 +29,11 @@ def verify_reference_entry(entry: dict[str, Any]) -> list[str]:
     b = entry["birth"]
     exp = entry["expected"]
     inp = BirthDetailsInput(
+        name="Reference",
         birth_date=date.fromisoformat(b["date"]),
         birth_time=time.fromisoformat(b["time"]),
         place_name=b["place"],
+        country=b["country"],
         latitude=float(b["lat"]),
         longitude=float(b["lon"]),
         node_type=b.get("node_type", "MEAN"),

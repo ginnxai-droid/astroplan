@@ -50,6 +50,36 @@ async def test_manual_resolves() -> None:
     assert r.timezone_iana == "Asia/Kolkata"
 
 
+async def test_nominatim_query_includes_country(monkeypatch) -> None:
+    import httpx
+
+    import app.core.geocode as g
+
+    captured: dict[str, str] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["q"] = request.url.params["q"]
+        return httpx.Response(
+            200,
+            json=[{"lat": "18.5204", "lon": "73.8567", "display_name": "Pune, India"}],
+        )
+
+    transport = httpx.MockTransport(handler)
+    original = httpx.AsyncClient
+
+    class Patched(original):  # type: ignore[misc]
+        def __init__(self, *args, **kwargs):
+            kwargs["transport"] = transport
+            super().__init__(*args, **kwargs)
+
+    monkeypatch.setattr(g.httpx, "AsyncClient", Patched)
+    r = await NominatimProvider(Settings(env="test")).resolve(
+        "Pune", country="India", manual_lat=None, manual_lon=None, tz_override=None
+    )
+    assert captured["q"] == "Pune, India"
+    assert r.latitude == 18.5204 and r.timezone_iana == "Asia/Kolkata"
+
+
 async def test_nominatim_failure_maps_to_typed_error(monkeypatch) -> None:
     import httpx
 

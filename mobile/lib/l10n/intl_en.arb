@@ -20,6 +20,7 @@
   "dateLabel": "Birth date · YYYY-MM-DD",
   "timeLabel": "Birth time · HH:MM (24-hour)",
   "placeLabel": "Birthplace",
+  "countryLabel": "Country",
   "latitudeLabel": "Latitude (optional)",
   "longitudeLabel": "Longitude (optional)",
   "timezoneLabel": "IANA timezone (optional)",

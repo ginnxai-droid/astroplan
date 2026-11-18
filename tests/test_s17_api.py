@@ -13,6 +13,7 @@ def test_chart_dasha_transits_daily_insight_yogas_304_etag_and_observability(
         "birth_date": "1993-11-14",
         "birth_time": "10:15:00",
         "place_name": "Pune",
+        "country": "India",
         "latitude": 18.5204,
         "longitude": 73.8567,
         "uncertainty_minutes": 10,
@@ -98,6 +99,7 @@ def test_m1_cross_user_idor_blocked_m2_operator_gate_and_share_revocation(client
             "birth_date": "1992-05-10",
             "birth_time": "14:30:00",
             "place_name": "Pune",
+            "country": "India",
             "latitude": 18.5204,
             "longitude": 73.8567,
         },
@@ -152,6 +154,7 @@ def test_m1_cross_user_idor_blocked_m2_operator_gate_and_share_revocation(client
 
     exp = client.get("/v1/privacy/export", headers=headers_u999)
     assert exp.status_code == 200 and exp.json()["charts"][0]["name"] == "Aarav"
+    assert exp.json()["charts"][0]["country"] == "India"
     assert client.delete("/v1/privacy/delete", headers=headers_u999).status_code == 200
 
 

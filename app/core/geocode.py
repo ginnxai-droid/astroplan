@@ -30,6 +30,7 @@ class GeocodeProvider(Protocol):
         self,
         place_name: str,
         *,
+        country: str | None = None,
         manual_lat: float | None,
         manual_lon: float | None,
         tz_override: str | None,
@@ -56,6 +57,7 @@ class ManualOnlyProvider:
         self,
         place_name: str,
         *,
+        country: str | None = None,
         manual_lat: float | None,
         manual_lon: float | None,
         tz_override: str | None,
@@ -114,22 +116,24 @@ class NominatimProvider:
         self,
         place_name: str,
         *,
+        country: str | None = None,
         manual_lat: float | None,
         manual_lon: float | None,
         tz_override: str | None,
     ) -> ResolvedPlace:
         if manual_lat is not None and manual_lon is not None:
             return _resolve_manual(self._tf, place_name, manual_lat, manual_lon, tz_override)
-        key = place_name.strip().lower()
+        query = f"{place_name}, {country}" if country else place_name
+        key = query.strip().lower()
         if key in self._cache:
             self._cache.move_to_end(key)
             c = self._cache[key]
             return ResolvedPlace(
                 c.latitude, c.longitude, tz_override or c.timezone_iana, "cache", c.display_name
             )
-        candidates = await self.search_candidates(place_name, limit=5)
+        candidates = await self.search_candidates(query, limit=5)
         if not candidates:
-            raise AmbiguousLocationError(place_name)
+            raise AmbiguousLocationError(query)
         first = candidates[0]
         tz = tz_override or first.timezone_iana
         load_zone(tz)

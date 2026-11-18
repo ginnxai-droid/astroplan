@@ -24,9 +24,11 @@ def test_fernet_encryption_name_place_consent_sql_revocation_and_window_dispatch
         repo.create_user_and_chart(
             user_id="U_NO_CONSENT",
             chart_id="C_NO",
+            name="No Consent",
             birth_date=date(1993, 11, 14),
             birth_time=time(10, 15),
             place_name="Pune",
+            country="India",
             lat=18.5204,
             lon=73.8567,
             tz_iana="Asia/Kolkata",
@@ -39,6 +41,7 @@ def test_fernet_encryption_name_place_consent_sql_revocation_and_window_dispatch
         birth_date=date(1993, 11, 14),
         birth_time=time(10, 15),
         place_name="Pune",
+        country="India",
         lat=18.5204,
         lon=73.8567,
         tz_iana="Asia/Kolkata",
@@ -48,6 +51,7 @@ def test_fernet_encryption_name_place_consent_sql_revocation_and_window_dispatch
     )
     raw_name, raw_place = repo.get_raw_ciphertext("C100")
     assert b"Aarav" not in raw_name and b"Pune" not in raw_place
+    assert repo.export_user_data("U100")["charts"][0]["country"] == "India"  # type: ignore[index]
 
     due = collect_due_notification_users(
         repo.session_factory, time(7, 40), date(2026, 11, 16), window_minutes=15
@@ -118,6 +122,7 @@ def test_create_app_wires_configured_field_encryption_keys(tmp_path: Path) -> No
                 "birth_date": "1990-05-15",
                 "birth_time": "08:45:00",
                 "place_name": "Pune",
+                "country": "India",
                 "latitude": 18.5204,
                 "longitude": 73.8567,
                 "timezone_override": "Asia/Kolkata",

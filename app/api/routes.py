@@ -134,15 +134,35 @@ def _map(exc: Exception, catalog: Catalog, lang: LanguageCode = "en") -> HTTPExc
     return HTTPException(400, {"error": "bad_request", "detail": str(exc)})
 
 
-async def _resolve(details: BirthDetailsInput, settings: Settings) -> tuple[float, float, str]:
+async def _resolve_place(
+    place_name: str,
+    country: str | None,
+    *,
+    manual_lat: float | None,
+    manual_lon: float | None,
+    tz_override: str | None,
+    settings: Settings,
+) -> tuple[float, float, str]:
     provider = make_provider(settings)
     resolved = await provider.resolve(
+        place_name,
+        country=country,
+        manual_lat=manual_lat,
+        manual_lon=manual_lon,
+        tz_override=tz_override,
+    )
+    return resolved.latitude, resolved.longitude, resolved.timezone_iana
+
+
+async def _resolve(details: BirthDetailsInput, settings: Settings) -> tuple[float, float, str]:
+    return await _resolve_place(
         details.place_name,
+        details.country,
         manual_lat=details.latitude,
         manual_lon=details.longitude,
         tz_override=details.timezone_override,
+        settings=settings,
     )
-    return resolved.latitude, resolved.longitude, resolved.timezone_iana
 
 
 def build_router(settings: Settings) -> APIRouter:
@@ -223,15 +243,15 @@ def build_router(settings: Settings) -> APIRouter:
         lon: float | None = None,
         if_none_match: str | None = Header(default=None),
     ) -> Response | dict[str, object]:
-        details = BirthDetailsInput(
-            birth_date=target_date,
-            birth_time=time(0, 0),
-            place_name=place_name,
-            latitude=lat,
-            longitude=lon,
-        )
         try:
-            rlat, rlon, tz = await _resolve(details, settings)
+            rlat, rlon, tz = await _resolve_place(
+                place_name,
+                None,
+                manual_lat=lat,
+                manual_lon=lon,
+                tz_override=None,
+                settings=settings,
+            )
             etag_val = (
                 f'"{hashlib.sha256(f"{target_date}:{rlat}:{rlon}:{tz}".encode()).hexdigest()[:16]}"'
             )
@@ -547,6 +567,7 @@ def build_router(settings: Settings) -> APIRouter:
                 birth_date=req.details.birth_date,
                 birth_time=req.details.birth_time,
                 place_name=req.details.place_name,
+                country=req.details.country,
                 lat=lat,
                 lon=lon,
                 tz_iana=tz,

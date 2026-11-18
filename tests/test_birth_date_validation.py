@@ -7,6 +7,7 @@ DETAILS = {
     "birth_date": "1993-11-14",
     "birth_time": "10:15:00",
     "place_name": "Pune",
+    "country": "India",
     "latitude": 18.5204,
     "longitude": 73.8567,
     "uncertainty_minutes": 10,

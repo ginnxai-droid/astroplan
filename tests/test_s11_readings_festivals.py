@@ -20,7 +20,9 @@ def test_all_four_life_areas_daily_insight_yogas_and_astronomical_vrats() -> Non
     inp = BirthDetailsInput(
         birth_date=date(1992, 5, 10),
         birth_time=time(14, 30),
+        name="Test Person",
         place_name="Pune",
+        country="India",
         latitude=18.5204,
         longitude=73.8567,
         language="mr",

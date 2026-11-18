@@ -239,6 +239,11 @@
             "title": "Birth Time",
             "type": "string"
           },
+          "country": {
+            "maxLength": 80,
+            "title": "Country",
+            "type": "string"
+          },
           "language": {
             "default": "en",
             "enum": [
@@ -276,7 +281,7 @@
             "title": "Longitude"
           },
           "name": {
-            "default": "User",
+            "maxLength": 120,
             "title": "Name",
             "type": "string"
           },
@@ -314,9 +319,11 @@
           }
         },
         "required": [
+          "name",
           "birth_date",
           "birth_time",
-          "place_name"
+          "place_name",
+          "country"
         ],
         "title": "BirthDetailsInput",
         "type": "object"

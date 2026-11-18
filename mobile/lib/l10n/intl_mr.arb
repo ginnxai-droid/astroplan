@@ -20,6 +20,7 @@
   "dateLabel": "जन्मतारीख · YYYY-MM-DD",
   "timeLabel": "जन्मवेळ · HH:MM (24 तास)",
   "placeLabel": "जन्मस्थळ",
+  "countryLabel": "देश",
   "latitudeLabel": "अक्षांश (ऐच्छिक)",
   "longitudeLabel": "रेखांश (ऐच्छिक)",
   "timezoneLabel": "IANA प्रमाणवेळ (ऐच्छिक)",

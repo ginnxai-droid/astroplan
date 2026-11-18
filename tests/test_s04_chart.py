@@ -14,7 +14,9 @@ def _ref():
     inp = BirthDetailsInput(
         birth_date=date(1947, 8, 15),
         birth_time=time(0, 0),
+        name="Test Person",
         place_name="New Delhi",
+        country="India",
         latitude=28.6139,
         longitude=77.2090,
         uncertainty_minutes=15,
@@ -67,7 +69,11 @@ def test_navamsa_ascendant_uses_raw_lagna_longitude(
     # Values just below boundaries must not cross them through display rounding.
     monkeypatch.setattr(chart_module, "sidereal_lagna", lambda *_: lagna_lon)
     inp = BirthDetailsInput(
-        birth_date=date(1947, 8, 15), birth_time=time(0), place_name="New Delhi"
+        name="Test Person",
+        birth_date=date(1947, 8, 15),
+        birth_time=time(0),
+        place_name="New Delhi",
+        country="India",
     )
     payload = calculate_chart(inp, 28.6139, 77.2090, "Asia/Kolkata").model_dump(mode="json")
     assert payload["navamsa_lagna_sign_index"] == expected_index

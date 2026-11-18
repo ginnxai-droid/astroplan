@@ -33,6 +33,7 @@ class _BirthFormState extends State<BirthForm> {
       'birth_date',
       'birth_time',
       'place_name',
+      'country',
       'latitude',
       'longitude',
       'timezone_override',
@@ -91,6 +92,7 @@ class _BirthFormState extends State<BirthForm> {
       'birth_date': value('birth_date'),
       'birth_time': value('birth_time'),
       'place_name': value('place_name'),
+      'country': value('country'),
       'uncertainty_minutes': int.parse(value('uncertainty_minutes')),
       'node_type': node,
       'language': Localizations.localeOf(context).languageCode,
@@ -174,6 +176,9 @@ class _BirthFormState extends State<BirthForm> {
                     }
                   })),
           field('place_name', t.placeLabel,
+              validator: (v) =>
+                  (v?.trim().length ?? 0) >= 2 ? null : t.requiredField),
+          field('country', t.countryLabel,
               validator: (v) =>
                   (v?.trim().length ?? 0) >= 2 ? null : t.requiredField),
           Text(t.coordinatesHint,
