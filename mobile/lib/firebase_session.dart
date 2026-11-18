@@ -5,7 +5,8 @@ Future<String?> anonymousFirebaseToken() async {
   final auth = FirebaseAuth.instance;
   try {
     final user = auth.currentUser ?? (await auth.signInAnonymously()).user;
-    return user?.getIdToken();
+    final token = await user?.getIdToken();
+    return token;
   } on FirebaseAuthException {
     return null;
   }
