@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +7,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'api.dart';
 import 'celestial_home.dart';
 import 'celestial_widgets.dart';
+import 'firebase_session.dart';
 import 'l10n/app_localizations.dart';
 export 'api.dart';
 
@@ -88,15 +90,19 @@ class FlutterLocalNotificationNotifier implements DailyInsightNotifier {
   }
 }
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(AstroplanApp(notifier: FlutterLocalNotificationNotifier()));
+  await Firebase.initializeApp();
+  runApp(AstroplanApp(
+      notifier: FlutterLocalNotificationNotifier(),
+      tokenProvider: anonymousFirebaseToken));
 }
 
 class AstroplanApp extends StatefulWidget {
-  const AstroplanApp({super.key, this.notifier, this.api});
+  const AstroplanApp({super.key, this.notifier, this.api, this.tokenProvider});
   final DailyInsightNotifier? notifier;
   final AstroplanApiClient? api;
+  final Future<String?> Function()? tokenProvider;
   @override
   State<AstroplanApp> createState() => _AstroplanAppState();
 }
@@ -110,7 +116,8 @@ class _AstroplanAppState extends State<AstroplanApp> {
   void initState() {
     super.initState();
     tzdata.initializeTimeZones();
-    _api = widget.api ?? AstroplanApiClient();
+    _api = widget.api ??
+        AstroplanApiClient(tokenProvider: widget.tokenProvider);
     _notifier = widget.notifier ?? FlutterLocalNotificationNotifier();
     _loadPreferences();
   }

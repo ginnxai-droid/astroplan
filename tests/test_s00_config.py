@@ -46,7 +46,7 @@ def test_production_refuses_missing_guardrail(override: dict[str, object], expec
 
 
 def test_dev_defaults_safe() -> None:
-    s = Settings(env="dev")
+    s = Settings(env="dev", _env_file=None)
     assert s.llm_rephrase_enabled is False
     assert s.legal_gate_approved is False
     assert s.source_offer_url == ""

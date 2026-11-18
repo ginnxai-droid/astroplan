@@ -52,6 +52,7 @@ def settings() -> Settings:
         database_url="sqlite+pysqlite:///:memory:",
         allow_draft_rules=True,
         geocode_provider="manual_only",
+        _env_file=None,
     )
 
 

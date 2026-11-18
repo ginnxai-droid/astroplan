@@ -155,12 +155,13 @@ def test_m1_cross_user_idor_blocked_m2_operator_gate_and_share_revocation(client
     assert client.delete("/v1/privacy/delete", headers=headers_u999).status_code == 200
 
 
-def test_m6_firebase_mode_rejects_unauthenticated_requests() -> None:
+def test_m6_firebase_mode_rejects_unauthenticated_requests(monkeypatch) -> None:
     from fastapi.testclient import TestClient
 
     from app.config import Settings
     from app.main import create_app
 
+    monkeypatch.setattr("app.main.configure_firebase", lambda settings: None)
     fb_client = TestClient(
         create_app(
             Settings(

@@ -12,3 +12,10 @@ mobile/build/
 web-share/.next/
 web-share/node_modules/
 artifacts/
+# Firebase config and signing/credential material (supplied at deploy time)
+google-services.json
+*.jks
+*.keystore
+key.properties
+*firebase-adminsdk*.json
+service-account*.json
