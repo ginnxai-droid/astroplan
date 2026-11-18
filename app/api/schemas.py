@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime, time
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 LanguageCode = Literal["en", "hi", "mr"]
 StrengthGrade = Literal["likely", "supported", "weak", "contested"]
@@ -32,6 +32,13 @@ class BirthDetailsInput(BaseModel):
     uncertainty_minutes: int = Field(0, ge=0, le=120)
     node_type: NodeType = "MEAN"
     language: LanguageCode = "en"
+
+    @field_validator("birth_date")
+    @classmethod
+    def _reject_future_birth_date(cls, value: date) -> date:
+        if value > date.today():
+            raise ValueError("birth_date_in_future")
+        return value
 
 
 class ConsentGrantRequest(BaseModel):
