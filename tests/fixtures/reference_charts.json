@@ -6,11 +6,11 @@
       "date": "1947-08-15",
       "time": "00:00:00",
       "place": "New Delhi",
+      "country": "India",
       "lat": 28.6139,
       "lon": 77.209,
       "tz": "Asia/Kolkata",
-      "node_type": "MEAN",
-      "country": "India"
+      "node_type": "MEAN"
     },
     "expected": {
       "ayanamsa_value": 23.1282,
@@ -20,6 +20,1706 @@
       "moon_nakshatra": "Pushya",
       "moon_pada": 1,
       "planet_longitudes": {}
+    }
+  },
+  {
+    "id": "G1_SYN_001",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1997-08-09",
+      "time": "11:25:00",
+      "place": "Chennai",
+      "country": "India",
+      "lat": 13.0827,
+      "lon": 80.2707,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.823619,
+      "lagna_sign": "Libra",
+      "lagna_degree": 12.0808,
+      "moon_sign": "Virgo",
+      "moon_nakshatra": "Chitra",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 112.8671,
+        "Moon": 177.2095,
+        "Mars": 183.0647,
+        "Mercury": 139.3816,
+        "Jupiter": 293.2186,
+        "Venus": 146.2142,
+        "Saturn": 356.4884,
+        "Rahu": 147.5689,
+        "Ketu": 327.5689
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_002",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1994-08-19",
+      "time": "09:00:00",
+      "place": "Mysuru",
+      "country": "India",
+      "lat": 12.2958,
+      "lon": 76.6394,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.782082,
+      "lagna_sign": "Virgo",
+      "lagna_degree": 12.5846,
+      "moon_sign": "Capricorn",
+      "moon_nakshatra": "Uttara Ashadha",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 122.1538,
+        "Moon": 275.6122,
+        "Mars": 67.7446,
+        "Mercury": 128.362,
+        "Jupiter": 194.2177,
+        "Venus": 168.0671,
+        "Saturn": 316.2409,
+        "Rahu": 205.1235,
+        "Ketu": 25.1235
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_003",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "",
+    "birth": {
+      "date": "1992-12-18",
+      "time": "06:20:00",
+      "place": "Seoul",
+      "country": "South Korea",
+      "lat": 37.5665,
+      "lon": 126.978,
+      "tz": "Asia/Seoul",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.758782,
+      "lagna_sign": "Scorpio",
+      "lagna_degree": 14.0094,
+      "moon_sign": "Virgo",
+      "moon_nakshatra": "Hasta",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 242.4435,
+        "Moon": 166.6313,
+        "Mars": 91.3738,
+        "Mercury": 223.303,
+        "Jupiter": 168.2745,
+        "Venus": 286.8859,
+        "Saturn": 291.1881,
+        "Rahu": 237.4093,
+        "Ketu": 57.4093
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_004",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1993-10-07",
+      "time": "10:20:00",
+      "place": "Lucknow",
+      "country": "India",
+      "lat": 26.8467,
+      "lon": 80.9462,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.769999,
+      "lagna_sign": "Scorpio",
+      "lagna_degree": 15.5044,
+      "moon_sign": "Gemini",
+      "moon_nakshatra": "Mrigashira",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 170.1634,
+        "Moon": 61.0337,
+        "Mars": 193.0897,
+        "Mercury": 194.1348,
+        "Jupiter": 178.8443,
+        "Venus": 145.3402,
+        "Saturn": 300.2281,
+        "Rahu": 221.8661,
+        "Ketu": 41.8661
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_005",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Frequently changed DST rules; Western hemisphere",
+    "birth": {
+      "date": "1998-11-19",
+      "time": "20:40:00",
+      "place": "Casablanca",
+      "country": "Morocco",
+      "lat": 33.5731,
+      "lon": -7.5898,
+      "tz": "Africa/Casablanca",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.841502,
+      "lagna_sign": "Gemini",
+      "lagna_degree": 21.8751,
+      "moon_sign": "Scorpio",
+      "moon_nakshatra": "Anuradha",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 213.4722,
+        "Moon": 220.8867,
+        "Mars": 151.8794,
+        "Mercury": 233.5174,
+        "Jupiter": 324.3918,
+        "Venus": 218.6499,
+        "Saturn": 4.3015,
+        "Rahu": 122.789,
+        "Ketu": 302.789
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_006",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1997-11-12",
+      "time": "19:25:00",
+      "place": "Panaji",
+      "country": "India",
+      "lat": 15.4909,
+      "lon": 73.8278,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.827265,
+      "lagna_sign": "Taurus",
+      "lagna_degree": 18.4813,
+      "moon_sign": "Pisces",
+      "moon_nakshatra": "Revati",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 206.3934,
+        "Moon": 358.9117,
+        "Mars": 248.6965,
+        "Mercury": 223.2688,
+        "Jupiter": 290.2736,
+        "Venus": 253.2681,
+        "Saturn": 350.7059,
+        "Rahu": 142.517,
+        "Ketu": 322.517
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_007",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "High latitude; Western hemisphere",
+    "birth": {
+      "date": "1995-01-03",
+      "time": "08:05:00",
+      "place": "Dublin",
+      "country": "Ireland",
+      "lat": 53.3498,
+      "lon": -6.2603,
+      "tz": "Europe/Dublin",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.787329,
+      "lagna_sign": "Sagittarius",
+      "lagna_degree": 7.9076,
+      "moon_sign": "Capricorn",
+      "moon_nakshatra": "Shravana",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 258.682,
+        "Moon": 284.277,
+        "Mars": 128.877,
+        "Mercury": 270.4244,
+        "Jupiter": 221.4072,
+        "Venus": 212.2278,
+        "Saturn": 314.3975,
+        "Rahu": 197.8535,
+        "Ketu": 17.8535
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_008",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Historical DST in effect; High latitude; Western hemisphere",
+    "birth": {
+      "date": "1994-04-14",
+      "time": "08:40:00",
+      "place": "London",
+      "country": "United Kingdom",
+      "lat": 51.5074,
+      "lon": -0.1278,
+      "tz": "Europe/London",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.777231,
+      "lagna_sign": "Taurus",
+      "lagna_degree": 26.6148,
+      "moon_sign": "Taurus",
+      "moon_nakshatra": "Krittika",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 0.3533,
+        "Moon": 36.1561,
+        "Mars": 335.8834,
+        "Mercury": 344.1757,
+        "Jupiter": 197.9906,
+        "Venus": 21.612,
+        "Saturn": 314.9156,
+        "Rahu": 211.8443,
+        "Ketu": 31.8443
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_009",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "2000-09-22",
+      "time": "05:45:00",
+      "place": "Kochi",
+      "country": "India",
+      "lat": 9.9312,
+      "lon": 76.2673,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.867209,
+      "lagna_sign": "Leo",
+      "lagna_degree": 27.2191,
+      "moon_sign": "Gemini",
+      "moon_nakshatra": "Ardra",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 155.4356,
+        "Moon": 77.8842,
+        "Mars": 129.2877,
+        "Mercury": 177.5081,
+        "Jupiter": 47.2766,
+        "Venus": 182.9192,
+        "Saturn": 37.0345,
+        "Rahu": 87.1705,
+        "Ketu": 267.1705
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_010",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1991-01-11",
+      "time": "21:15:00",
+      "place": "Jaipur",
+      "country": "India",
+      "lat": 26.9124,
+      "lon": 75.7873,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.731773,
+      "lagna_sign": "Leo",
+      "lagna_degree": 11.9852,
+      "moon_sign": "Scorpio",
+      "moon_nakshatra": "Anuradha",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 267.1785,
+        "Moon": 220.0327,
+        "Mars": 34.6503,
+        "Mercury": 243.7689,
+        "Jupiter": 107.0871,
+        "Venus": 284.3393,
+        "Saturn": 273.1786,
+        "Rahu": 274.834,
+        "Ketu": 94.834
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_011",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "2003-04-10",
+      "time": "15:20:00",
+      "place": "Surat",
+      "country": "India",
+      "lat": 21.1702,
+      "lon": 72.8311,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.902792,
+      "lagna_sign": "Leo",
+      "lagna_degree": 6.9813,
+      "moon_sign": "Cancer",
+      "moon_nakshatra": "Punarvasu",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 356.2226,
+        "Moon": 91.2163,
+        "Mars": 269.0485,
+        "Mercury": 14.1447,
+        "Jupiter": 104.225,
+        "Venus": 322.5074,
+        "Saturn": 60.2176,
+        "Rahu": 37.8668,
+        "Ketu": 217.8668
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_012",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "2002-02-28",
+      "time": "13:55:00",
+      "place": "Guwahati",
+      "country": "India",
+      "lat": 26.1445,
+      "lon": 91.7362,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.887262,
+      "lagna_sign": "Cancer",
+      "lagna_degree": 1.0866,
+      "moon_sign": "Leo",
+      "moon_nakshatra": "Uttara Phalguni",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 315.6846,
+        "Moon": 149.5114,
+        "Mars": 5.211,
+        "Mercury": 289.9543,
+        "Jupiter": 71.7434,
+        "Venus": 326.4962,
+        "Saturn": 44.5347,
+        "Rahu": 59.3846,
+        "Ketu": 239.3846
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_013",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1998-04-30",
+      "time": "16:05:00",
+      "place": "Bengaluru",
+      "country": "India",
+      "lat": 12.9716,
+      "lon": 77.5946,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.833723,
+      "lagna_sign": "Virgo",
+      "lagna_degree": 10.6409,
+      "moon_sign": "Gemini",
+      "moon_nakshatra": "Ardra",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 16.0571,
+        "Moon": 69.9975,
+        "Mars": 19.0412,
+        "Mercury": 349.9468,
+        "Jupiter": 325.5966,
+        "Venus": 332.3985,
+        "Saturn": 1.6486,
+        "Rahu": 133.5687,
+        "Ketu": 313.5687
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_014",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1997-05-21",
+      "time": "15:55:00",
+      "place": "Delhi",
+      "country": "India",
+      "lat": 28.6139,
+      "lon": 77.209,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.820566,
+      "lagna_sign": "Virgo",
+      "lagna_degree": 26.0039,
+      "moon_sign": "Libra",
+      "moon_nakshatra": "Vishakha",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 36.5856,
+        "Moon": 204.9751,
+        "Mars": 146.0524,
+        "Mercury": 11.5115,
+        "Jupiter": 297.5145,
+        "Venus": 49.3404,
+        "Saturn": 352.4824,
+        "Rahu": 151.7983,
+        "Ketu": 331.7983
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_015",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "",
+    "birth": {
+      "date": "1998-01-12",
+      "time": "08:15:00",
+      "place": "Lahore",
+      "country": "Pakistan",
+      "lat": 31.5497,
+      "lon": 74.3436,
+      "tz": "Asia/Karachi",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.829581,
+      "lagna_sign": "Capricorn",
+      "lagna_degree": 17.0699,
+      "moon_sign": "Gemini",
+      "moon_nakshatra": "Punarvasu",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 267.8771,
+        "Moon": 80.8033,
+        "Mars": 295.7123,
+        "Mercury": 245.4962,
+        "Jupiter": 300.8102,
+        "Venus": 274.9143,
+        "Saturn": 350.3527,
+        "Rahu": 139.308,
+        "Ketu": 319.308
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_016",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1994-05-25",
+      "time": "03:55:00",
+      "place": "Bhopal",
+      "country": "India",
+      "lat": 23.2599,
+      "lon": 77.4126,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.778785,
+      "lagna_sign": "Aries",
+      "lagna_degree": 10.002,
+      "moon_sign": "Scorpio",
+      "moon_nakshatra": "Anuradha",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 39.7258,
+        "Moon": 216.6581,
+        "Mars": 6.9622,
+        "Mercury": 61.8493,
+        "Jupiter": 193.0752,
+        "Venus": 70.8608,
+        "Saturn": 317.9231,
+        "Rahu": 209.6921,
+        "Ketu": 29.6921
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_017",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "",
+    "birth": {
+      "date": "1994-02-04",
+      "time": "06:45:00",
+      "place": "Tel Aviv",
+      "country": "Israel",
+      "lat": 32.0853,
+      "lon": 34.7818,
+      "tz": "Asia/Jerusalem",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.774588,
+      "lagna_sign": "Capricorn",
+      "lagna_degree": 23.8966,
+      "moon_sign": "Scorpio",
+      "moon_nakshatra": "Vishakha",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 291.3576,
+        "Moon": 212.4778,
+        "Mars": 281.6958,
+        "Mercury": 309.6012,
+        "Jupiter": 199.9629,
+        "Venus": 295.7022,
+        "Saturn": 306.9501,
+        "Rahu": 215.5072,
+        "Ketu": 35.5072
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_018",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Historical DST in effect; Southern hemisphere",
+    "birth": {
+      "date": "2000-03-11",
+      "time": "14:10:00",
+      "place": "Melbourne",
+      "country": "Australia",
+      "lat": -37.8136,
+      "lon": 144.9631,
+      "tz": "Australia/Melbourne",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.859755,
+      "lagna_sign": "Taurus",
+      "lagna_degree": 20.2918,
+      "moon_sign": "Aries",
+      "moon_nakshatra": "Krittika",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 326.9985,
+        "Moon": 28.7965,
+        "Mars": 357.3211,
+        "Mercury": 309.6577,
+        "Jupiter": 10.8169,
+        "Venus": 303.2389,
+        "Saturn": 19.4489,
+        "Rahu": 97.4975,
+        "Ketu": 277.4975
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_019",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "",
+    "birth": {
+      "date": "1994-05-21",
+      "time": "11:20:00",
+      "place": "Hong Kong",
+      "country": "Hong Kong",
+      "lat": 22.3193,
+      "lon": 114.1694,
+      "tz": "Asia/Hong_Kong",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.77864,
+      "lagna_sign": "Cancer",
+      "lagna_degree": 23.1369,
+      "moon_sign": "Virgo",
+      "moon_nakshatra": "Hasta",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 36.0785,
+        "Moon": 160.0869,
+        "Mars": 4.1094,
+        "Mercury": 56.515,
+        "Jupiter": 193.4783,
+        "Venus": 66.3126,
+        "Saturn": 317.7342,
+        "Rahu": 209.8932,
+        "Ketu": 29.8932
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_020",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30); Northern India lat >30",
+    "birth": {
+      "date": "1993-01-29",
+      "time": "06:10:00",
+      "place": "Dehradun",
+      "country": "India",
+      "lat": 30.3165,
+      "lon": 78.0322,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.760393,
+      "lagna_sign": "Sagittarius",
+      "lagna_degree": 27.3244,
+      "moon_sign": "Pisces",
+      "moon_nakshatra": "Revati",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 285.3586,
+        "Moon": 353.6985,
+        "Mars": 76.8569,
+        "Mercury": 289.126,
+        "Jupiter": 170.9304,
+        "Venus": 332.0986,
+        "Saturn": 295.7668,
+        "Rahu": 235.1763,
+        "Ketu": 55.1763
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_021",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "2000-08-01",
+      "time": "14:40:00",
+      "place": "Bhubaneswar",
+      "country": "India",
+      "lat": 20.2961,
+      "lon": 85.8245,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.865234,
+      "lagna_sign": "Scorpio",
+      "lagna_degree": 22.0579,
+      "moon_sign": "Leo",
+      "moon_nakshatra": "Magha",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 105.5569,
+        "Moon": 123.499,
+        "Mars": 96.3499,
+        "Mercury": 86.8506,
+        "Jupiter": 42.1451,
+        "Venus": 119.5606,
+        "Saturn": 35.5848,
+        "Rahu": 89.9064,
+        "Ketu": 269.9064
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_022",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Historical DST in effect; Frequently changed DST rules; Southern hemisphere; Western hemisphere",
+    "birth": {
+      "date": "1997-11-14",
+      "time": "15:10:00",
+      "place": "Santiago",
+      "country": "Chile",
+      "lat": -33.4489,
+      "lon": -70.6693,
+      "tz": "America/Santiago",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.827348,
+      "lagna_sign": "Aquarius",
+      "lagna_degree": 24.0786,
+      "moon_sign": "Taurus",
+      "moon_nakshatra": "Krittika",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 208.584,
+        "Moon": 30.8175,
+        "Mars": 250.342,
+        "Mercury": 226.388,
+        "Jupiter": 290.5189,
+        "Venus": 255.331,
+        "Saturn": 350.5873,
+        "Rahu": 142.4016,
+        "Ketu": 322.4016
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_023",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30); Northern India lat >30",
+    "birth": {
+      "date": "1995-06-04",
+      "time": "09:45:00",
+      "place": "Srinagar",
+      "country": "India",
+      "lat": 34.0837,
+      "lon": 74.7973,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.793136,
+      "lagna_sign": "Cancer",
+      "lagna_degree": 16.8189,
+      "moon_sign": "Cancer",
+      "moon_nakshatra": "Ashlesha",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 49.3111,
+        "Moon": 112.9573,
+        "Mars": 130.6486,
+        "Mercury": 50.9138,
+        "Jupiter": 226.3757,
+        "Venus": 28.2987,
+        "Saturn": 330.1048,
+        "Rahu": 189.8072,
+        "Ketu": 9.8072
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_024",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "",
+    "birth": {
+      "date": "1996-12-31",
+      "time": "06:35:00",
+      "place": "Osaka",
+      "country": "Japan",
+      "lat": 34.6937,
+      "lon": 135.5023,
+      "tz": "Asia/Tokyo",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.815154,
+      "lagna_sign": "Sagittarius",
+      "lagna_degree": 7.4607,
+      "moon_sign": "Leo",
+      "moon_nakshatra": "Purva Phalguni",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 255.6702,
+        "Moon": 141.8362,
+        "Mars": 155.0507,
+        "Mercury": 260.7074,
+        "Jupiter": 271.0999,
+        "Venus": 233.2542,
+        "Saturn": 337.466,
+        "Rahu": 159.2985,
+        "Ketu": 339.2985
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_025",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1990-09-21",
+      "time": "18:30:00",
+      "place": "Pune",
+      "country": "India",
+      "lat": 18.5204,
+      "lon": 73.8567,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.727485,
+      "lagna_sign": "Pisces",
+      "lagna_degree": 4.9967,
+      "moon_sign": "Libra",
+      "moon_nakshatra": "Chitra",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 154.5593,
+        "Moon": 183.663,
+        "Mars": 45.3039,
+        "Mercury": 137.1511,
+        "Jupiter": 102.9865,
+        "Venus": 143.861,
+        "Saturn": 264.9753,
+        "Rahu": 280.7752,
+        "Ketu": 100.7752
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_026",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Southern hemisphere",
+    "birth": {
+      "date": "1993-09-30",
+      "time": "08:20:00",
+      "place": "Auckland",
+      "country": "New Zealand",
+      "lat": -36.8509,
+      "lon": 174.7645,
+      "tz": "Pacific/Auckland",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.769718,
+      "lagna_sign": "Scorpio",
+      "lagna_degree": 2.0643,
+      "moon_sign": "Pisces",
+      "moon_nakshatra": "Purva Bhadrapada",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 162.9242,
+        "Moon": 332.6898,
+        "Mars": 188.0858,
+        "Mercury": 184.5236,
+        "Jupiter": 177.2657,
+        "Venus": 136.3021,
+        "Saturn": 300.5216,
+        "Rahu": 222.2558,
+        "Ketu": 42.2558
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_027",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30); Northern India lat >30",
+    "birth": {
+      "date": "1996-07-24",
+      "time": "23:50:00",
+      "place": "Amritsar",
+      "country": "India",
+      "lat": 31.634,
+      "lon": 74.8723,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.809068,
+      "lagna_sign": "Aries",
+      "lagna_degree": 8.7714,
+      "moon_sign": "Libra",
+      "moon_nakshatra": "Vishakha",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 98.2994,
+        "Moon": 200.781,
+        "Mars": 65.5095,
+        "Mercury": 112.5331,
+        "Jupiter": 256.4696,
+        "Venus": 56.078,
+        "Saturn": 343.5607,
+        "Rahu": 167.7314,
+        "Ketu": 347.7314
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_028",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Western hemisphere",
+    "birth": {
+      "date": "2002-03-23",
+      "time": "14:42:00",
+      "place": "Medellín",
+      "country": "Colombia",
+      "lat": 6.2442,
+      "lon": -75.5812,
+      "tz": "America/Bogota",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.88816,
+      "lagna_sign": "Cancer",
+      "lagna_degree": 16.6893,
+      "moon_sign": "Cancer",
+      "moon_nakshatra": "Punarvasu",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 339.112,
+        "Moon": 90.5791,
+        "Mars": 21.7052,
+        "Mercury": 325.5347,
+        "Jupiter": 72.5322,
+        "Venus": 355.6706,
+        "Saturn": 45.8767,
+        "Rahu": 58.1409,
+        "Ketu": 238.1409
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_029",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1996-06-16",
+      "time": "08:15:00",
+      "place": "Coimbatore",
+      "country": "India",
+      "lat": 11.0168,
+      "lon": 76.9558,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.807589,
+      "lagna_sign": "Cancer",
+      "lagna_degree": 1.4046,
+      "moon_sign": "Gemini",
+      "moon_nakshatra": "Mrigashira",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 61.4314,
+        "Moon": 61.9681,
+        "Mars": 38.6923,
+        "Mercury": 38.8655,
+        "Jupiter": 261.2167,
+        "Venus": 52.9391,
+        "Saturn": 342.6995,
+        "Rahu": 169.7795,
+        "Ketu": 349.7795
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_030",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "2002-03-13",
+      "time": "14:05:00",
+      "place": "Mumbai",
+      "country": "India",
+      "lat": 19.076,
+      "lon": 72.8777,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.887759,
+      "lagna_sign": "Gemini",
+      "lagna_degree": 25.0548,
+      "moon_sign": "Aquarius",
+      "moon_nakshatra": "Purva Bhadrapada",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 328.7033,
+        "Moon": 320.7964,
+        "Mars": 14.3918,
+        "Mercury": 308.2263,
+        "Jupiter": 71.965,
+        "Venus": 342.6932,
+        "Saturn": 45.1688,
+        "Rahu": 58.6954,
+        "Ketu": 238.6954
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_031",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1997-11-06",
+      "time": "17:40:00",
+      "place": "Kanpur",
+      "country": "India",
+      "lat": 26.4499,
+      "lon": 80.3319,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.827032,
+      "lagna_sign": "Aries",
+      "lagna_degree": 26.3862,
+      "moon_sign": "Capricorn",
+      "moon_nakshatra": "Uttara Ashadha",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 200.2932,
+        "Moon": 272.5685,
+        "Mars": 244.1308,
+        "Mercury": 214.3416,
+        "Jupiter": 289.6581,
+        "Venus": 247.3185,
+        "Saturn": 351.0684,
+        "Rahu": 142.8388,
+        "Ketu": 322.8388
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_032",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Southern hemisphere; Western hemisphere",
+    "birth": {
+      "date": "1998-05-27",
+      "time": "13:45:00",
+      "place": "Buenos Aires",
+      "country": "Argentina",
+      "lat": -34.6037,
+      "lon": -58.3816,
+      "tz": "America/Argentina/Buenos_Aires",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.834765,
+      "lagna_sign": "Leo",
+      "lagna_degree": 17.5682,
+      "moon_sign": "Gemini",
+      "moon_nakshatra": "Ardra",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 42.3622,
+        "Moon": 67.8052,
+        "Mars": 38.686,
+        "Mercury": 27.0404,
+        "Jupiter": 330.2562,
+        "Venus": 3.5154,
+        "Saturn": 4.8602,
+        "Rahu": 132.1243,
+        "Ketu": 312.1243
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_033",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1998-07-08",
+      "time": "22:45:00",
+      "place": "Visakhapatnam",
+      "country": "India",
+      "lat": 17.6868,
+      "lon": 83.2185,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.836372,
+      "lagna_sign": "Pisces",
+      "lagna_degree": 4.1703,
+      "moon_sign": "Sagittarius",
+      "moon_nakshatra": "Mula",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 82.5056,
+        "Moon": 250.9253,
+        "Mars": 67.7495,
+        "Mercury": 107.5699,
+        "Jupiter": 334.083,
+        "Venus": 53.0693,
+        "Saturn": 8.5678,
+        "Rahu": 129.8975,
+        "Ketu": 309.8975
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_034",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1999-03-03",
+      "time": "08:55:00",
+      "place": "Kolkata",
+      "country": "India",
+      "lat": 22.5726,
+      "lon": 88.3639,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.845452,
+      "lagna_sign": "Aries",
+      "lagna_degree": 14.7292,
+      "moon_sign": "Leo",
+      "moon_nakshatra": "Uttara Phalguni",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 318.2539,
+        "Moon": 148.2314,
+        "Mars": 196.9943,
+        "Mercury": 336.356,
+        "Jupiter": 340.261,
+        "Venus": 347.5564,
+        "Saturn": 6.3615,
+        "Rahu": 117.3159,
+        "Ketu": 297.3159
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_035",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1995-06-18",
+      "time": "14:30:00",
+      "place": "Ahmedabad",
+      "country": "India",
+      "lat": 23.0225,
+      "lon": 72.5714,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.793678,
+      "lagna_sign": "Virgo",
+      "lagna_degree": 27.9292,
+      "moon_sign": "Aquarius",
+      "moon_nakshatra": "Shatabhisha",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 62.8804,
+        "Moon": 314.0474,
+        "Mars": 137.7937,
+        "Mercury": 46.0609,
+        "Jupiter": 224.6337,
+        "Venus": 45.5715,
+        "Saturn": 330.6862,
+        "Rahu": 189.0548,
+        "Ketu": 9.0548
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_036",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Western hemisphere",
+    "birth": {
+      "date": "1994-07-14",
+      "time": "11:10:00",
+      "place": "Accra",
+      "country": "Ghana",
+      "lat": 5.6037,
+      "lon": -0.187,
+      "tz": "Africa/Accra",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.780717,
+      "lagna_sign": "Virgo",
+      "lagna_degree": 16.0349,
+      "moon_sign": "Virgo",
+      "moon_nakshatra": "Uttara Phalguni",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 88.0055,
+        "Moon": 157.3296,
+        "Mars": 43.6334,
+        "Mercury": 68.1383,
+        "Jupiter": 191.2107,
+        "Venus": 129.8221,
+        "Saturn": 318.2486,
+        "Rahu": 207.0143,
+        "Ketu": 27.0143
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_037",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Historical DST in effect",
+    "birth": {
+      "date": "1995-06-05",
+      "time": "09:30:00",
+      "place": "Bologna",
+      "country": "Italy",
+      "lat": 44.4949,
+      "lon": 11.3426,
+      "tz": "Europe/Rome",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.793179,
+      "lagna_sign": "Cancer",
+      "lagna_degree": 10.8589,
+      "moon_sign": "Leo",
+      "moon_nakshatra": "Magha",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 50.3983,
+        "Moon": 127.1147,
+        "Mars": 131.1993,
+        "Mercury": 50.2802,
+        "Jupiter": 226.2314,
+        "Venus": 29.6786,
+        "Saturn": 330.1627,
+        "Rahu": 189.747,
+        "Ketu": 9.747
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_038",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Historical DST in effect; Russian summer time 1993; High latitude",
+    "birth": {
+      "date": "1993-07-22",
+      "time": "18:00:00",
+      "place": "Moscow",
+      "country": "Russia",
+      "lat": 55.7558,
+      "lon": 37.6173,
+      "tz": "Europe/Moscow",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.767069,
+      "lagna_sign": "Scorpio",
+      "lagna_degree": 11.4378,
+      "moon_sign": "Leo",
+      "moon_nakshatra": "Purva Phalguni",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 95.9954,
+        "Moon": 138.1968,
+        "Mars": 143.5677,
+        "Mercury": 84.8738,
+        "Jupiter": 164.6498,
+        "Venus": 54.484,
+        "Saturn": 305.1809,
+        "Rahu": 225.9262,
+        "Ketu": 45.9262
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_039",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "2001-12-15",
+      "time": "07:35:00",
+      "place": "Nagpur",
+      "country": "India",
+      "lat": 21.1458,
+      "lon": 79.0882,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.884383,
+      "lagna_sign": "Sagittarius",
+      "lagna_degree": 10.2645,
+      "moon_sign": "Sagittarius",
+      "moon_nakshatra": "Mula",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 239.2787,
+        "Moon": 241.9395,
+        "Mars": 310.6247,
+        "Mercury": 244.9472,
+        "Jupiter": 78.9966,
+        "Venus": 231.9965,
+        "Saturn": 46.6679,
+        "Rahu": 63.373,
+        "Ketu": 243.373
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_040",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1999-10-17",
+      "time": "11:50:00",
+      "place": "Indore",
+      "country": "India",
+      "lat": 22.7196,
+      "lon": 75.8577,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.854177,
+      "lagna_sign": "Sagittarius",
+      "lagna_degree": 11.4434,
+      "moon_sign": "Sagittarius",
+      "moon_nakshatra": "Purva Ashadha",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 179.5859,
+        "Moon": 265.603,
+        "Mars": 246.2926,
+        "Mercury": 202.6148,
+        "Jupiter": 6.9559,
+        "Venus": 133.8643,
+        "Saturn": 21.4287,
+        "Rahu": 105.2273,
+        "Ketu": 285.2273
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_041",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1992-03-13",
+      "time": "04:25:00",
+      "place": "Varanasi",
+      "country": "India",
+      "lat": 25.3176,
+      "lon": 82.9739,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.748076,
+      "lagna_sign": "Capricorn",
+      "lagna_degree": 23.7779,
+      "moon_sign": "Gemini",
+      "moon_nakshatra": "Ardra",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 328.8716,
+        "Moon": 69.7971,
+        "Mars": 294.5317,
+        "Mercury": 346.3896,
+        "Jupiter": 134.2643,
+        "Venus": 304.9594,
+        "Saturn": 290.3853,
+        "Rahu": 252.2436,
+        "Ketu": 72.2436
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_042",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1994-02-14",
+      "time": "06:40:00",
+      "place": "Pune",
+      "country": "India",
+      "lat": 18.5204,
+      "lon": 73.8567,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.774965,
+      "lagna_sign": "Capricorn",
+      "lagna_degree": 23.5871,
+      "moon_sign": "Pisces",
+      "moon_nakshatra": "Uttara Bhadrapada",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 301.3324,
+        "Moon": 340.4087,
+        "Mars": 289.4021,
+        "Mercury": 313.1548,
+        "Jupiter": 200.5485,
+        "Venus": 308.0525,
+        "Saturn": 308.1323,
+        "Rahu": 214.9852,
+        "Ketu": 34.9852
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_043",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Historical DST in effect",
+    "birth": {
+      "date": "2001-09-09",
+      "time": "18:45:00",
+      "place": "Sofia",
+      "country": "Bulgaria",
+      "lat": 42.6977,
+      "lon": 23.3219,
+      "tz": "Europe/Sofia",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.880695,
+      "lagna_sign": "Capricorn",
+      "lagna_degree": 28.8716,
+      "moon_sign": "Taurus",
+      "moon_nakshatra": "Krittika",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 143.1463,
+        "Moon": 39.3803,
+        "Mars": 246.5915,
+        "Mercury": 168.0633,
+        "Jupiter": 77.4364,
+        "Venus": 112.2617,
+        "Saturn": 50.8197,
+        "Rahu": 68.4831,
+        "Ketu": 248.4831
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_044",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1999-05-02",
+      "time": "12:10:00",
+      "place": "Thiruvananthapuram",
+      "country": "India",
+      "lat": 8.5241,
+      "lon": 76.9366,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.847752,
+      "lagna_sign": "Cancer",
+      "lagna_degree": 13.3041,
+      "moon_sign": "Scorpio",
+      "moon_nakshatra": "Anuradha",
+      "moon_pada": 1,
+      "planet_longitudes": {
+        "Sun": 17.5875,
+        "Moon": 215.6938,
+        "Mars": 187.4453,
+        "Mercury": 355.1109,
+        "Jupiter": 354.6308,
+        "Venus": 58.9475,
+        "Saturn": 13.5242,
+        "Rahu": 114.1293,
+        "Ketu": 294.1293
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_045",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Southern hemisphere",
+    "birth": {
+      "date": "1999-04-28",
+      "time": "13:20:00",
+      "place": "Bandung",
+      "country": "Indonesia",
+      "lat": -6.9175,
+      "lon": 107.6191,
+      "tz": "Asia/Jakarta",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.847599,
+      "lagna_sign": "Leo",
+      "lagna_degree": 0.607,
+      "moon_sign": "Virgo",
+      "moon_nakshatra": "Hasta",
+      "moon_pada": 3,
+      "planet_longitudes": {
+        "Sun": 13.6897,
+        "Moon": 167.6231,
+        "Mars": 188.9327,
+        "Mercury": 349.0862,
+        "Jupiter": 353.6956,
+        "Venus": 54.3788,
+        "Saturn": 13.0116,
+        "Rahu": 114.342,
+        "Ketu": 294.342
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_046",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Western hemisphere",
+    "birth": {
+      "date": "1993-02-02",
+      "time": "07:50:00",
+      "place": "Chicago",
+      "country": "United States",
+      "lat": 41.8781,
+      "lon": -87.6298,
+      "tz": "America/Chicago",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.760567,
+      "lagna_sign": "Aquarius",
+      "lagna_degree": 6.334,
+      "moon_sign": "Taurus",
+      "moon_nakshatra": "Rohini",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 289.9758,
+        "Moon": 50.7994,
+        "Mars": 75.9597,
+        "Mercury": 297.141,
+        "Jupiter": 170.8965,
+        "Venus": 336.2797,
+        "Saturn": 296.3111,
+        "Rahu": 234.9352,
+        "Ketu": 54.9352
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_047",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1995-12-05",
+      "time": "20:05:00",
+      "place": "Patna",
+      "country": "India",
+      "lat": 25.5941,
+      "lon": 85.1376,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.800189,
+      "lagna_sign": "Cancer",
+      "lagna_degree": 2.5303,
+      "moon_sign": "Taurus",
+      "moon_nakshatra": "Krittika",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 229.1774,
+        "Moon": 33.1816,
+        "Mars": 250.0139,
+        "Mercury": 236.039,
+        "Jupiter": 239.6719,
+        "Venus": 256.1909,
+        "Saturn": 324.3631,
+        "Rahu": 180.0338,
+        "Ketu": 0.0338
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_048",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1992-11-27",
+      "time": "19:10:00",
+      "place": "Hyderabad",
+      "country": "India",
+      "lat": 17.385,
+      "lon": 78.4867,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.758004,
+      "lagna_sign": "Gemini",
+      "lagna_degree": 4.4075,
+      "moon_sign": "Sagittarius",
+      "moon_nakshatra": "Purva Ashadha",
+      "moon_pada": 2,
+      "planet_longitudes": {
+        "Sun": 221.8126,
+        "Moon": 259.9723,
+        "Mars": 93.8464,
+        "Mercury": 209.7546,
+        "Jupiter": 165.4051,
+        "Venus": 263.0314,
+        "Saturn": 289.5486,
+        "Rahu": 238.4861,
+        "Ketu": 58.4861
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_049",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "Historical DST in effect; Western hemisphere",
+    "birth": {
+      "date": "1992-08-07",
+      "time": "10:25:00",
+      "place": "Porto",
+      "country": "Portugal",
+      "lat": 41.1579,
+      "lon": -8.6291,
+      "tz": "Europe/Lisbon",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.753715,
+      "lagna_sign": "Virgo",
+      "lagna_degree": 5.2746,
+      "moon_sign": "Scorpio",
+      "moon_nakshatra": "Anuradha",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 111.3594,
+        "Moon": 224.3834,
+        "Mars": 44.028,
+        "Mercury": 103.9381,
+        "Jupiter": 142.6332,
+        "Venus": 126.3945,
+        "Saturn": 291.3793,
+        "Rahu": 244.4305,
+        "Ketu": 64.4305
+      }
+    }
+  },
+  {
+    "id": "G1_SYN_050",
+    "reference_software": "swetest 2.10.03 (official windows/sweph.zip from aloistr/swisseph), Moshier, Lahiri (-sid1), mean ayanamsa (-nonut), whole-sign W, MEAN node, geocentric",
+    "coverage_note": "India, no DST (IST +5:30)",
+    "birth": {
+      "date": "1999-04-22",
+      "time": "13:35:00",
+      "place": "Chandigarh",
+      "country": "India",
+      "lat": 30.7333,
+      "lon": 76.7794,
+      "tz": "Asia/Kolkata",
+      "node_type": "MEAN"
+    },
+    "expected": {
+      "ayanamsa_value": 23.847372,
+      "lagna_sign": "Leo",
+      "lagna_degree": 0.0524,
+      "moon_sign": "Cancer",
+      "moon_nakshatra": "Punarvasu",
+      "moon_pada": 4,
+      "planet_longitudes": {
+        "Sun": 7.9179,
+        "Moon": 92.1955,
+        "Mars": 191.144,
+        "Mercury": 341.1813,
+        "Jupiter": 352.2985,
+        "Venus": 47.5631,
+        "Saturn": 12.2545,
+        "Rahu": 114.656,
+        "Ketu": 294.656
+      }
     }
   }
 ]
