@@ -120,6 +120,7 @@ def calculate_chart(
     ayan = ayanamsa_ut(jd)
     lagna_lon = sidereal_lagna(jd, lat, lon)
     lagna_idx = sign_index_from_longitude(lagna_lon)
+    navamsa_lagna_idx = navamsa_sign_index(lagna_lon)
 
     planets = [
         _build(r.planet, r.longitude_sidereal, r.speed_longitude, lagna_idx)
@@ -145,6 +146,8 @@ def calculate_chart(
         lagna_sign_index=lagna_idx,
         lagna_sign_name=sign_name(lagna_idx),
         lagna_degree=round(degree_in_sign(lagna_lon), 4),
+        navamsa_lagna_sign_index=navamsa_lagna_idx,
+        navamsa_lagna_sign_name=sign_name(navamsa_lagna_idx),
         moon_sign_index=moon.sign_index,
         moon_sign_name=moon.sign_name,
         moon_nakshatra=moon.nakshatra_name,

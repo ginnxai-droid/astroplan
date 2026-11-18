@@ -6,7 +6,8 @@ import 'package:astroplan/main.dart' as app;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  testWidgets('onboarding -> ARB title renders with local notifications initialized',
+  testWidgets(
+      'onboarding -> ARB title renders with local notifications initialized',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     app.main();

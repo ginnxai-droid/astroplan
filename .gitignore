@@ -11,3 +11,4 @@ mobile/build/
 .dart_tool/
 web-share/.next/
 web-share/node_modules/
+artifacts/

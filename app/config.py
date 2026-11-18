@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     # G0: Legal & Swiss Ephemeris AGPL/Commercial licensing gate
     legal_gate_approved: bool = False
     legal_gate_reference: str = ""
+    # AGPL-3.0 network-use obligation: where users can obtain the corresponding source.
+    source_offer_url: str = ""
 
     # G2: Advisor rule-library approval gate
     allow_draft_rules: bool = False
@@ -65,6 +67,9 @@ class Settings(BaseSettings):
         problems: list[str] = []
         if not (self.legal_gate_approved and self.legal_gate_reference.strip()):
             problems.append("G0: legal_gate_approved and legal_gate_reference required")
+        source_offer = self.source_offer_url.strip()
+        if not source_offer.startswith("https://") or source_offer == "https://":
+            problems.append("G0: source_offer_url must be an https source offer")
         if not self.require_swiss_files:
             problems.append("G1: require_swiss_files must be true")
         if self.allow_draft_rules:

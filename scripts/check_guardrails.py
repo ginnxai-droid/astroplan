@@ -25,6 +25,23 @@ WEBSHARE_FORBIDDEN_TOKENS = (
 )
 
 
+def _g0_source_offer() -> list[str]:
+    problems: list[str] = []
+    for required in ("NOTICE", "LICENSE-AGPL-3.0.txt"):
+        if not (ROOT / required).exists():
+            problems.append(f"G0-source-offer: missing {required}")
+    config_text = (ROOT / "app" / "config.py").read_text(encoding="utf-8")
+    if "source_offer_url" not in config_text:
+        problems.append("G0-source-offer: production settings lost source_offer_url")
+    routes = (ROOT / "app" / "api" / "routes.py").read_text(encoding="utf-8")
+    if '"source_offer_url": settings.source_offer_url' not in routes:
+        problems.append("G0-source-offer: trust endpoint no longer reports the source offer")
+    page = ROOT / "web-share" / "app" / "share" / "[token]" / "page.tsx"
+    if page.exists() and "AGPL-3.0" not in page.read_text(encoding="utf-8"):
+        problems.append("G0-source-offer: share page lost the source offer")
+    return problems
+
+
 def _g3_static() -> list[str]:
     problems: list[str] = []
     for path in (ROOT / "app").rglob("*.py"):
@@ -113,6 +130,7 @@ def _g7_scope() -> list[str]:
 def main() -> int:
     failed = False
     for label, fn in [
+        ("G0-source-offer", _g0_source_offer),
         ("G3-static", _g3_static),
         ("G5-logging", _g5_logging),
         ("G5-contacts", _g5_contacts),

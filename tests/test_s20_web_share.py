@@ -34,6 +34,12 @@ def test_share_page_embeds_no_secrets_and_no_client_side_token_logic() -> None:
         assert banned not in src, f"forbidden material in share page: {banned}"
 
 
+def test_share_page_conveys_the_agpl_source_offer() -> None:
+    src = PAGE.read_text(encoding="utf-8")
+    assert "AGPL-3.0" in src, "network use must convey the ephemeris license"
+    assert "github.com/ginnxai-droid/astroplan" in src, "source offer must link to the code"
+
+
 def test_web_share_package_pins_next_14() -> None:
     pkg = json.loads(PKG.read_text(encoding="utf-8"))
     assert pkg["dependencies"]["next"].startswith("14.2.")

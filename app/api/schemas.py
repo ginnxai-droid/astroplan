@@ -126,6 +126,8 @@ class ChartResponse(BaseModel):
     lagna_sign_index: int
     lagna_sign_name: str
     lagna_degree: float
+    navamsa_lagna_sign_index: int
+    navamsa_lagna_sign_name: str
     moon_sign_index: int
     moon_sign_name: str
     moon_nakshatra: str

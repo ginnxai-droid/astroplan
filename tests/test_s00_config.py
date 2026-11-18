@@ -8,7 +8,8 @@ GOOD = {
     "env": "production",
     "database_url": "postgresql+psycopg://astro:pw@db:5432/astroplan",
     "legal_gate_approved": True,
-    "legal_gate_reference": "COUNSEL-2026-001",
+    "legal_gate_reference": "OWNER-2026-11-18-AGPL3",
+    "source_offer_url": "https://github.com/ginnxai-droid/astroplan",
     "require_swiss_files": True,
     "allow_draft_rules": False,
     "auth_mode": "firebase",
@@ -27,6 +28,8 @@ def test_production_accepts_fully_gated_config() -> None:
     [
         ({"legal_gate_approved": False}, "G0"),
         ({"legal_gate_reference": " "}, "G0"),
+        ({"source_offer_url": ""}, "G0"),
+        ({"source_offer_url": "http://example.com/source"}, "G0"),
         ({"require_swiss_files": False}, "G1"),
         ({"allow_draft_rules": True}, "G2"),
         ({"auth_mode": "dev"}, "G5"),
@@ -46,3 +49,4 @@ def test_dev_defaults_safe() -> None:
     s = Settings(env="dev")
     assert s.llm_rephrase_enabled is False
     assert s.legal_gate_approved is False
+    assert s.source_offer_url == ""

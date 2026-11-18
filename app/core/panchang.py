@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta
+from math import cos, radians
 
 import swisseph as swe
 
 from app.core.constants import (
     KARANA_REPEATING,
-    NAKSHATRA_NAMES,
     RAHU_KAAL_SLOT_BY_WEEKDAY,
     TITHI_NAMES,
     VARA_NAMES,
@@ -16,6 +16,7 @@ from app.core.constants import (
 )
 from app.core.ephemeris import sunrise_sunset_jd_ut
 from app.core.timeutil import jd_ut_to_local_datetime, local_to_utc
+from app.core.zodiac import degree_in_sign, nakshatra_and_pada, sign_index_from_longitude, sign_name
 
 
 def _karana(idx: int) -> str:
@@ -53,7 +54,7 @@ def calculate_daily_panchang(
     tithi = TITHI_NAMES[tithi_idx]
     weekday = target_date.weekday()
     vara = VARA_NAMES[weekday]
-    nak = NAKSHATRA_NAMES[int(moon_lon / (360.0 / 27.0))]
+    _, nak, moon_pada = nakshatra_and_pada(moon_lon)
     yoga = YOGA_NAMES[int(((sun_lon + moon_lon) % 360.0) / (360.0 / 27.0))]
     karana = _karana(int(diff / 6.0))
 
@@ -72,6 +73,13 @@ def calculate_daily_panchang(
         "tithi": tithi,
         "tithi_index": tithi_idx + 1,
         "sun_longitude": round(sun_lon, 4),
+        "moon_longitude": moon_lon,
+        "moon_sign_name": sign_name(sign_index_from_longitude(moon_lon)),
+        "moon_degree_in_sign": degree_in_sign(moon_lon),
+        "moon_nakshatra_pada": moon_pada,
+        "reference_datetime": jd_ut_to_local_datetime(ref_jd, tz_name).isoformat(),
+        "reference_kind": "sunrise" if rise_jd is not None else "fallback_06:00",
+        "phase_illumination": (1.0 - cos(radians(diff))) / 2.0,
         "vara": vara,
         "nakshatra": nak,
         "yoga": yoga,

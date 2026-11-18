@@ -481,6 +481,8 @@ def build_router(settings: Settings) -> APIRouter:
             "professional_advice_disclaimer": catalog.get(
                 "trust.professional_advice_disclaimer", lang
             ),
+            "license": "AGPL-3.0",
+            "source_offer_url": settings.source_offer_url,
             "grievance_officer": {
                 "name": settings.grievance_officer_name,
                 "email": settings.grievance_officer_email,

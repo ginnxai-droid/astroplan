@@ -1,5 +1,22 @@
 import React from "react";
 
+const SOURCE_OFFER_URL =
+  process.env.ASTRO_SOURCE_OFFER_URL?.trim() ||
+  "https://github.com/ginnxai-droid/astroplan";
+const EPHEMERIS_LICENSE = "AGPL-3.0";
+
+function LicenseFooter() {
+  return (
+    <footer style={{ marginTop: 28, fontSize: 12, color: "#555" }}>
+      <p>
+        Swiss Ephemeris is licensed under {EPHEMERIS_LICENSE}. The complete
+        corresponding source for this service is available at{" "}
+        <a href={SOURCE_OFFER_URL}>{SOURCE_OFFER_URL}</a>.
+      </p>
+    </footer>
+  );
+}
+
 interface SharedChartPayload {
   shared_chart?: {
     chart_id: string;
@@ -40,6 +57,7 @@ export default async function SharedChartPage({
           This shared chart link has expired, been revoked by its owner, or is invalid
           (Status {status}).
         </p>
+        <LicenseFooter />
       </main>
     );
   }
@@ -58,6 +76,7 @@ export default async function SharedChartPage({
         Whole-Sign Houses, D9 Navamsa). Interpretations follow traditional Parashari
         Jyotish rules and are not scientifically validated.
       </p>
+      <LicenseFooter />
     </main>
   );
 }

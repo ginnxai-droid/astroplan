@@ -1,0 +1,26 @@
+Astroplan
+Copyright (c) 2026 ginnxai-droid
+
+This product includes software developed by the Astroplan project
+(https://github.com/ginnxai-droid/astroplan).
+
+It also includes the Swiss Ephemeris library, accessed through the
+`pyswisseph` bindings, which is licensed under the GNU Affero General Public
+License, version 3 (AGPL-3.0). The full license text is in
+LICENSE-AGPL-3.0.txt.
+
+Because this distribution combines AGPL-3.0 code with the rest of the
+program, the combined work is provided under AGPL-3.0. The original Astroplan
+source remains available under MIT (LICENSE) for use outside this combined
+distribution.
+
+AGPL section 13 source offer: users interacting with this service over a
+network can obtain the complete corresponding source code of the running
+version at:
+
+  https://github.com/ginnxai-droid/astroplan
+
+Production deployments must set ASTRO_SOURCE_OFFER_URL to that address (or an
+equivalent https:// source archive). The API reports it at
+GET /v1/trust/about-predictions, the mobile app shows it under Privacy &
+reminders, and the shared-chart page prints it.

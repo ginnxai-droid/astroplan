@@ -146,6 +146,7 @@ behavior most:
 | `ASTRO_DATABASE_URL` | SQLite file | PostgreSQL 16 (`postgresql+psycopg://…`) required in production |
 | `ASTRO_REQUIRE_SWISS_FILES` | `false` | Must be true in production; dev may use the Moshier fallback |
 | `ASTRO_LEGAL_GATE_APPROVED` | `false` | G0 legal / ephemeris licensing gate |
+| `ASTRO_SOURCE_OFFER_URL` | empty | AGPL-3.0 source offer shown to network users; production requires an `https://` URL |
 | `ASTRO_ALLOW_DRAFT_RULES` | `true` in example | Must be false in production (G2) |
 | `ASTRO_AUTH_MODE` | `dev` | `firebase` required in production |
 | `ASTRO_FIELD_ENCRYPTION_KEYS` | empty | Required in production (Fernet keys) |
@@ -158,7 +159,8 @@ behavior most:
 
 `scripts/check_guardrails.py` enforces the project constraints on every run:
 
-- **G0** — legal and Swiss Ephemeris licensing sign-off recorded.
+- **G0** — licensing sign-off recorded, with an `https://` source offer
+  required in production.
 - **G1** — reference chart set complete and environment-dependent checks.
 - **G2** — advisor-approved rule library (no draft rules in production).
 - **G3** — static scan of user-facing prose for prohibited claims.
@@ -174,6 +176,19 @@ implementation plan under `docs/superpowers/plans/`.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Note that Swiss Ephemeris carries its own
-AGPL/commercial licensing terms; the G0 gate exists so that is resolved before
-any production deployment.
+Astroplan is distributed under **AGPL-3.0** because it links the Swiss
+Ephemeris library (`pyswisseph`), which is licensed under the GNU Affero
+General Public License v3. The full text is in
+[LICENSE-AGPL-3.0.txt](LICENSE-AGPL-3.0.txt) and the notices are in
+[NOTICE](NOTICE). The original Astroplan application code was published under
+MIT (see [LICENSE](LICENSE)); that grant remains available for use outside
+this combined distribution.
+
+AGPL section 13 requires a source offer to network users. The API reports it
+from `ASTRO_SOURCE_OFFER_URL` at `GET /v1/trust/about-predictions`, the mobile
+app shows it under **Privacy & reminders**, and the shared-chart page prints
+it. Production startup fails unless the value is an `https://` URL, so the
+offer cannot be silently dropped from a deployment. Flutter release builds can
+override the in-app address with
+`--dart-define=ASTRO_SOURCE_OFFER_URL=https://…`, and `web-share` reads the
+same variable at render time.

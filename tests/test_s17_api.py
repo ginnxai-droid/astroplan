@@ -24,6 +24,7 @@ def test_chart_dasha_transits_daily_insight_yogas_304_etag_and_observability(
     assert r.status_code == 200
     assert r.json()["ayanamsa_name"] == "Lahiri"
     assert r.json()["disclaimer"] != ""
+    assert {"navamsa_lagna_sign_index", "navamsa_lagna_sign_name"} <= r.json().keys()
     assert any('"event": "http_request"' in rec.message for rec in caplog.records)
 
     assert client.post("/v1/dasha", json=payload).status_code == 200
@@ -33,6 +34,15 @@ def test_chart_dasha_transits_daily_insight_yogas_304_etag_and_observability(
 
     r_panchang = client.get("/v1/panchang?target_date=2026-11-16&lat=18.5204&lon=73.8567")
     assert r_panchang.status_code == 200
+    assert {
+        "moon_longitude",
+        "moon_sign_name",
+        "moon_degree_in_sign",
+        "moon_nakshatra_pada",
+        "reference_datetime",
+        "reference_kind",
+        "phase_illumination",
+    } <= r_panchang.json().keys()
     assert "max-age=86400" in r_panchang.headers.get("Cache-Control", "")
     etag = r_panchang.headers["ETag"]
     r_304 = client.get(
@@ -49,6 +59,24 @@ def test_chart_dasha_transits_daily_insight_yogas_304_etag_and_observability(
         "finances",
         "home",
     }
+
+
+def test_trust_about_predictions_exposes_agpl_source_offer() -> None:
+    from fastapi.testclient import TestClient
+
+    from app.config import Settings
+    from app.main import create_app
+
+    settings = Settings(
+        env="test",
+        database_url="sqlite+pysqlite:///:memory:",
+        allow_draft_rules=True,
+        geocode_provider="manual_only",
+        source_offer_url="https://example.org/astroplan-source",
+    )
+    body = TestClient(create_app(settings)).get("/v1/trust/about-predictions?lang=en").json()
+    assert body["source_offer_url"] == "https://example.org/astroplan-source"
+    assert body["license"] == "AGPL-3.0"
 
 
 def test_m1_cross_user_idor_blocked_m2_operator_gate_and_share_revocation(client) -> None:
@@ -185,6 +213,9 @@ def test_m4_festivals_full_year_and_gap24_openapi_schema_contract(client) -> Non
         assert methods.issubset(set(schema["paths"][path].keys()))
 
     schemas = schema["components"]["schemas"]
+    assert {"navamsa_lagna_sign_index", "navamsa_lagna_sign_name"} <= set(
+        schemas["ChartResponse"]["required"]
+    )
     assert {"lagna_sign_name", "moon_nakshatra", "planets", "disclaimer"}.issubset(
         set(schemas["ChartResponse"]["properties"].keys())
     )

@@ -384,6 +384,14 @@
             "title": "Moon Sign Name",
             "type": "string"
           },
+          "navamsa_lagna_sign_index": {
+            "title": "Navamsa Lagna Sign Index",
+            "type": "integer"
+          },
+          "navamsa_lagna_sign_name": {
+            "title": "Navamsa Lagna Sign Name",
+            "type": "string"
+          },
           "planets": {
             "items": {
               "$ref": "#/components/schemas/PlanetPosition"
@@ -420,6 +428,8 @@
           "lagna_sign_index",
           "lagna_sign_name",
           "lagna_degree",
+          "navamsa_lagna_sign_index",
+          "navamsa_lagna_sign_name",
           "moon_sign_index",
           "moon_sign_name",
           "moon_nakshatra",

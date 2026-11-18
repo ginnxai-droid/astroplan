@@ -13,10 +13,9 @@ def degree_in_sign(lon: float) -> float:
 
 def nakshatra_and_pada(lon: float) -> tuple[int, str, int]:
     lon = lon % 360.0
-    span = 360.0 / 27.0
-    zero = int(lon / span)
-    pada = int((lon - zero * span) / (span / 4.0)) + 1
-    return zero + 1, NAKSHATRA_NAMES[zero], min(max(pada, 1), 4)
+    quarter = int(lon / (360.0 / 108.0))
+    zero, pada = divmod(quarter, 4)
+    return zero + 1, NAKSHATRA_NAMES[zero], pada + 1
 
 
 def navamsa_sign_index(lon: float) -> int:
