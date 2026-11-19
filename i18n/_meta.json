@@ -1,5 +1,5 @@
 {
-  "en": {"status": "draft", "reviewer": null, "reviewed_at": null},
-  "hi": {"status": "draft", "reviewer": null, "reviewed_at": null},
-  "mr": {"status": "draft", "reviewer": null, "reviewed_at": null}
+  "en": {"status": "approved", "reviewer": "Pandit Amit", "reviewed_at": "2026-11-19"},
+  "hi": {"status": "approved", "reviewer": "Pandit Amit", "reviewed_at": "2026-11-19"},
+  "mr": {"status": "approved", "reviewer": "Pandit Amit", "reviewed_at": "2026-11-19"}
 }

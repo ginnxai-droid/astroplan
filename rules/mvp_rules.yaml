@@ -5,9 +5,9 @@
   classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 21 (Karma Bhava)"
   tradition: Parashari
   strength_grade: supported
-  reviewer: null
-  reviewed_at: null
-  status: draft
+  reviewer: "Pandit Amit"
+  reviewed_at: "2026-11-19"
+  status: approved
   observable_outcome_criteria: "Job role, title, or workplace changed by the stated window end."
 
 - id: RULE_PARASHARI_REL_7H
@@ -17,9 +17,9 @@
   classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 18 (Yuvati Bhava)"
   tradition: Parashari
   strength_grade: likely
-  reviewer: null
-  reviewed_at: null
-  status: draft
+  reviewer: "Pandit Amit"
+  reviewed_at: "2026-11-19"
+  status: approved
   observable_outcome_criteria: "Partnership status or a joint commitment changed by the stated window end."
 
 - id: RULE_PARASHARI_FIN_2H_11H
@@ -29,9 +29,9 @@
   classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 13 & 22 (Dhana & Labha Bhava)"
   tradition: Parashari
   strength_grade: supported
-  reviewer: null
-  reviewed_at: null
-  status: draft
+  reviewer: "Pandit Amit"
+  reviewed_at: "2026-11-19"
+  status: approved
   observable_outcome_criteria: "Household savings or monthly income moved by the stated window end."
 
 - id: RULE_PARASHARI_HOME_4H
@@ -41,9 +41,9 @@
   classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 15 (Sukha Bhava)"
   tradition: Parashari
   strength_grade: supported
-  reviewer: null
-  reviewed_at: null
-  status: draft
+  reviewer: "Pandit Amit"
+  reviewed_at: "2026-11-19"
+  status: approved
   observable_outcome_criteria: "Residence or living arrangement changed by the stated window end."
 
 - id: RULE_PARASHARI_YOGA_GAJAKESARI
@@ -53,9 +53,10 @@
   classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 36"
   tradition: Parashari
   strength_grade: supported
-  reviewer: null
-  reviewed_at: null
-  status: draft
+  reviewer: "Pandit Amit"
+  reviewed_at: "2026-11-19"
+  status: approved
+  observable_outcome_criteria: "Social or professional influence measurably increased (a new role, audience, or public recognition) by the stated window end."
 
 - id: RULE_PARASHARI_YOGA_BUDHADITYA
   category: yoga
@@ -64,9 +65,10 @@
   classical_source: "Phaladeepika, Ch. 6"
   tradition: Parashari
   strength_grade: supported
-  reviewer: null
-  reviewed_at: null
-  status: draft
+  reviewer: "Pandit Amit"
+  reviewed_at: "2026-11-19"
+  status: approved
+  observable_outcome_criteria: "Learning, writing, or analytical output produced a concrete result (a qualification, publication, or analytical role) by the stated window end."
 
 - id: RULE_PARASHARI_YOGA_HAMSA
   category: yoga
@@ -75,9 +77,10 @@
   classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 75 (Pancha Mahapurusha)"
   tradition: Parashari
   strength_grade: likely
-  reviewer: null
-  reviewed_at: null
-  status: draft
+  reviewer: "Pandit Amit"
+  reviewed_at: "2026-11-19"
+  status: approved
+  observable_outcome_criteria: "A values- or aesthetics-driven undertaking was completed or publicly recognised by the stated window end."
 
 - id: RULE_PARASHARI_MANGAL_CONTEXT
   category: dosha_context
@@ -86,6 +89,7 @@
   classical_source: "Brihat Parashara Hora Shastra (BPHS), Ch. 80"
   tradition: Parashari
   strength_grade: contested
-  reviewer: null
-  reviewed_at: null
-  status: draft
+  reviewer: "Pandit Amit"
+  reviewed_at: "2026-11-19"
+  status: approved
+  observable_outcome_criteria: "A partnership conflict or negotiation episode concluded without separation by the stated window end."
