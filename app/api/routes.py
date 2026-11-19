@@ -63,7 +63,12 @@ from app.interpretation.language import Catalog
 from app.interpretation.llm import SafeRephraser
 from app.interpretation.readings import generate_daily_insight, generate_life_area_readings
 from app.interpretation.rules import load_rules
-from app.ledger.service import OutcomeMark, PredictionLedgerService
+from app.ledger.service import (
+    OutcomeMark,
+    PredictionLedgerService,
+    UnresolvableTimeWindow,
+    WindowNotClosed,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -459,12 +464,17 @@ def build_router(settings: Settings) -> APIRouter:
             eff_year = forecast_year or _today_in_tz(tz).year
             c = calculate_chart(details, lat, lon, tz)
             moon = next(p for p in c.planets if p.planet == "Moon")
-            d = calculate_vimshottari_dasha(
-                details.birth_date, moon.longitude, date(eff_year, 1, 15)
-            )
-            t = evaluate_current_transits(c, date(eff_year, 1, 15))
+            snapshots = [
+                (
+                    calculate_vimshottari_dasha(
+                        details.birth_date, moon.longitude, date(eff_year, month, 15)
+                    ),
+                    evaluate_current_transits(c, date(eff_year, month, 15)),
+                )
+                for month in (1, 4, 7, 10)
+            ]
             return generate_annual_forecast_report(
-                c, d, t, rules, catalog, eff_year, details.language
+                c, snapshots, rules, catalog, eff_year, details.language
             )
         except Exception as exc:
             raise _map(exc, catalog, details.language) from exc
@@ -702,16 +712,19 @@ def build_router(settings: Settings) -> APIRouter:
             grade = _STRENGTH_ADAPTER.validate_python(req.confidence_grade)
         except Exception as exc:
             raise HTTPException(422, {"error": "invalid_confidence_grade"}) from exc
-        entry = ledger.register(
-            entry_id=req.entry_id,
-            user_id=target,
-            statement_id=req.statement_id,
-            rule_id=req.rule_id,
-            statement_text=req.statement_text,
-            confidence_grade=grade,
-            time_window=req.time_window,
-            observable_outcome_criteria=req.observable_outcome_criteria,
-        )
+        try:
+            entry = ledger.register(
+                entry_id=req.entry_id,
+                user_id=target,
+                statement_id=req.statement_id,
+                rule_id=req.rule_id,
+                statement_text=req.statement_text,
+                confidence_grade=grade,
+                time_window=req.time_window,
+                observable_outcome_criteria=req.observable_outcome_criteria,
+            )
+        except UnresolvableTimeWindow as exc:
+            raise HTTPException(422, {"error": "unresolvable_time_window"}) from exc
         return entry.model_dump()
 
     @router.post("/ledger/{entry_id}/mark")
@@ -725,11 +738,16 @@ def build_router(settings: Settings) -> APIRouter:
             if not existing:
                 raise HTTPException(403, {"error": "entry_not_found_or_forbidden"})
             return ledger.mark_outcome(entry_id, req.outcome).model_dump()
+        except WindowNotClosed as exc:
+            raise HTTPException(409, {"error": "window_not_closed"}) from exc
         except KeyError as exc:
             raise HTTPException(404, {"error": "entry_not_found"}) from exc
 
     @router.get("/ledger/calibration")
-    async def ledger_calibration(user_id: str | None = None) -> dict[str, object]:
-        return ledger.calibration_summary(user_id=user_id)
+    async def ledger_calibration(
+        user_id: str | None = None,
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, object]:
+        return ledger.calibration_summary(user_id=_enforce_ownership(user_id, auth_user))
 
     return router

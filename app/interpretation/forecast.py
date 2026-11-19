@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from app.api.schemas import (
     AnnualForecastQuarter,
     AnnualForecastResponse,
     ChartResponse,
     ExplainedStatement,
     LanguageCode,
+    LifeAreaCategory,
     WhyThisExplanation,
 )
 from app.interpretation.guardrails import verify_text
@@ -13,16 +16,25 @@ from app.interpretation.language import Catalog
 from app.interpretation.readings import generate_life_area_readings
 from app.interpretation.rules import Rule
 
+Snapshot = tuple[dict[str, object], dict[str, object]]
+
+_QUARTERS: tuple[tuple[str, LifeAreaCategory], ...] = (
+    ("Q1 {year} (Jan-Mar)", "career"),
+    ("Q2 {year} (Apr-Jun)", "finances"),
+    ("Q3 {year} (Jul-Sep)", "relationships"),
+    ("Q4 {year} (Oct-Dec)", "home"),
+)
+
 
 def generate_annual_forecast_report(
     chart: ChartResponse,
-    dasha: dict[str, object],
-    transits: dict[str, object],
+    snapshots: Sequence[Snapshot],
     rules: list[Rule],
     catalog: Catalog,
     year: int,
     lang: LanguageCode,
 ) -> AnnualForecastResponse:
+    dasha, transits = snapshots[0]
     areas = generate_life_area_readings(chart, dasha, transits, rules, catalog, lang)
 
     simple = catalog.format(
@@ -63,35 +75,24 @@ def generate_annual_forecast_report(
         safety_verified=True,
     )
 
-    sade_sati_info: dict[str, object] = transits["sade_sati"]  # type: ignore[assignment]
-    quarters = [
-        AnnualForecastQuarter(
-            quarter=f"Q1 {year} (Jan-Mar)",
-            theme_statement=areas["career"][0],
-            active_dasha=f"{dasha['active_mahadasha']}-{dasha['active_antardasha']}",
-            key_transit_note=(
-                f"Jupiter in {transits['jupiter_transit_sign']} supports structured planning."
-            ),
-        ),
-        AnnualForecastQuarter(
-            quarter=f"Q2 {year} (Apr-Jun)",
-            theme_statement=areas["finances"][0],
-            active_dasha=f"{dasha['active_mahadasha']}-{dasha['active_antardasha']}",
-            key_transit_note="Focus on savings allocation and budget review.",
-        ),
-        AnnualForecastQuarter(
-            quarter=f"Q3 {year} (Jul-Sep)",
-            theme_statement=areas["relationships"][0],
-            active_dasha=f"{dasha['active_mahadasha']}-{dasha['active_antardasha']}",
-            key_transit_note="Constructive communication in family and partnerships.",
-        ),
-        AnnualForecastQuarter(
-            quarter=f"Q4 {year} (Oct-Dec)",
-            theme_statement=areas["home"][0],
-            active_dasha=f"{dasha['active_mahadasha']}-{dasha['active_antardasha']}",
-            key_transit_note=str(sade_sati_info["phase_description"]),
-        ),
-    ]
+    quarters: list[AnnualForecastQuarter] = []
+    for (q_dasha, q_transits), (label, category) in zip(snapshots, _QUARTERS, strict=True):
+        q_areas = generate_life_area_readings(chart, q_dasha, q_transits, rules, catalog, lang)
+        note = (
+            f"Jupiter in {q_transits['jupiter_transit_sign']} and "
+            f"Saturn in {q_transits['saturn_transit_sign']} colour this quarter."
+        )
+        sade_sati_info: dict[str, object] = q_transits["sade_sati"]  # type: ignore[assignment]
+        if sade_sati_info["is_active"]:
+            note = f"{note} Sade Sati: {sade_sati_info['phase_description']}"
+        quarters.append(
+            AnnualForecastQuarter(
+                quarter=label.format(year=year),
+                theme_statement=q_areas[category][0],
+                active_dasha=(f"{q_dasha['active_mahadasha']}-{q_dasha['active_antardasha']}"),
+                key_transit_note=note,
+            )
+        )
 
     return AnnualForecastResponse(
         year=year,

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+import calendar
+import re
+from datetime import UTC, date, datetime
 from typing import Literal
 
 from pydantic import BaseModel
@@ -12,12 +14,54 @@ from app.interpretation.guardrails import verify_text
 
 OutcomeMark = Literal["hit", "miss", "ambiguous"]
 
+
+class UnresolvableTimeWindow(ValueError):
+    """Raised when a ledger time window has no parseable end date."""
+
+
+class WindowNotClosed(ValueError):
+    """Raised when an outcome is marked before its window closes."""
+
+
 GRADE_PROBABILITY: dict[StrengthGrade, float] = {
     "likely": 0.75,
     "supported": 0.65,
     "weak": 0.45,
     "contested": 0.35,
 }
+
+_ISO_DATE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
+_CALENDAR_YEAR = re.compile(r"\bCalendar Year\s+(\d{4})\b", re.IGNORECASE)
+_QUARTER = re.compile(r"\bQ([1-4])\s+(\d{4})\b")
+_YEAR_RANGE = re.compile(r"\b(\d{4})\s*(?:-|\u2013|to)\s*(\d{4})\b")
+_YEAR_ONLY = re.compile(r"\b(\d{4})\b")
+
+
+def _window_end(window: str) -> date | None:
+    if m := _ISO_DATE.search(window):
+        try:
+            return date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            return None
+    if m := _CALENDAR_YEAR.search(window):
+        return date(int(m.group(1)), 12, 31)
+    if m := _QUARTER.search(window):
+        end_month = 3 * int(m.group(1))
+        year = int(m.group(2))
+        return date(year, end_month, calendar.monthrange(year, end_month)[1])
+    if m := _YEAR_RANGE.search(window):
+        return date(int(m.group(2)), 12, 31)
+    if m := _YEAR_ONLY.search(window):
+        return date(int(m.group(1)), 12, 31)
+    return None
+
+
+def _require_window_closed(window: str, today: date) -> None:
+    end = _window_end(window)
+    if end is not None and today <= end:
+        raise WindowNotClosed(
+            f"window closes on {end.isoformat()}; outcome cannot be marked before then"
+        )
 
 
 class PreRegisteredLedgerEntry(BaseModel):
@@ -55,6 +99,8 @@ class PredictionLedgerService:
         safety_category: str = "general",
     ) -> PreRegisteredLedgerEntry:
         verify_text(statement_text)
+        if _window_end(time_window) is None:
+            raise UnresolvableTimeWindow(f"time_window has no resolvable end date: {time_window!r}")
         now = datetime.now(UTC)
         prob = GRADE_PROBABILITY[confidence_grade]
         entry = PreRegisteredLedgerEntry(
@@ -131,6 +177,7 @@ class PredictionLedgerService:
                 row = s.scalar(select(LedgerEntryRow).where(LedgerEntryRow.entry_id == entry_id))
                 if row is None:
                     raise KeyError(entry_id)
+                _require_window_closed(row.time_window, now.date())
                 row.user_outcome = outcome
                 row.outcome_logged_at_utc = now
                 entry = PreRegisteredLedgerEntry(
@@ -153,6 +200,7 @@ class PredictionLedgerService:
         if entry_id not in self._entries:
             raise KeyError(entry_id)
         e = self._entries[entry_id]
+        _require_window_closed(e.time_window, now.date())
         e.user_outcome = outcome
         e.outcome_logged_at_utc = now
         return e

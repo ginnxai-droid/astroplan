@@ -10,7 +10,7 @@ FIELDS = {
     "rule_id": "RULE_PARASHARI_CAREER_10H",
     "statement_text": "Steady professional progress is supported through planning.",
     "confidence_grade": "supported",
-    "time_window": "Active Moon-Ketu Dasha (until 2027-08-12)",
+    "time_window": "Active Moon-Ketu Dasha (until 2020-08-12)",
     "observable_outcome_criteria": "Role changed by window end.",
     "safety_category": "life_area",
 }

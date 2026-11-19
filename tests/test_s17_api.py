@@ -158,6 +158,59 @@ def test_m1_cross_user_idor_blocked_m2_operator_gate_and_share_revocation(client
     assert client.delete("/v1/privacy/delete", headers=headers_u999).status_code == 200
 
 
+def test_ledger_calibration_is_scoped_to_the_authenticated_user(client) -> None:
+    headers = {"X-User-Id": "U_CAL"}
+
+    own = client.get("/v1/ledger/calibration", headers=headers)
+    assert own.status_code == 200
+    assert own.json()["scope_user_id"] == "U_CAL"
+
+    assert client.get("/v1/ledger/calibration?user_id=U_CAL", headers=headers).status_code == 200
+
+    cross_user = client.get("/v1/ledger/calibration?user_id=U_OTHER", headers=headers)
+    assert cross_user.status_code == 403
+    assert cross_user.json()["detail"]["error"] == "forbidden_cross_user_access"
+
+
+def test_ledger_marks_require_a_closed_window(client) -> None:
+    headers = {"X-User-Id": "U_WINDOW"}
+    base = {
+        "user_id": "U_WINDOW",
+        "statement_id": "S_WINDOW",
+        "rule_id": "RULE_PARASHARI_CAREER_10H",
+        "statement_text": "Steady professional progress is supported through planning.",
+        "confidence_grade": "supported",
+        "observable_outcome_criteria": "Role changed by window end.",
+    }
+
+    future = client.post(
+        "/v1/ledger/register",
+        headers=headers,
+        json={**base, "entry_id": "E_FUTURE", "time_window": "Q1 2027"},
+    )
+    assert future.status_code == 200
+    blocked = client.post("/v1/ledger/E_FUTURE/mark", headers=headers, json={"outcome": "miss"})
+    assert blocked.status_code == 409
+    assert blocked.json()["detail"]["error"] == "window_not_closed"
+
+    undated = client.post(
+        "/v1/ledger/register",
+        headers=headers,
+        json={**base, "entry_id": "E_UNDATED", "time_window": "when it happens"},
+    )
+    assert undated.status_code == 422
+    assert undated.json()["detail"]["error"] == "unresolvable_time_window"
+
+    closed = client.post(
+        "/v1/ledger/register",
+        headers=headers,
+        json={**base, "entry_id": "E_CLOSED", "time_window": "Q1 2020"},
+    )
+    assert closed.status_code == 200
+    marked = client.post("/v1/ledger/E_CLOSED/mark", headers=headers, json={"outcome": "hit"})
+    assert marked.status_code == 200
+
+
 def test_m6_firebase_mode_rejects_unauthenticated_requests(monkeypatch) -> None:
     from fastapi.testclient import TestClient
 
@@ -178,6 +231,7 @@ def test_m6_firebase_mode_rejects_unauthenticated_requests(monkeypatch) -> None:
     )
     assert fb_client.get("/v1/privacy/export").status_code == 401
     assert fb_client.delete("/v1/privacy/delete").status_code == 401
+    assert fb_client.get("/v1/ledger/calibration").status_code == 401
     assert (
         fb_client.post(
             "/v1/privacy/consent",
