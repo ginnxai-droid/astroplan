@@ -7,22 +7,35 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val signingKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+val envSigning: Map<String, String?> = mapOf(
+    "storeFile" to System.getenv("ASTROPLAN_STORE_FILE"),
+    "storePassword" to System.getenv("ASTROPLAN_STORE_PASSWORD"),
+    "keyAlias" to System.getenv("ASTROPLAN_KEY_ALIAS"),
+    "keyPassword" to System.getenv("ASTROPLAN_KEY_PASSWORD"),
+)
+val envSigningConfigured = signingKeys.all { !envSigning[it].isNullOrBlank() }
+
 val signingPropertiesFile = rootProject.file("key.properties")
 val signingProperties = Properties().apply {
     if (signingPropertiesFile.exists()) {
         signingPropertiesFile.inputStream().use { load(it) }
     }
 }
-val signingKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
-val signingConfigured = signingPropertiesFile.exists() &&
+val fileSigningConfigured = signingPropertiesFile.exists() &&
     signingKeys.all { !signingProperties.getProperty(it).isNullOrBlank() }
+val signingConfigured = envSigningConfigured || fileSigningConfigured
+
+fun signingValue(key: String): String =
+    if (envSigningConfigured) envSigning.getValue(key)!! else signingProperties.getProperty(key)
 
 if (!signingConfigured) {
     gradle.taskGraph.whenReady {
         if (allTasks.any { it.name.contains("Release") }) {
             throw GradleException(
-                "Release signing is not configured. Create android/key.properties with " +
-                    signingKeys.joinToString(", ") +
+                "Release signing is not configured. Set ASTROPLAN_STORE_FILE, " +
+                    "ASTROPLAN_STORE_PASSWORD, ASTROPLAN_KEY_ALIAS, ASTROPLAN_KEY_PASSWORD, " +
+                    "or create android/key.properties with " + signingKeys.joinToString(", ") +
                     " (storeFile may be an absolute path). Release builds fail closed " +
                     "until a real upload keystore is provided."
             )
@@ -55,10 +68,10 @@ android {
     signingConfigs {
         if (signingConfigured) {
             create("release") {
-                storeFile = file(signingProperties.getProperty("storeFile"))
-                storePassword = signingProperties.getProperty("storePassword")
-                keyAlias = signingProperties.getProperty("keyAlias")
-                keyPassword = signingProperties.getProperty("keyPassword")
+                storeFile = file(signingValue("storeFile"))
+                storePassword = signingValue("storePassword")
+                keyAlias = signingValue("keyAlias")
+                keyPassword = signingValue("keyPassword")
             }
         }
     }
