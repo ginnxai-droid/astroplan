@@ -48,6 +48,7 @@
   "marathiLabel": "मराठी",
   "localBeta": "Local beta · draft interpretations",
   "loadingLabel": "Calculating from your details…",
+  "loadingSlowLabel": "Waking up the servers — this can take up to a minute.",
   "refreshLabel": "Refresh",
   "networkError": "Cannot reach the service. Check your connection and try again.",
   "serviceError": "This service is unavailable. No result has been substituted.",

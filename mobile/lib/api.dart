@@ -22,10 +22,14 @@ class AstroplanApiClient {
     http.Client? client,
     String? userId,
     Future<String?> Function()? tokenProvider,
+    Duration? timeout,
   })  : baseUrl = baseUrl ?? _defaultBaseUrl,
         _client = client ?? http.Client(),
         _userId = userId ?? _configuredUser,
-        _tokenProvider = tokenProvider;
+        _tokenProvider = tokenProvider,
+        _timeout = timeout ?? requestTimeout;
+
+  static const requestTimeout = Duration(seconds: 60);
 
   static const _configuredBase = String.fromEnvironment('ASTRO_API_BASE_URL');
   static const _configuredUser = String.fromEnvironment('ASTRO_DEV_USER');
@@ -41,6 +45,7 @@ class AstroplanApiClient {
   final http.Client _client;
   final String _userId;
   final Future<String?> Function()? _tokenProvider;
+  final Duration _timeout;
 
   bool get _loopback => const {'localhost', '127.0.0.1', '10.0.2.2', '::1'}
       .contains(Uri.tryParse(baseUrl)?.host);
@@ -112,7 +117,7 @@ class AstroplanApiClient {
       final response = await _client
           .send(request)
           .then(http.Response.fromStream)
-          .timeout(const Duration(seconds: 25));
+          .timeout(_timeout);
       return _decode(response);
     } on http.ClientException {
       throw const ApiFailure('network_unavailable');

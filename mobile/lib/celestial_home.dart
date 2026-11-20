@@ -1097,7 +1097,9 @@ class _CelestialHomeState extends State<CelestialHome> {
                     child: Column(children: [
                       const LinearProgressIndicator(),
                       gap(),
-                      Text(t.loadingLabel)
+                      SlowLoadHint(
+                          label: t.loadingLabel,
+                          slowLabel: t.loadingSlowLabel)
                     ]));
               }
               return content(snapshot.data!);

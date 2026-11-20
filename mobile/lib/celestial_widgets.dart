@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'api.dart';
@@ -131,6 +132,43 @@ String friendlyError(AppLocalizations t, Object error) {
     'unknown_timezone' => t.timezoneError,
     _ => t.serviceError,
   };
+}
+
+class SlowLoadHint extends StatefulWidget {
+  const SlowLoadHint(
+      {super.key,
+      required this.label,
+      required this.slowLabel,
+      this.delay = const Duration(seconds: 4)});
+  final String label;
+  final String slowLabel;
+  final Duration delay;
+
+  @override
+  State<SlowLoadHint> createState() => _SlowLoadHintState();
+}
+
+class _SlowLoadHintState extends State<SlowLoadHint> {
+  Timer? _timer;
+  var _slow = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(widget.delay, () {
+      if (mounted) setState(() => _slow = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      Text(_slow ? widget.slowLabel : widget.label);
 }
 
 class GoldPanel extends StatelessWidget {

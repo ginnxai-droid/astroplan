@@ -176,7 +176,7 @@ void main() {
       return <String, dynamic>{};
     }));
     await tester.pump();
-    await tester.pump(const Duration(seconds: 26));
+    await tester.pump(const Duration(seconds: 61));
     expect(error,
         isA<ApiFailure>().having((e) => e.code, 'code', 'network_unavailable'));
     expect(calls, 1);
@@ -271,5 +271,35 @@ void main() {
         client: MockClient((_) async => throw http.ClientException('offline')));
     await expectLater(
         other.fetchAndCacheDailyPanchang('2026-11-17'), throwsException);
+  });
+
+  test('default request timeout outlasts a free-tier cold start', () {
+    expect(AstroplanApiClient.requestTimeout, const Duration(seconds: 60));
+  });
+
+  test('a server slower than the configured timeout is a network failure',
+      () async {
+    final api = AstroplanApiClient(
+        baseUrl: 'https://example.test/v1',
+        timeout: const Duration(milliseconds: 60),
+        client: MockClient((_) async {
+          await Future<void>.delayed(const Duration(milliseconds: 250));
+          return http.Response('{"ok":true}', 200);
+        }));
+    await expectLater(
+        api.get('/panchang'),
+        throwsA(isA<ApiFailure>()
+            .having((e) => e.code, 'code', 'network_unavailable')));
+  });
+
+  test('a response inside the configured timeout succeeds', () async {
+    final api = AstroplanApiClient(
+        baseUrl: 'https://example.test/v1',
+        timeout: const Duration(milliseconds: 500),
+        client: MockClient((_) async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          return http.Response('{"ok":true}', 200);
+        }));
+    expect((await api.get('/panchang'))['ok'], true);
   });
 }
