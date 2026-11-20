@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 export const metadata = {
-  title: "Astroplan (KUF) — Verifiable Chart Share",
+  title: "Astroplan — Verifiable Chart Share",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

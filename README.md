@@ -1,4 +1,6 @@
-# Astroplan (KUF) v3.6
+# Astroplan v3.6
+
+*Know your future, Astroplan.*
 
 An explainable Vedic astrology platform: a deterministic sidereal chart engine, a
 guardrailed interpretation layer over a reviewed rule library, and a prediction

@@ -52,7 +52,7 @@ export default async function SharedChartPage({
   if (status !== 200 || !data?.shared_chart) {
     return (
       <main style={{ maxWidth: 680, margin: "40px auto", fontFamily: "sans-serif" }}>
-        <h1>Astroplan (KUF) — Share Link Unavailable</h1>
+        <h1>Astroplan — Share Link Unavailable</h1>
         <p>
           This shared chart link has expired, been revoked by its owner, or is invalid
           (Status {status}).
@@ -65,7 +65,8 @@ export default async function SharedChartPage({
   const chart = data.shared_chart;
   return (
     <main style={{ maxWidth: 680, margin: "40px auto", fontFamily: "sans-serif" }}>
-      <h1>Astroplan (KUF) — Verifiable Chart Share (Read-Only)</h1>
+      <h1>Astroplan — Verifiable Chart Share (Read-Only)</h1>
+      <p>Know your future, Astroplan.</p>
       <section style={{ padding: 16, border: "1px solid #ddd", borderRadius: 8 }}>
         <p><strong>Name:</strong> {chart.name}</p>
         <p><strong>Birth Date &amp; Time:</strong> {chart.birth_date} at {chart.birth_time}</p>

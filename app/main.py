@@ -16,7 +16,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     crypto.configure(settings.field_encryption_keys, settings.env)
     configure_firebase(settings)
     app = FastAPI(
-        title="Astroplan (KUF) v3.6",
+        title="Astroplan API v3.6",
         version="3.6.0",
         description=(
             "Vedic-native astrology API with verifiable calculations, "
