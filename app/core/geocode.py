@@ -79,7 +79,7 @@ class NominatimProvider:
         self._last = 0.0
         self._lock = asyncio.Lock()
 
-    async def search_candidates(self, query: str, limit: int = 5) -> list[ResolvedPlace]:
+    async def _search_nominatim(self, query: str, limit: int) -> list[ResolvedPlace]:
         async with self._lock:
             elapsed = time.monotonic() - self._last
             if elapsed < 1.0:
@@ -96,21 +96,71 @@ class NominatimProvider:
                     data = resp.json()
             except httpx.HTTPError as exc:
                 raise GeocoderUnavailableError(query) from exc
-            out: list[ResolvedPlace] = []
-            for row in data:
-                lat, lon = float(row["lat"]), float(row["lon"])
-                tz = self._tf.timezone_at(lat=lat, lng=lon)
-                if tz:
-                    out.append(
-                        ResolvedPlace(
-                            lat,
-                            lon,
-                            tz,
-                            "nominatim",
-                            display_name=str(row.get("display_name", query)),
-                        )
-                    )
+        out: list[ResolvedPlace] = []
+        if not isinstance(data, list):
             return out
+        for row in data:
+            lat, lon = float(row["lat"]), float(row["lon"])
+            tz = self._tf.timezone_at(lat=lat, lng=lon)
+            if tz:
+                out.append(
+                    ResolvedPlace(
+                        lat,
+                        lon,
+                        tz,
+                        "nominatim",
+                        display_name=str(row.get("display_name", query)),
+                    )
+                )
+        return out
+
+    async def _search_open_meteo(self, query: str, limit: int) -> list[ResolvedPlace]:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(
+                    "https://geocoding-api.open-meteo.com/v1/search",
+                    params={"name": query, "count": limit, "language": "en", "format": "json"},
+                    headers={"User-Agent": self._s.geocode_user_agent},
+                )
+                resp.raise_for_status()
+                data = resp.json()
+        except httpx.HTTPError as exc:
+            raise GeocoderUnavailableError(query) from exc
+        if not isinstance(data, dict):
+            return []
+        rows = data.get("results")
+        out: list[ResolvedPlace] = []
+        for row in rows or []:
+            lat, lon = float(row["latitude"]), float(row["longitude"])
+            tz = row.get("timezone") or self._tf.timezone_at(lat=lat, lng=lon)
+            if tz:
+                out.append(
+                    ResolvedPlace(
+                        lat,
+                        lon,
+                        str(tz),
+                        "open-meteo",
+                        display_name=str(row.get("name", query)),
+                    )
+                )
+        return out
+
+    async def search_candidates(self, query: str, limit: int = 5) -> list[ResolvedPlace]:
+        # Public Nominatim rejects many cloud hosts. Resolve with Open-Meteo first.
+        meteo_down = False
+        try:
+            found = await self._search_open_meteo(query, limit)
+        except GeocoderUnavailableError:
+            found = []
+            meteo_down = True
+        if found:
+            return found
+        try:
+            return await self._search_nominatim(query, limit)
+        except GeocoderUnavailableError:
+            if meteo_down:
+                raise
+            return []
 
     async def resolve(
         self,
@@ -138,7 +188,7 @@ class NominatimProvider:
         tz = tz_override or first.timezone_iana
         load_zone(tz)
         resolved = ResolvedPlace(
-            first.latitude, first.longitude, tz, "nominatim", first.display_name
+            first.latitude, first.longitude, tz, first.source, first.display_name
         )
         self._cache[key] = resolved
         if len(self._cache) > self._max_cache_size:

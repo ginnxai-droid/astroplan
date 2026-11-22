@@ -58,6 +58,8 @@ async def test_nominatim_query_includes_country(monkeypatch) -> None:
     captured: dict[str, str] = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
+        if "q" not in request.url.params:
+            return httpx.Response(200, json={"results": []})
         captured["q"] = request.url.params["q"]
         return httpx.Response(
             200,
@@ -78,6 +80,46 @@ async def test_nominatim_query_includes_country(monkeypatch) -> None:
     )
     assert captured["q"] == "Pune, India"
     assert r.latitude == 18.5204 and r.timezone_iana == "Asia/Kolkata"
+
+
+async def test_nominatim_failure_falls_back_to_open_meteo(monkeypatch) -> None:
+    import httpx
+
+    import app.core.geocode as g
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if "open-meteo.com" in request.url.host:
+            return httpx.Response(
+                200,
+                json={
+                    "results": [
+                        {
+                            "name": "Pune",
+                            "latitude": 18.5196,
+                            "longitude": 73.8553,
+                            "timezone": "Asia/Kolkata",
+                            "country": "India",
+                        }
+                    ]
+                },
+            )
+        return httpx.Response(503)
+
+    transport = httpx.MockTransport(handler)
+    original = httpx.AsyncClient
+
+    class Patched(original):  # type: ignore[misc]
+        def __init__(self, *args, **kwargs):
+            kwargs["transport"] = transport
+            super().__init__(*args, **kwargs)
+
+    monkeypatch.setattr(g.httpx, "AsyncClient", Patched)
+    resolved = await NominatimProvider(Settings(env="test")).resolve(
+        "Pune", country="India", manual_lat=None, manual_lon=None, tz_override=None
+    )
+    assert resolved.latitude == 18.5196
+    assert resolved.timezone_iana == "Asia/Kolkata"
+    assert resolved.source == "open-meteo"
 
 
 async def test_nominatim_failure_maps_to_typed_error(monkeypatch) -> None:

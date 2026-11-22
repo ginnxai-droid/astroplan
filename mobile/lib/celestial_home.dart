@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,6 +13,7 @@ import 'birth_sheet.dart';
 import 'celestial_widgets.dart';
 import 'firebase_session.dart';
 import 'l10n/app_localizations.dart';
+import 'place_lookup.dart';
 import 'licensing.dart';
 import 'terms.dart';
 
@@ -51,8 +53,7 @@ class _CelestialHomeState extends State<CelestialHome> {
   final answers = <Json>[];
   final chatThread = <Json>[];
   final question = TextEditingController();
-  final phoneController = TextEditingController();
-  final otpController = TextEditingController();
+  StreamSubscription<void>? _authSub;
   String? selectedArea;
   bool askUnmatched = false;
   AppLocalizations get t => AppLocalizations.of(context)!;
@@ -78,7 +79,15 @@ class _CelestialHomeState extends State<CelestialHome> {
   @override
   void initState() {
     super.initState();
-    if (api.authenticated) {
+    _authSub = watchAccount()?.listen((_) {
+      if (!mounted) return;
+      final signedIn = isPhoneSignedIn;
+      setState(() {});
+      if (signedIn && profile == null && api.authenticated) {
+        _restoreSavedProfile();
+      }
+    });
+    if (api.authenticated && (!firebaseAvailable || isPhoneSignedIn)) {
       _restoreSavedProfile();
     }
   }
@@ -91,15 +100,17 @@ class _CelestialHomeState extends State<CelestialHome> {
       if (!mounted || epoch != generation) return;
       if (saved['saved'] != true || saved['self_chart'] is! Map) return;
       if (!overwrite && profile != null) return;
-      final selfMap = {
+      final selfMap = await attachCoordinates({
         ...jsonMap(saved['self_chart']),
         if (saved['gender'] != null) 'gender': saved['gender'],
         if (saved['marital_status'] != null)
           'marital_status': saved['marital_status'],
         if (saved['occupation'] != null) 'occupation': saved['occupation'],
-      };
-      final partnerMap =
-          saved['partner_chart'] is Map ? jsonMap(saved['partner_chart']) : null;
+      });
+      if (!mounted || epoch != generation) return;
+      final partnerMap = saved['partner_chart'] is Map
+          ? await attachCoordinates(jsonMap(saved['partner_chart']))
+          : null;
       setState(() {
         profile = selfMap;
         partner = partnerMap;
@@ -241,9 +252,8 @@ class _CelestialHomeState extends State<CelestialHome> {
   @override
   void dispose() {
     epoch++;
+    _authSub?.cancel();
     question.dispose();
-    phoneController.dispose();
-    otpController.dispose();
     super.dispose();
   }
 
@@ -312,14 +322,16 @@ class _CelestialHomeState extends State<CelestialHome> {
     if (result == null || !mounted) return;
     if (forPartner) {
       if (!result.partnerPermission || profile == null) return;
+      final enriched = await attachCoordinates(result.details);
+      if (!mounted) return;
       setState(() {
-        partner = result.details;
+        partner = enriched;
         data.remove('match');
         errors.remove('match');
       });
       _loadMatch();
       if (accountReady) {
-        await _persistChart(result.details,
+        await _persistChart(enriched,
             adult: _savedAdult || result.adult,
             parental: _savedParental || result.parental,
             isPartner: true,
@@ -328,9 +340,11 @@ class _CelestialHomeState extends State<CelestialHome> {
       return;
     }
     // Invalidate all in-flight responses before accepting a different person's details.
+    final enriched = await attachCoordinates(result.details);
+    if (!mounted) return;
     clearSession();
     setState(() {
-      profile = result.details;
+      profile = enriched;
       _savedAdult = result.adult;
       _savedParental = result.parental;
     });
@@ -353,7 +367,7 @@ class _CelestialHomeState extends State<CelestialHome> {
         final ok = response != null;
         setState(() => consentRecorded = ok);
         if (ok) {
-          await _persistChart(result.details,
+          await _persistChart(enriched,
               adult: result.adult,
               parental: result.parental,
               gender: result.gender,
@@ -364,39 +378,89 @@ class _CelestialHomeState extends State<CelestialHome> {
     }
   }
 
+  Future<Json> _postDetails(String path,
+      {Map<String, String> query = const {}}) async {
+    try {
+      return await api.post(path, details, query: query);
+    } on ApiFailure catch (error) {
+      final missingCoordinates =
+          profile?['latitude'] == null || profile?['longitude'] == null;
+      if (!missingCoordinates ||
+          (error.code != 'geocoder_unavailable' &&
+              error.code != 'ambiguous_location')) {
+        rethrow;
+      }
+      final hit = await resolvePlaceOnDevice(
+          shown(profile?['place_name']), shown(profile?['country']));
+      if (hit == null || !mounted) rethrow;
+      setState(() {
+        profile = {
+          ...?profile,
+          'latitude': hit.latitude,
+          'longitude': hit.longitude,
+          if (hit.timezone != null) 'timezone_override': hit.timezone,
+        };
+      });
+      if (accountReady) {
+        await _persistChart(details,
+            adult: _savedAdult, parental: _savedParental);
+      }
+      return api.post(path, details, query: query);
+    }
+  }
+
   void _loadProfile() {
     if (profile == null) return;
-    final body = details;
-    final query = targetQuery;
-    load('chart', () => api.post('/chart', body)).then((chart) {
+    () async {
+      final next = await attachCoordinates(profile!);
+      if (!mounted || profile == null) return;
+      if (next['latitude'] != profile?['latitude'] ||
+          next['longitude'] != profile?['longitude']) {
+        setState(() => profile = next);
+      }
       if (!mounted) return;
-      load('dasha', () => api.post('/dasha', body, query: query));
-      load('daily',
-          () => api.post('/readings/daily-insight', body, query: query));
-      load('areas', () => api.post('/readings/life-areas', body, query: query));
-      if (chart == null) return;
-      load(
-          'sky',
-          () => api.fetchAndCacheDailyPanchang(targetDate,
-              placeName: shown(profile?['place_name']),
-              latitude: number(chart['resolved_latitude']),
-              longitude: number(chart['resolved_longitude'])));
-    });
+      load('chart', () => _postDetails('/chart')).then((chart) {
+        if (!mounted || chart == null) return;
+        final query = targetQuery;
+        load('dasha', () => _postDetails('/dasha', query: query));
+        load('daily',
+            () => _postDetails('/readings/daily-insight', query: query));
+        load('areas', () => _postDetails('/readings/life-areas', query: query));
+        load(
+            'sky',
+            () => api.fetchAndCacheDailyPanchang(targetDate,
+                placeName: shown(profile?['place_name']),
+                latitude: number(chart['resolved_latitude']),
+                longitude: number(chart['resolved_longitude'])));
+      });
+    }();
   }
 
   void _loadMatch() {
     if (profile == null || partner == null) return;
-    load(
-        'match',
-        () => api.post('/matching/ashtakoota', {
-              'profile_a': details,
-              'profile_b': {
-                ...partner!,
-                'language': widget.locale.languageCode
-              },
-              'partner_consent_confirmed': true,
-              'already_married': partner?['already_married'] == true,
-            }));
+    () async {
+      final self = await attachCoordinates(profile!);
+      final other = await attachCoordinates(partner!);
+      if (!mounted || profile == null || partner == null) return;
+      setState(() {
+        profile = self;
+        partner = other;
+      });
+      load(
+          'match',
+          () => api.post('/matching/ashtakoota', {
+                'profile_a': {
+                  ...self,
+                  'language': widget.locale.languageCode
+                },
+                'profile_b': {
+                  ...other,
+                  'language': widget.locale.languageCode
+                },
+                'partner_consent_confirmed': true,
+                'already_married': other['already_married'] == true,
+              }));
+    }();
   }
 
   void _loadCalibration() {
@@ -472,80 +536,20 @@ class _CelestialHomeState extends State<CelestialHome> {
     }
   }
 
-  Future<void> phoneLoginSheet() async {
-    phoneController.clear();
-    otpController.clear();
-    var verificationId = '';
-    var busy = false;
-    await goldSheet<void>(context,
-        title: t.phoneSignIn,
-        child: StatefulBuilder(builder: (sheetContext, update) {
-          Future<void> sendCode() async {
-            final raw = phoneController.text.replaceAll(RegExp(r'\D'), '');
-            final e164 =
-                raw.length == 10 ? '+91$raw' : phoneController.text.trim();
-            update(() => busy = true);
-            final id = await startPhoneOtp(e164);
-            if (!sheetContext.mounted) return;
-            update(() {
-              busy = false;
-              verificationId = id ?? '';
-            });
-            if (id == null && mounted) toast(t.phoneSignInFailed);
-          }
-
-          Future<void> verifyCode() async {
-            if (verificationId.isEmpty) return;
-            update(() => busy = true);
-            final ok = await confirmPhoneOtp(
-                verificationId: verificationId, smsCode: otpController.text);
-            if (!sheetContext.mounted) return;
-            update(() => busy = false);
-            if (!ok) {
-              if (mounted) toast(t.phoneSignInFailed);
-              return;
-            }
-            Navigator.pop(sheetContext);
-            await _restoreSavedProfile(overwrite: true);
-            if (mounted && profile == null) {
-              await editBirth();
-            }
-            if (mounted) setState(() {});
-          }
-
-          return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                note(t.phoneSignInHint),
-                gap(14),
-                TextField(
-                    key: const Key('phone_number'),
-                    controller: phoneController,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                        labelText: t.phoneNumberLabel,
-                        hintText: t.phoneNumberHint)),
-                gap(12),
-                if (verificationId.isNotEmpty)
-                  TextField(
-                      key: const Key('otp_code'),
-                      controller: otpController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                          labelText: t.otpLabel, hintText: t.otpHint)),
-                gap(16),
-                SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                        onPressed: busy
-                            ? null
-                            : (verificationId.isEmpty ? sendCode : verifyCode),
-                        child: Text(verificationId.isEmpty
-                            ? t.sendOtpAction
-                            : t.verifyOtpAction))),
-              ]);
-        }));
+  Future<void> _afterPhoneSignedIn() async {
+    await _restoreSavedProfile(overwrite: true);
+    if (mounted && profile == null) {
+      await editBirth();
+    }
+    if (mounted) setState(() {});
   }
+
+  Future<void> phoneLoginSheet() => goldSheet<void>(context,
+      title: t.phoneSignIn,
+      child: PhoneAuthPanel(onSignedIn: () async {
+        if (mounted) Navigator.of(context).pop();
+        await _afterPhoneSignedIn();
+      }));
 
   Future<void> mark(Json answer, String outcome) async {
     final id = answer['ledger_entry_id'] as String;
@@ -569,7 +573,7 @@ class _CelestialHomeState extends State<CelestialHome> {
   Widget gap([double height = 14]) => SizedBox(height: height);
   Widget note(String text) => Text(text,
       style: const TextStyle(color: muted, fontSize: 12, height: 1.6));
-  Widget status(String key) {
+  Widget status(String key, {List<String> hideWhenSameAs = const []}) {
     if (pending.contains(key)) {
       return Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -580,6 +584,10 @@ class _CelestialHomeState extends State<CelestialHome> {
                   minHeight: 2, color: gold, backgroundColor: panel)));
     }
     if (errors[key] != null) {
+      final message = friendlyError(t, errors[key]!);
+      final duplicated = hideWhenSameAs.any((other) =>
+          errors[other] != null && friendlyError(t, errors[other]!) == message);
+      if (duplicated) return const SizedBox.shrink();
       return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: GoldPanel(
@@ -744,11 +752,11 @@ class _CelestialHomeState extends State<CelestialHome> {
           TextButton(onPressed: editBirth, child: Text(t.editDetailsLabel)),
         note(t.dayBasis),
         gap(),
-        status('daily'),
+        status('daily', hideWhenSameAs: const ['chart']),
         if (data['daily'] case final statement?)
           StatementPanel(statement: statement, title: t.dayFeelTitle),
         gap(),
-        status('areas'),
+        status('areas', hideWhenSameAs: const ['chart', 'daily']),
         for (final area in dayAreas) ...[
           for (final statement in jsonRows(areas[area.$1])) ...[
             StatementPanel(statement: statement, title: areaTitle(area.$2)),
@@ -870,6 +878,13 @@ class _CelestialHomeState extends State<CelestialHome> {
   }
 
   Future<void> openAnnual(int forecastYear) async {
+    if (profile != null) {
+      final next = await attachCoordinates(profile!);
+      if (!mounted) return;
+      if (next['latitude'] != profile?['latitude']) {
+        setState(() => profile = next);
+      }
+    }
     final future = load(
         'annual',
         () => api.post('/reports/annual-forecast', details,
@@ -882,6 +897,11 @@ class _CelestialHomeState extends State<CelestialHome> {
 
   Future<void> saveAnnualPdf() async {
     if (pending.contains('annual-pdf') || profile == null) return;
+    final next = await attachCoordinates(profile!);
+    if (!mounted || profile == null) return;
+    if (next['latitude'] != profile?['latitude']) {
+      setState(() => profile = next);
+    }
     setState(() {
       pending.add('annual-pdf');
       errors.remove('annual-pdf');
@@ -1012,7 +1032,7 @@ class _CelestialHomeState extends State<CelestialHome> {
           if (c['disclaimer'] != null) note(shown(c['disclaimer'])),
           gap(),
         ],
-        status('areas'),
+        status('areas', hideWhenSameAs: const ['chart']),
         if (errors['chart'] != null || errors['areas'] != null) ...[
           FilledButton.icon(
               onPressed: pending.contains('chart') ? null : _loadProfile,
@@ -1545,7 +1565,7 @@ class _CelestialHomeState extends State<CelestialHome> {
     }
   }
 
-  Future<void> privacySheet() => goldSheet<void>(context,
+  Future<void> privacySheet() => goldSheet<String>(context,
       title: t.privacyLabel,
       child: StatefulBuilder(
           builder: (sheetContext, update) =>
@@ -1579,8 +1599,7 @@ class _CelestialHomeState extends State<CelestialHome> {
                           }),
                 const Divider(),
                 if (firebaseAvailable) ...[
-                  if ((isGoogleSignedIn || isPhoneSignedIn) &&
-                      currentAccountLabel != null) ...[
+                  if (isPhoneSignedIn && currentAccountLabel != null) ...[
                     note(t.googleSignedInAs(currentAccountLabel!)),
                     ListTile(
                         contentPadding: EdgeInsets.zero,
@@ -1591,24 +1610,25 @@ class _CelestialHomeState extends State<CelestialHome> {
                           _handleSignOut();
                         }),
                   ] else ...[
+                    if (isGoogleSignedIn && currentAccountLabel != null)
+                      note(t.googleSignedInAs(currentAccountLabel!)),
                     ListTile(
+                        key: const Key('phone_sign_in_profile'),
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(Icons.sms_outlined, color: gold),
                         title: Text(t.phoneSignIn),
                         subtitle: Text(t.phoneSignInHint),
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          phoneLoginSheet();
-                        }),
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.login, color: gold),
-                        title: Text(t.googleSignIn),
-                        subtitle: Text(t.googleSignInHint),
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          _handleGoogleSignIn();
-                        }),
+                        onTap: () => Navigator.pop(sheetContext, 'phone')),
+                    if (!isGoogleSignedIn)
+                      ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.login, color: gold),
+                          title: Text(t.googleSignIn),
+                          subtitle: Text(t.googleSignInHint),
+                          onTap: () {
+                            Navigator.pop(sheetContext);
+                            _handleGoogleSignIn();
+                          }),
                   ],
                   const Divider(),
                 ],
@@ -1716,7 +1736,9 @@ class _CelestialHomeState extends State<CelestialHome> {
                                     ],
                                   ]));
                     }),
-              ]))).then((_) {});
+              ]))).then((action) async {
+        if (action == 'phone' && mounted) await phoneLoginSheet();
+      });
   void showRemote(String title, Future<Json> Function() request,
       Widget Function(Json) content) {
     final response = request();
@@ -1767,8 +1789,42 @@ class _CelestialHomeState extends State<CelestialHome> {
     }
   }
 
+  Widget phoneGate() => Scaffold(
+      body: Container(
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF0D1427), Color(0xFF080D1C), night],
+                  stops: [0, .45, 1])),
+          child: SafeArea(
+              child: ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                  children: [
+                Row(children: [
+                  const Spacer(),
+                  OutlinedButton(
+                      key: const Key('language_selector'),
+                      onPressed: languageSheet,
+                      style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(44, 36),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          shape: const StadiumBorder()),
+                      child: Text(widget.locale.languageCode.toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 10, letterSpacing: 1.2))),
+                ]),
+                const SizedBox(height: 28),
+                Text(t.phoneGateTitle, style: serif(32)),
+                const SizedBox(height: 12),
+                note(t.phoneGateBody),
+                const SizedBox(height: 22),
+                PhoneAuthPanel(onSignedIn: _afterPhoneSignedIn),
+              ]))));
+
   @override
   Widget build(BuildContext context) {
+    if (firebaseAvailable && !isPhoneSignedIn) return phoneGate();
     final labels = [t.tabToday, t.tabChart, t.tabAsk, t.tabMatch, t.tabLedger];
     const icons = [
       Icons.wb_sunny_outlined,
@@ -1906,5 +1962,111 @@ class _CelestialHomeState extends State<CelestialHome> {
                                                     : Colors.transparent),
                                           ]))))))))),
     );
+  }
+}
+
+class PhoneAuthPanel extends StatefulWidget {
+  const PhoneAuthPanel({super.key, required this.onSignedIn});
+  final Future<void> Function() onSignedIn;
+
+  @override
+  State<PhoneAuthPanel> createState() => _PhoneAuthPanelState();
+}
+
+class _PhoneAuthPanelState extends State<PhoneAuthPanel> {
+  final phoneController = TextEditingController();
+  final otpController = TextEditingController();
+  String verificationId = '';
+  String? errorText;
+  bool busy = false;
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    otpController.dispose();
+    super.dispose();
+  }
+
+  Future<void> sendCode() async {
+    setState(() {
+      busy = true;
+      errorText = null;
+    });
+    final result = await startPhoneOtp(phoneController.text);
+    if (!mounted) return;
+    if (result.signedIn) {
+      setState(() => busy = false);
+      await widget.onSignedIn();
+      return;
+    }
+    setState(() {
+      busy = false;
+      verificationId = result.verificationId ?? '';
+      errorText = result.verificationId == null
+          ? (result.errorMessage ??
+              AppLocalizations.of(context)!.phoneSignInFailed)
+          : null;
+    });
+  }
+
+  Future<void> verifyCode() async {
+    setState(() {
+      busy = true;
+      errorText = null;
+    });
+    final result = await confirmPhoneOtp(
+        verificationId: verificationId, smsCode: otpController.text);
+    if (!mounted) return;
+    if (!result.signedIn) {
+      setState(() {
+        busy = false;
+        errorText = result.errorMessage ??
+            AppLocalizations.of(context)!.phoneSignInFailed;
+      });
+      return;
+    }
+    setState(() => busy = false);
+    await widget.onSignedIn();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(t.phoneSignInHint,
+          style: const TextStyle(color: muted, fontSize: 12, height: 1.6)),
+      const SizedBox(height: 14),
+      TextField(
+          key: const Key('phone_number'),
+          controller: phoneController,
+          keyboardType: TextInputType.phone,
+          decoration: InputDecoration(
+              labelText: t.phoneNumberLabel, hintText: t.phoneNumberHint)),
+      if (verificationId.isNotEmpty) ...[
+        const SizedBox(height: 12),
+        TextField(
+            key: const Key('otp_code'),
+            controller: otpController,
+            keyboardType: TextInputType.number,
+            decoration:
+                InputDecoration(labelText: t.otpLabel, hintText: t.otpHint)),
+      ],
+      if (errorText != null) ...[
+        const SizedBox(height: 12),
+        Text(errorText!,
+            style: const TextStyle(color: Color(0xFFE6A2A7), height: 1.5)),
+      ],
+      const SizedBox(height: 16),
+      SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+              key: const Key('phone_otp_action'),
+              onPressed: busy
+                  ? null
+                  : (verificationId.isEmpty ? sendCode : verifyCode),
+              child: Text(verificationId.isEmpty
+                  ? t.sendOtpAction
+                  : t.verifyOtpAction))),
+    ]);
   }
 }
