@@ -87,7 +87,14 @@ def test_partnership_reading_uses_both_charts_and_both_dashas() -> None:
     sections = report["sections"]
     assert isinstance(sections, list) and len(sections) == 6
     titles = [str(section["title"]) for section in sections]  # type: ignore[index]
-    assert titles == ["स्वभाव", "नाते", "विवाहाची सध्याची स्थिती", "ताण आणि काय करावे", "सध्याची ग्रहगती", "दशा आणि आचरण"]
+    assert titles == [
+        "स्वभाव",
+        "नाते",
+        "विवाहाची सध्याची स्थिती",
+        "ताण आणि काय करावे",
+        "सध्याची ग्रहगती",
+        "दशा आणि आचरण",
+    ]
     joined = " ".join(str(section["text"]) for section in sections)  # type: ignore[index]
     assert "Asha" in joined and "Nutan" in joined
     assert c1.lagna_sign_name in joined and c2.lagna_sign_name in joined

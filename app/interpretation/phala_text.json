@@ -1,0 +1,618 @@
+{
+  "temper": {
+    "Aries": [
+      "quick action, and impatience when a plan stalls",
+      "शीघ्र कर्म, और अटकी योजना पर अधीरता",
+      "त्वरित कृती, आणि अडकलेल्या योजनेवर अधीरता"
+    ],
+    "Taurus": [
+      "a steady pace, with care for comfort and resources",
+      "स्थिर गति, और सुख तथा साधनों की चिंता",
+      "स्थिर गती, आणि सुख व साधनांची काळजी"
+    ],
+    "Gemini": [
+      "learning through talk, and a change of approach when facts change",
+      "बातचीत से सीखना, और नए तथ्य पर तरीका बदलना",
+      "बोलून शिकणे, आणि नव्या तपशीलावर मार्ग बदलणे"
+    ],
+    "Cancer": [
+      "protection of home and mood, and a long memory for small slights",
+      "घर और मन की रक्षा, और छोटी ठेस की लंबी स्मृति",
+      "घर आणि मनाचे रक्षण, आणि छोट्या ठेसेची दीर्घ स्मृती"
+    ],
+    "Leo": [
+      "a visible role, and a need for respect inside the household",
+      "दिखाई देने वाली भूमिका, और घर में सम्मान की आवश्यकता",
+      "दिसणारी भूमिका, आणि घरात मानाची गरज"
+    ],
+    "Virgo": [
+      "attention to detail, and a wish that practical work be done properly",
+      "बारीकी पर ध्यान, और व्यावहारिक काम के ठीक होने की चाह",
+      "बारकाव्याकडे लक्ष, आणि व्यावहारिक काम नीट व्हावे ही इच्छा"
+    ],
+    "Libra": [
+      "a fair exchange, and discomfort with an unresolved argument",
+      "न्यायपूर्ण आदान-प्रदान, और अधूरे विवाद से असहजता",
+      "न्याय्य देवाणघेवाण, आणि अपूर्ण वादाबद्दल अस्वस्थता"
+    ],
+    "Scorpio": [
+      "a private inner life, and a full commitment after trust",
+      "निजी भीतरी जीवन, और विश्वास के बाद पूरा वचन",
+      "खाजगी आतील जीवन, आणि विश्वासानंतर पूर्ण वचन"
+    ],
+    "Sagittarius": [
+      "room for belief, study, and movement",
+      "विश्वास, अध्ययन और गति के लिए जगह",
+      "श्रद्धा, अभ्यास आणि हालचालीसाठी जागा"
+    ],
+    "Capricorn": [
+      "trust measured by duty kept over time",
+      "समय के साथ निभाए कर्तव्य से मापा गया विश्वास",
+      "काळानुसार निभावलेल्या कर्तव्यावरून मोजलेला विश्वास"
+    ],
+    "Aquarius": [
+      "loyalty to a principle, and a need for some independence",
+      "एक सिद्धांत के प्रति निष्ठा, और कुछ स्वतंत्रता की आवश्यकता",
+      "एका तत्त्वाशी निष्ठा, आणि थोड्या स्वतंत्रतेची गरज"
+    ],
+    "Pisces": [
+      "absorption of the other mood, and a need for a quiet edge",
+      "दूसरे के मन को ग्रहण करना, और एक शांत किनारे की आवश्यकता",
+      "दुसऱ्याच्या मनःस्थितीचा स्वीकार, आणि एका शांत किनाऱ्याची गरज"
+    ]
+  },
+  "behavior": {
+    "Sun": [
+      "carry a visible duty, and do not demand praise for it",
+      "दिखने वाला कर्तव्य निभाएँ, और उसके लिए प्रशंसा की माँग न करें",
+      "दिसणारे कर्तव्य निभावा, आणि त्याबद्दल स्तुतीची मागणी करू नका"
+    ],
+    "Moon": [
+      "keep the household rhythm steady, and postpone a hard talk when upset",
+      "घर की लय स्थिर रखें, और क्षुब्ध होने पर कठिन बात टालें",
+      "घराची लय स्थिर ठेवा, आणि अस्वस्थ असताना कठीण चर्चा पुढे ढकला"
+    ],
+    "Mars": [
+      "pause before answering in anger, and put the heat into a shared task",
+      "क्रोध में उत्तर देने से पहले रुकें, और ताप को साझे काम में लगाएँ",
+      "रागात उत्तर देण्यापूर्वी थांबा, आणि ताप सामायिक कामात लावा"
+    ],
+    "Mercury": [
+      "say the practical point plainly, and do not win by cleverness",
+      "व्यावहारिक बात साफ कहें, और चतुराई से जीतने की कोशिश न करें",
+      "व्यावहारिक मुद्दा स्पष्ट सांगा, आणि हुशारीने जिंकण्याचा प्रयत्न करू नका"
+    ],
+    "Jupiter": [
+      "guide without lecturing, and keep a money promise small enough to keep",
+      "उपदेश के बिना मार्ग दिखाएँ, और धन का वचन इतना छोटा रखें कि निभ जाए",
+      "उपदेशाशिवाय मार्ग दाखवा, आणि धनाचे वचन इतके छोटे ठेवा की ते निभावता येईल"
+    ],
+    "Venus": [
+      "protect courtesy and comfort, and do not hide a conflict under sweetness",
+      "शिष्टता और सुख की रक्षा करें, और मधुरता के नीचे संघर्ष न छिपाएँ",
+      "सौजन्य आणि सुखाचे रक्षण करा, आणि गोडपणाखाली संघर्ष लपवू नका"
+    ],
+    "Saturn": [
+      "accept a slower pace, and finish one real duty each week",
+      "धीमी गति स्वीकारें, और हर सप्ताह एक वास्तविक कर्तव्य पूरा करें",
+      "सावकाश गती स्वीकारा, आणि प्रत्येक आठवड्यात एक खरे कर्तव्य पूर्ण करा"
+    ],
+    "Rahu": [
+      "tell the partner before chasing an unusual plan",
+      "असामान्य योजना से पहले साथी को बताएँ",
+      "असाधारण योजना आधी जोडीदाराला सांगा"
+    ],
+    "Ketu": [
+      "stay present for ordinary household duties instead of withdrawing",
+      "हटने के बजाय घर के साधारण कर्तव्य में उपस्थित रहें",
+      "माघार घेण्याऐवजी घरातील साध्या कर्तव्यात उपस्थित राहा"
+    ]
+  },
+  "matter": {
+    "1": [
+      "the body, personal direction, and how people meet you",
+      "शरीर, व्यक्तिगत दिशा और लोगों के सामने आपका ठहराव",
+      "शरीर, वैयक्तिक दिशा आणि लोकांसमोर तुमचे ठराविक रूप"
+    ],
+    "2": [
+      "savings, family resources, and speech",
+      "बचत, पारिवारिक साधन और वाणी",
+      "बचत, कौटुंबिक साधने आणि वाणी"
+    ],
+    "3": [
+      "effort, skill, siblings, and short journeys",
+      "परिश्रम, कौशल, सहोदर और छोटी यात्रा",
+      "परिश्रम, कौशल्य, भावंडे आणि छोट्या प्रवास"
+    ],
+    "4": [
+      "home, the mother, and emotional rest",
+      "घर, माता और मानसिक विश्राम",
+      "घर, माता आणि मानसिक विश्रांती"
+    ],
+    "5": [
+      "children, study, affection, and creative work",
+      "संतान, अध्ययन, स्नेह और रचनात्मक काम",
+      "अपत्य, अभ्यास, स्नेह आणि निर्मितीचे काम"
+    ],
+    "6": [
+      "service, competition, debts, and daily obstacles",
+      "सेवा, प्रतिस्पर्धा, ऋण और रोज के व्यवधान",
+      "सेवा, स्पर्धा, कर्ज आणि रोजचे अडथळे"
+    ],
+    "7": [
+      "marriage, partnership, and one-to-one agreements",
+      "विवाह, साझेदारी और आमने-सामने के समझौते",
+      "विवाह, भागीदारी आणि समोरासमोरचे करार"
+    ],
+    "8": [
+      "shared resources and changes that arrive without much warning",
+      "साझे साधन और वे परिवर्तन जो कम चेतावनी के साथ आते हैं",
+      "सामायिक साधने आणि कमी सूचना देऊन येणारे बदल"
+    ],
+    "9": [
+      "teachers, long journeys, and fortune",
+      "गुरु, लंबी यात्रा और भाग्य",
+      "गुरु, लांब प्रवास आणि भाग्य"
+    ],
+    "10": [
+      "career, public duty, and reputation",
+      "करियर, सार्वजनिक कर्तव्य और प्रतिष्ठा",
+      "करिअर, सार्वजनिक कर्तव्य आणि प्रतिष्ठा"
+    ],
+    "11": [
+      "income, gains, and the circle that supports you",
+      "आय, लाभ और साथ देने वाला वृत्त",
+      "उत्पन्न, लाभ आणि साथ देणारे वर्तुळ"
+    ],
+    "12": [
+      "expenses, rest, and time away from home",
+      "खर्च, विश्राम और घर से दूर का समय",
+      "खर्च, विश्रांती आणि घरापासून दूरचा काळ"
+    ]
+  },
+  "lines": {
+    "where": [
+      "{planet} is in {sign}, house {house}, nakshatra {nak}, pada {pada}, with Navamsa (D9) in {d9}",
+      "{planet} {sign} में है, भाव {house}, नक्षत्र {nak}, चरण {pada}, और नवांश (D9) {d9} में",
+      "{planet} {sign} मध्ये आहे, भाव {house}, नक्षत्र {nak}, चरण {pada}, आणि नवांश (D9) {d9} मध्ये"
+    ],
+    "retro_yes": [
+      ". It is retrograde, so results ripen after review and patience.",
+      "। यह वक्री है, इसलिए फल पुनरावलोकन और धैर्य के बाद पकता है।",
+      ". तो वक्री आहे, म्हणून फळ पुनरावलोकन आणि संयमानंतर पक्व होते."
+    ],
+    "retro_no": [".", "।", "."],
+    "tone_pressure": [
+      "Be cautious here. Take protective measures before a large step, and do not rush. This configuration is not favorable for haste.",
+      "यहाँ सावधानी रखें। बड़े कदम से पहले रक्षात्मक उपाय करें और जल्दबाजी न करें। यह ग्रह स्थिति जल्दबाजी के लिए अनुकूल नहीं है।",
+      "येथे सावध राहा. मोठ्या पावलापूर्वी संरक्षणात्मक उपाय करा आणि घाई करू नका. ही ग्रहस्थिती घाईसाठी अनुकूल नाही."
+    ],
+    "tone_support": [
+      "This configuration is supportive. Use it for the matters named here, and still check the practical details before you commit.",
+      "यह ग्रह स्थिति सहायक है। इसे यहाँ बताए विषयों के लिए उपयोग करें, और वचन से पहले व्यावहारिक विवरण जाँच लें।",
+      "ही ग्रहस्थिती सहाय्यक आहे. येथे सांगितलेल्या विषयांसाठी तिचा वापर करा, आणि वचन देण्यापूर्वी व्यावहारिक तपशील तपासा."
+    ],
+    "jup_easy": [
+      "Jupiter's transit is in a classically supportive house from the birth Moon.",
+      "बृहस्पति का गोचर जन्म चंद्र से शास्त्रीय रूप से सहायक भाव में है।",
+      "गुरूचे गोचर जन्म चंद्रापासून शास्त्रीय सहाय्यक भावात आहे."
+    ],
+    "jup_hard": [
+      "Jupiter's transit is not in a classically supportive house from the birth Moon, so growth asks for patience.",
+      "बृहस्पति का गोचर जन्म चंद्र से शास्त्रीय रूप से सहायक भाव में नहीं है, इसलिए वृद्धि के लिए धैर्य चाहिए।",
+      "गुरूचे गोचर जन्म चंद्रापासून शास्त्रीय सहाय्यक भावात नाही, म्हणून वाढीसाठी धीर हवा."
+    ],
+    "sat_easy": [
+      "Saturn's transit is in a house where steady labour is rewarded.",
+      "शनि का गोचर उस भाव में है जहाँ स्थिर परिश्रम फल देता है।",
+      "शनीचे गोचर त्या भावात आहे जिथे स्थिर परिश्रम फळ देते."
+    ],
+    "sat_hard": [
+      "Saturn's transit asks for slower commitments and cleaner routines.",
+      "शनि का गोचर धीमे वचन और साफ दिनचर्या माँगता है।",
+      "शनीचे गोचर सावकाश वचन आणि स्वच्छ दिनक्रम मागते."
+    ],
+    "observance": [
+      "For {planet} in house {house}, the fitting observance is {deity} on {weekday}: {practice}. This supports {matter}. The practice asks for no purchase, and it does not force a result.",
+      "भाव {house} में {planet} के लिए उपयुक्त उपासना {weekday} को {deity} की है: {practice}। यह {matter} के लिए सहायक है। इस अभ्यास में कोई खरीद नहीं है, और यह फल को बाध्य नहीं करता।",
+      "भाव {house} मधील {planet} साठी योग्य उपासना {weekday} रोजी {deity} ची आहे: {practice}. हे {matter} साठी सहाय्यक आहे. या अभ्यासात खरेदी नाही, आणि तो फळाला बंधनकारक करत नाही."
+    ],
+    "chart_anchor": [
+      "Lagna is {lagna}. Birth Moon is {moon_sign}, nakshatra {moon_nak}, pada {moon_pada} (Navamsa {moon_d9}).",
+      "लग्न {lagna} है। जन्म चंद्र {moon_sign} है, नक्षत्र {moon_nak}, चरण {moon_pada} (नवांश {moon_d9})।",
+      "लग्न {lagna} आहे. जन्म चंद्र {moon_sign} आहे, नक्षत्र {moon_nak}, चरण {moon_pada} (नवांश {moon_d9})."
+    ],
+    "period_full": [
+      "The active Vimshottari period is {md} Mahadasha, {ad} Antardasha, and {pd} Pratyantar, running through {ad_end}.",
+      "सक्रिय विंशोत्तरी काल {md} महादशा, {ad} अंतर्दशा और {pd} प्रत्यंतर है, {ad_end} तक।",
+      "सक्रिय विंशोत्तरी काळ {md} महादशा, {ad} अंतरदशा आणि {pd} प्रत्यंतर आहे, {ad_end} पर्यंत."
+    ],
+    "jup_sat_transit": [
+      "Jupiter transits {jup_sign}, house {jup_h} from the birth Moon. Saturn transits {sat_sign}, house {sat_h} from that Moon.",
+      "बृहस्पति {jup_sign} से गोचर कर रहा है, जन्म चंद्र से भाव {jup_h}। शनि {sat_sign} में है, उसी चंद्र से भाव {sat_h}।",
+      "गुरू {jup_sign} मधून गोचर करतो, जन्म चंद्रापासून भाव {jup_h}. शनी {sat_sign} मध्ये आहे, त्याच चंद्रापासून भाव {sat_h}."
+    ],
+    "career_open": [
+      "Career. The 10th house falls in {sign} and its lord is {lord}.",
+      "करियर। दशम भाव {sign} में पड़ता है और उसका स्वामी {lord} है।",
+      "करिअर. दशम भाव {sign} मध्ये येतो आणि त्याचा स्वामी {lord} आहे."
+    ],
+    "sun_role": [
+      "The Sun carries authority, visibility, and public role.",
+      "सूर्य अधिकार, दृश्यमानता और सार्वजनिक भूमिका का कारक है।",
+      "सूर्य अधिकार, दृश्यमानता आणि सार्वजनिक भूमिकेचा कारक आहे."
+    ],
+    "lord_matter": [
+      "Because {lord} sits in house {house}, career growth moves through {matter}.",
+      "क्योंकि {lord} भाव {house} में है, करियर की प्रगति {matter} से होकर चलती है।",
+      "कारण {lord} भाव {house} मध्ये आहे, करिअरची प्रगती {matter} मधून जाते."
+    ],
+    "rel_open": [
+      "Relationships, marriage, and children. The 7th house falls in {seventh} and its lord is {lord}.",
+      "संबंध, विवाह और संतान। सप्तम भाव {seventh} में पड़ता है और उसका स्वामी {lord} है।",
+      "नाते, विवाह आणि अपत्य. सप्तम भाव {seventh} मध्ये येतो आणि त्याचा स्वामी {lord} आहे."
+    ],
+    "venus_role": [
+      "Venus is the karaka of marriage, warmth, and mutual agreement.",
+      "शुक्र विवाह, स्नेह और परस्पर समझौते का कारक है।",
+      "शुक्र विवाह, स्नेह आणि परस्पर कराराचा कारक आहे."
+    ],
+    "venus_same_lord": [
+      "Venus both rules the 7th house and acts as marriage karaka, giving Navamsa {d9} direct weight in partnership.",
+      "शुक्र सप्तम भाव का स्वामी भी है और विवाह कारक भी, इसलिए साझेदारी में नवांश {d9} का सीधा महत्व है।",
+      "शुक्र सप्तम भावाचा स्वामीही आहे आणि विवाह कारकही, म्हणून भागीदारीत नवांश {d9} ला थेट महत्त्व आहे."
+    ],
+    "fifth_open": [
+      "The 5th house, for children, study, and affection, falls in {fifth} under {fifth_lord}.",
+      "संतान, अध्ययन और स्नेह का पंचम भाव {fifth} में {fifth_lord} के अधीन है।",
+      "अपत्य, अभ्यास आणि स्नेहाचा पंचम भाव {fifth} मध्ये {fifth_lord} खाली येतो."
+    ],
+    "money_open": [
+      "Money. The 2nd house of savings and family wealth falls in {second} under {second_lord}, while the 11th house of income and gains falls in {eleventh} under {eleventh_lord}.",
+      "धन। बचत और कुल-धन का द्वितीय भाव {second} में {second_lord} के अधीन है, और आय तथा लाभ का एकादश भाव {eleventh} में {eleventh_lord} के अधीन है।",
+      "धन. बचत आणि कौटुंबिक धनाचा द्वितीय भाव {second} मध्ये {second_lord} खाली आहे, आणि उत्पन्न व लाभाचा एकादश भाव {eleventh} मध्ये {eleventh_lord} खाली आहे."
+    ],
+    "natal_jup": [
+      "Natal Jupiter is the karaka of financial increase and wisdom.",
+      "जन्म कुंडली का बृहस्पति धन-वृद्धि और विवेक का कारक है।",
+      "जन्म कुंडलीतील गुरू धनवाढ आणि विवेकाचा कारक आहे."
+    ],
+    "transit_jup_money": [
+      "By transit, Jupiter moves through {jup_sign}, house {jup_h} from the birth Moon, touching {matter}.",
+      "गोचर में बृहस्पति {jup_sign} में है, जन्म चंद्र से भाव {jup_h}, जो {matter} को सक्रिय करता है।",
+      "गोचरात गुरू {jup_sign} मध्ये आहे, जन्म चंद्रापासून भाव {jup_h}, जो {matter} सक्रिय करतो."
+    ],
+    "home_open": [
+      "Home and family. The 4th house of home, property, and inner peace falls in {sign} and its lord is {lord}.",
+      "घर और परिवार। घर, संपत्ति और मानसिक शांति का चतुर्थ भाव {sign} में है और उसका स्वामी {lord} है।",
+      "घर आणि कुटुंब. घर, मालमत्ता आणि मानसिक शांतीचा चतुर्थ भाव {sign} मध्ये आहे आणि त्याचा स्वामी {lord} आहे."
+    ],
+    "moon_same_fourth": [
+      "Moon rules the 4th house and is also the emotional karaka, linking domestic peace directly to {matter} and Navamsa {d9}.",
+      "चंद्र चतुर्थ भाव का स्वामी भी है और मन का कारक भी, इसलिए घर की शांति सीधे {matter} और नवांश {d9} से जुड़ती है।",
+      "चंद्र चतुर्थ भावाचा स्वामीही आहे आणि मनाचा कारकही, म्हणून घरातील शांती थेट {matter} आणि नवांश {d9} शी जोडली जाते."
+    ],
+    "sat_home": [
+      "Saturn by transit moves through {sat_sign}, house {sat_h} from the birth Moon ({matter}), setting the practical pace at home.",
+      "शनि गोचर में {sat_sign} में है, जन्म चंद्र से भाव {sat_h} ({matter}), जो घर की व्यावहारिक गति तय करता है।",
+      "शनी गोचरात {sat_sign} मध्ये आहे, जन्म चंद्रापासून भाव {sat_h} ({matter}), जो घराची व्यावहारिक गती ठरवतो."
+    ],
+    "month_line": [
+      "{month}. The {md}-{ad} period continues, with Jupiter in {jup} and Saturn in {sat}. Give this month's working weight to {focus}.",
+      "{month}। {md}-{ad} काल जारी है, बृहस्पति {jup} में और शनि {sat} में। इस माह का कार्यभार {focus} पर रखें।",
+      "{month}. {md}-{ad} काळ सुरू आहे, गुरू {jup} मध्ये आणि शनी {sat} मध्ये. या महिन्याचा कार्यभार {focus} वर ठेवा."
+    ],
+    "year_close": [
+      "The quarters below follow this same birth chart. Each one uses the dasha and the Jupiter and Saturn positions of that quarter for career, partnership, children, money, and home.",
+      "नीचे की तिमाहियाँ इसी जन्म कुंडली से बनती हैं। हर तिमाही उस काल की दशा और बृहस्पति-शनि की स्थिति से करियर, साझेदारी, संतान, धन और घर बताती है।",
+      "खालील तिमाही याच जन्म कुंडलीतून येतात. प्रत्येक तिमाही त्या काळातील दशा आणि गुरू-शनीच्या स्थितीतून करिअर, भागीदारी, अपत्य, धन आणि घर सांगते."
+    ],
+    "daily_open": [
+      "For {who} ({lagna} Lagna; birth Moon in {moon_sign}, nakshatra {moon_nak}, pada {moon_pada}), today ({date}, {vara}) is shaped by {tithi} and {yoga} Yoga.",
+      "{who} ({lagna} लग्न; जन्म चंद्र {moon_sign}, नक्षत्र {moon_nak}, चरण {moon_pada}) के लिए आज ({date}, {vara}) {tithi} और {yoga} योग से आकार लेता है।",
+      "{who} ({lagna} लग्न; जन्म चंद्र {moon_sign}, नक्षत्र {moon_nak}, चरण {moon_pada}) साठी आज ({date}, {vara}) {tithi} आणि {yoga} योगाने घडतो."
+    ],
+    "daily_moon": [
+      "Today the Moon transits {t_sign} in nakshatra {t_nak}: house {m_house} from your birth Moon ({m_matter}) and house {l_house} from your {lagna} Lagna ({l_matter}).",
+      "आज चंद्र {t_sign} में नक्षत्र {t_nak} से गोचर कर रहा है: आपके जन्म चंद्र से भाव {m_house} ({m_matter}) और आपके {lagna} लग्न से भाव {l_house} ({l_matter})।",
+      "आज चंद्र {t_sign} मध्ये नक्षत्र {t_nak} मधून गोचर करत आहे: तुमच्या जन्म चंद्रापासून भाव {m_house} ({m_matter}) आणि तुमच्या {lagna} लग्नापासून भाव {l_house} ({l_matter})."
+    ],
+    "daily_vara": [
+      "Today is ruled by {vara_lord}. In your kundali, {vara_where} Because it occupies house {vara_h}, today's outer events pull focus toward {vara_matter}.",
+      "आज का वार-स्वामी {vara_lord} है। आपकी कुंडली में {vara_where} भाव {vara_h} में होने से आज के बाहरी प्रसंग {vara_matter} की ओर ध्यान खींचते हैं।",
+      "आजचा वार-स्वामी {vara_lord} आहे. तुमच्या कुंडलीत {vara_where} भाव {vara_h} मध्ये असल्यामुळे आजचे बाह्य प्रसंग {vara_matter} कडे लक्ष वळवतात."
+    ],
+    "daily_pro": [
+      "Parashari Gochara synthesis for {lagna} Lagna, Janma Rashi {moon_sign} ({moon_nak} Pada {moon_pada}): Transit Moon in {t_sign} ({t_nak}, H{m_house} from Moon / H{l_house} from Lagna); {vara} lord {vara_lord} in natal H{vara_h} ({vara_sign}, D9 {vara_d9}); {tithi}, {yoga} Yoga; {dasha_tag}; Transit Jupiter in {jup_sign} (H{jup_h} from Moon), Saturn in {sat_sign} (H{sat_h} from Moon).",
+      "{lagna} लग्न, जन्म राशि {moon_sign} ({moon_nak} चरण {moon_pada}) हेतु पाराशरी गोचर संश्लेषण: गोचर चंद्र {t_sign} ({t_nak}, चंद्र से भाव {m_house} / लग्न से भाव {l_house}); {vara} स्वामी {vara_lord} जन्म भाव {vara_h} ({vara_sign}, नवांश {vara_d9}) में; {tithi}, {yoga} योग; {dasha_tag}; गोचर बृहस्पति {jup_sign} (चंद्र से भाव {jup_h}), शनि {sat_sign} (चंद्र से भाव {sat_h})।",
+      "{lagna} लग्न, जन्म राशी {moon_sign} ({moon_nak} चरण {moon_pada}) साठी पाराशरी गोचर संकलन: गोचर चंद्र {t_sign} ({t_nak}, चंद्रापासून भाव {m_house} / लग्नापासून भाव {l_house}); {vara} स्वामी {vara_lord} जन्म भाव {vara_h} ({vara_sign}, नवांश {vara_d9}) मध्ये; {tithi}, {yoga} योग; {dasha_tag}; गोचर गुरू {jup_sign} (चंद्रापासून भाव {jup_h}), शनी {sat_sign} (चंद्रापासून भाव {sat_h})."
+    ],
+    "area_pro": [
+      "{area_label} Parashari analysis ({lagna} Lagna, {moon_sign} Moon in {moon_nak} Pada {moon_pada}): Primary bhava in {sign} ruled by {lord} in H{lord_h} ({lord_sign}, {lord_nak} Pada {lord_pada}, D9 {lord_d9}); Karaka {karaka} in H{karaka_h} ({karaka_sign}, D9 {karaka_d9}); Active Vimshottari {md}-{ad}-{pd} (until {ad_end}); Gochara Jupiter in {jup_sign} (H{jup_h} from Moon), Saturn in {sat_sign} (H{sat_h} from Moon).",
+      "{area_label} पाराशरी विश्लेषण ({lagna} लग्न, {moon_sign} चंद्र, {moon_nak} चरण {moon_pada}): मुख्य भाव {sign}, स्वामी {lord} भाव {lord_h} ({lord_sign}, {lord_nak} चरण {lord_pada}, नवांश {lord_d9}) में; कारक {karaka} भाव {karaka_h} ({karaka_sign}, नवांश {karaka_d9}) में; सक्रिय विंशोत्तरी {md}-{ad}-{pd} ({ad_end} तक); गोचर बृहस्पति {jup_sign} (चंद्र से भाव {jup_h}), शनि {sat_sign} (चंद्र से भाव {sat_h})।",
+      "{area_label} पाराशरी विश्लेषण ({lagna} लग्न, {moon_sign} चंद्र, {moon_nak} चरण {moon_pada}): मुख्य भाव {sign}, स्वामी {lord} भाव {lord_h} ({lord_sign}, {lord_nak} चरण {lord_pada}, नवांश {lord_d9}) मध्ये; कारक {karaka} भाव {karaka_h} ({karaka_sign}, नवांश {karaka_d9}) मध्ये; सक्रिय विंशोत्तरी {md}-{ad}-{pd} ({ad_end} पर्यंत); गोचर गुरू {jup_sign} (चंद्रापासून भाव {jup_h}), शनी {sat_sign} (चंद्रापासून भाव {sat_h})."
+    ],
+    "daily_rel": [
+      "Today for relationships ({date}): Transit Moon in {t_sign} ({t_nak}) activates house {m_house} from your {moon_sign} Moon and house {l_house} from your {lagna} Lagna ({l_matter}), during {tithi}. Your 7th house in {seventh} is ruled by {lord} (house {lord_h}, Navamsa {lord_d9}), while Venus sits in {venus_sign} (house {venus_h}, Navamsa {venus_d9}) under {md}-{ad}-{pd} Dasha.",
+      "आज संबंधों के लिए ({date}): गोचर चंद्र {t_sign} ({t_nak}) आपके {moon_sign} चंद्र से भाव {m_house} और {lagna} लग्न से भाव {l_house} ({l_matter}) को {tithi} में सक्रिय करता है। सप्तम भाव {seventh} का स्वामी {lord} (भाव {lord_h}, नवांश {lord_d9}) है, और शुक्र {venus_sign} (भाव {venus_h}, नवांश {venus_d9}) में {md}-{ad}-{pd} दशा के अंतर्गत है।",
+      "आज नातेसंबंधांसाठी ({date}): गोचर चंद्र {t_sign} ({t_nak}) तुमच्या {moon_sign} चंद्रापासून भाव {m_house} आणि {lagna} लग्नापासून भाव {l_house} ({l_matter}) ला {tithi} मध्ये सक्रिय करतो. सप्तम भाव {seventh} चा स्वामी {lord} (भाव {lord_h}, नवांश {lord_d9}) आहे, आणि शुक्र {venus_sign} (भाव {venus_h}, नवांश {venus_d9}) मध्ये {md}-{ad}-{pd} दशेखाली आहे."
+    ],
+    "daily_work": [
+      "Today for work and decisions ({date}, {vara}): Weekday lord {vara_lord} sits in house {vara_h} ({vara_sign}, Navamsa {vara_d9}), pulling today's duties toward {vara_matter}. Your 10th house in {tenth} is ruled by {lord} (house {lord_h}, {lord_nak}, Navamsa {lord_d9}), with Sun in {sun_sign} (house {sun_h}) and Transit Moon in house {l_house} from Lagna during {md}-{ad}-{pd}.",
+      "आज कार्य और निर्णयों के लिए ({date}, {vara}): वार-स्वामी {vara_lord} भाव {vara_h} ({vara_sign}, नवांश {vara_d9}) में बैठकर आज के दायित्व {vara_matter} से जोड़ता है। आपके दशम भाव {tenth} का स्वामी {lord} (भाव {lord_h}, {lord_nak}, नवांश {lord_d9}) है, सूर्य {sun_sign} (भाव {sun_h}) में है और गोचर चंद्र {md}-{ad}-{pd} के बीच लग्न से भाव {l_house} में है।",
+      "आज काम आणि निर्णयांसाठी ({date}, {vara}): वार-स्वामी {vara_lord} भाव {vara_h} ({vara_sign}, नवांश {vara_d9}) मध्ये असून आजची कर्तव्ये {vara_matter} शी जोडतो. तुमच्या दशम भाव {tenth} चा स्वामी {lord} (भाव {lord_h}, {lord_nak}, नवांश {lord_d9}) आहे, सूर्य {sun_sign} (भाव {sun_h}) मध्ये आहे आणि गोचर चंद्र {md}-{ad}-{pd} दरम्यान लग्नापासून भाव {l_house} मध्ये आहे."
+    ],
+    "daily_money": [
+      "Today for money ({date}): Transit Moon in {t_sign} activates house {m_house} from your birth Moon ({m_matter}) and house {l_house} from Lagna. Your 2nd house ({second}) is ruled by {second_lord} in house {second_h} (Navamsa {second_d9}), and your 11th house ({eleventh}) is ruled by {eleventh_lord} in house {eleventh_h}, while Jupiter transits {jup_sign} (house {jup_h} from Moon).",
+      "आज धन और खर्च के लिए ({date}): गोचर चंद्र {t_sign} में जन्म चंद्र से भाव {m_house} ({m_matter}) और लग्न से भाव {l_house} को सक्रिय करता है। आपके द्वितीय भाव ({second}) का स्वामी {second_lord} भाव {second_h} (नवांश {second_d9}) में है, और एकादश भाव ({eleventh}) का स्वामी {eleventh_lord} भाव {eleventh_h} में है, जबकि बृहस्पति {jup_sign} (चंद्र से भाव {jup_h}) में गोचर कर रहा है।",
+      "आज धन आणि खर्चासाठी ({date}): गोचर चंद्र {t_sign} मध्ये जन्म चंद्रापासून भाव {m_house} ({m_matter}) आणि लग्नापासून भाव {l_house} सक्रिय करतो. तुमच्या द्वितीय भावाचा ({second}) स्वामी {second_lord} भाव {second_h} (नवांश {second_d9}) मध्ये आहे, आणि एकादश भावाचा ({eleventh}) स्वामी {eleventh_lord} भाव {eleventh_h} मध्ये आहे, तर गुरू {jup_sign} (चंद्रापासून भाव {jup_h}) मध्ये गोचर करतो."
+    ],
+    "daily_home": [
+      "Today for home and family ({date}): Your 4th house in {fourth} is ruled by {lord} in house {lord_h} ({lord_sign}, Navamsa {lord_d9}), while natal Moon sits in {moon_sign} (house {moon_h}) and Transit Moon moves through {t_sign} ({t_nak}). Saturn transits {sat_sign} (house {sat_h} from Moon). Use {abhijit} for constructive domestic starts and avoid hasty starts during Rahu Kaal ({rahu}).",
+      "आज घर और परिवार के लिए ({date}): आपके चतुर्थ भाव {fourth} का स्वामी {lord} भाव {lord_h} ({lord_sign}, नवांश {lord_d9}) में है, जन्म चंद्र {moon_sign} (भाव {moon_h}) में है और गोचर चंद्र {t_sign} ({t_nak}) में चल रहा है। शनि {sat_sign} (चंद्र से भाव {sat_h}) में है। घरेलू शुभ आरंभ के लिए अभिजित ({abhijit}) का उपयोग करें और राहुकाल ({rahu}) में जल्दबाजी से बचें।",
+      "आज घर आणि कुटुंबासाठी ({date}): तुमच्या चतुर्थ भाव {fourth} चा स्वामी {lord} भाव {lord_h} ({lord_sign}, नवांश {lord_d9}) मध्ये आहे, जन्म चंद्र {moon_sign} (भाव {moon_h}) मध्ये आहे आणि गोचर चंद्र {t_sign} ({t_nak}) मधून चालला आहे. शनी {sat_sign} (चंद्रापासून भाव {sat_h}) मध्ये आहे. घरातील चांगल्या सुरुवातीसाठी अभिजित ({abhijit}) वापरा आणि राहुकाळात ({rahu}) घाई टाळा."
+    ],
+    "transit_quarter": [
+      "Jupiter in {jup_sign}, house {jup_h} from the birth Moon, and Saturn in {sat_sign}, house {sat_h} from the birth Moon, colour this quarter.",
+      "बृहस्पति {jup_sign} में, जन्म चंद्र से भाव {jup_h}, और शनि {sat_sign} में, जन्म चंद्र से भाव {sat_h}, इस तिमाही को रंग देते हैं।",
+      "गुरू {jup_sign} मध्ये, जन्म चंद्रापासून भाव {jup_h}, आणि शनी {sat_sign} मध्ये, जन्म चंद्रापासून भाव {sat_h}, या तिमाहीला रंग देतात."
+    ],
+    "sade_sati_note": [
+      "Sade Sati is active from the birth Moon: keep routines steady and do not treat a delay as a final outcome.",
+      "जन्म चंद्र से साढ़ेसाती सक्रिय है: दिनचर्या स्थिर रखें और देरी को अंतिम फल न मानें।",
+      "जन्म चंद्रापासून साडेसाती सक्रिय आहे: दिनक्रम स्थिर ठेवा आणि विलंबाला अंतिम फळ मानू नका."
+    ],
+    "yoga_gajakesari_simple": [
+      "Gajakesari Yoga in your kundali: Jupiter in {jup_sign} (house {jup_h}, nakshatra {jup_nak}, Navamsa {jup_d9}) stands in house {from_moon} from your birth Moon in {moon_sign} ({moon_nak}). This supports steady counsel, respected reputation, and resilience through {matter}.",
+      "आपकी कुंडली में गजकेसरी योग: बृहस्पति {jup_sign} (भाव {jup_h}, नक्षत्र {jup_nak}, नवांश {jup_d9}) में आपके जन्म चंद्र {moon_sign} ({moon_nak}) से भाव {from_moon} में है। यह {matter} के माध्यम से स्थिर विवेक, प्रतिष्ठा और धैर्य को सहारा देता है।",
+      "तुमच्या कुंडलीत गजकेसरी योग: गुरू {jup_sign} (भाव {jup_h}, नक्षत्र {jup_nak}, नवांश {jup_d9}) मध्ये तुमच्या जन्म चंद्र {moon_sign} ({moon_nak}) पासून भाव {from_moon} मध्ये आहे. हा योग {matter} मधून स्थिर विवेक, प्रतिष्ठा आणि संयमाला बळ देतो."
+    ],
+    "yoga_gajakesari_pro": [
+      "Gajakesari Yoga (BPHS Ch. 36): Jupiter in {jup_sign} (H{jup_h}, {jup_nak} Pada {jup_pada}, D9 {jup_d9}) occupies Kendra H{from_moon} from Janma Rashi {moon_sign} (H{moon_h}, {moon_nak} Pada {moon_pada}).",
+      "गजकेसरी योग (बृहत् पाराशर होरा शास्त्र अ. 36): बृहस्पति {jup_sign} (भाव {jup_h}, {jup_nak} चरण {jup_pada}, नवांश {jup_d9}) जन्म राशि {moon_sign} (भाव {moon_h}, {moon_nak} चरण {moon_pada}) से केंद्र भाव {from_moon} में स्थित है।",
+      "गजकेसरी योग (बृहत् पाराशर होरा शास्त्र अ. 36): गुरू {jup_sign} (भाव {jup_h}, {jup_nak} चरण {jup_pada}, नवांश {jup_d9}) जन्म राशी {moon_sign} (भाव {moon_h}, {moon_nak} चरण {moon_pada}) पासून केंद्र भाव {from_moon} मध्ये आहे."
+    ],
+    "yoga_budhaditya_simple": [
+      "Budhaditya Yoga in your kundali: Sun ({sun_nak}) and Mercury ({merc_nak}, Navamsa {merc_d9}) join in {sign}, house {house}. This sharpens judgement, speech, and skill in {matter}.",
+      "आपकी कुंडली में बुधादित्य योग: सूर्य ({sun_nak}) और बुध ({merc_nak}, नवांश {merc_d9}) {sign} में भाव {house} में युत हैं। यह {matter} में विवेक, वाणी और कौशल को निखारता है।",
+      "तुमच्या कुंडलीत बुधादित्य योग: सूर्य ({sun_nak}) आणि बुध ({merc_nak}, नवांश {merc_d9}) {sign} मध्ये भाव {house} मध्ये एकत्र आहेत. हा योग {matter} मध्ये निर्णयक्षमता, वाणी आणि कौशल्य वाढवतो."
+    ],
+    "yoga_budhaditya_pro": [
+      "Budhaditya Yoga (Phaladeepika Ch. 6): Sun ({sun_nak} Pada {sun_pada}, D9 {sun_d9}) and Mercury ({merc_nak} Pada {merc_pada}, D9 {merc_d9}) conjoined in {sign} (H{house} from {lagna} Lagna).",
+      "बुधादित्य योग (फलदीपिका अ. 6): सूर्य ({sun_nak} चरण {sun_pada}, नवांश {sun_d9}) और बुध ({merc_nak} चरण {merc_pada}, नवांश {merc_d9}) {lagna} लग्न से भाव {house} ({sign}) में संयुक्त हैं।",
+      "बुधादित्य योग (फलदीपिका अ. 6): सूर्य ({sun_nak} चरण {sun_pada}, नवांश {sun_d9}) आणि बुध ({merc_nak} चरण {merc_pada}, नवांश {merc_d9}) {lagna} लग्नापासून भाव {house} ({sign}) मध्ये एकत्र आहेत."
+    ],
+    "yoga_hamsa_simple": [
+      "Hamsa Mahapurusha Yoga in your kundali: Jupiter stands strong in {sign} (house {house}, nakshatra {nak}, Navamsa {d9}). This supports principled leadership, study, and steady counsel in {matter}.",
+      "आपकी कुंडली में हंस महापुरुष योग: बृहस्पति {sign} (भाव {house}, नक्षत्र {nak}, नवांश {d9}) में बलवान है। यह {matter} में नीतिपूर्ण नेतृत्व, अध्ययन और स्थिर मार्गदर्शन को सहारा देता है।",
+      "तुमच्या कुंडलीत हंस महापुरुष योग: गुरू {sign} (भाव {house}, नक्षत्र {nak}, नवांश {d9}) मध्ये बलवान आहे. हा योग {matter} मध्ये नीतिमान नेतृत्व, अभ्यास आणि स्थिर मार्गदर्शनाला बळ देतो."
+    ],
+    "yoga_hamsa_pro": [
+      "Hamsa Mahapurusha Yoga (BPHS Ch. 75): Jupiter in own/exalted Rashi {sign} in Kendra H{house} from {lagna} Lagna ({nak} Pada {pada}, D9 {d9}).",
+      "हंस महापुरुष योग (बृहत् पाराशर होरा शास्त्र अ. 75): बृहस्पति स्व/उच्च राशि {sign} में {lagna} लग्न से केंद्र भाव {house} ({nak} चरण {pada}, नवांश {d9}) में है।",
+      "हंस महापुरुष योग (बृहत् पाराशर होरा शास्त्र अ. 75): गुरू स्व/उच्च राशी {sign} मध्ये {lagna} लग्नापासून केंद्र भाव {house} ({nak} चरण {pada}, नवांश {d9}) मध्ये आहे."
+    ],
+    "dosha_mangal_mitigated": [
+      "Mangal placement in your kundali: Mars sits in {sign}, house {house} from Lagna and house {m_house} from your birth Moon ({nak}, Navamsa {d9}). Because Mars is in {sign}, classical dignity softens harshness; channel high energy into constructive shared duties.",
+      "आपकी कुंडली में मंगल स्थिति: मंगल {sign} में, लग्न से भाव {house} और जन्म चंद्र से भाव {m_house} ({nak}, नवांश {d9}) में है। {sign} राशि के कारण शास्त्रीय शमन मिलता है; ऊर्जा को साझे रचनात्मक काम में लगाएँ।",
+      "तुमच्या कुंडलीत मंगळ स्थिती: मंगळ {sign} मध्ये, लग्नापासून भाव {house} आणि जन्म चंद्रापासून भाव {m_house} ({nak}, नवांश {d9}) मध्ये आहे. {sign} राशीमुळे शास्त्रीय शमन मिळते; ऊर्जा सामायिक चांगल्या कामात वापरा."
+    ],
+    "dosha_mangal_active": [
+      "Mangal placement in your kundali: Mars sits in {sign}, house {house} from Lagna and house {m_house} from your birth Moon ({nak}, Navamsa {d9}). Be cautious with sharp speech or impatience in partnership ({matter}); take protective measures, pause before reacting, and check full chart balance.",
+      "आपकी कुंडली में मंगल स्थिति: मंगल {sign} में, लग्न से भाव {house} और जन्म चंद्र से भाव {m_house} ({nak}, नवांश {d9}) में है। साझेदारी और {matter} में तीखी वाणी या अधीरता से सावधान रहें; रक्षात्मक उपाय अपनाएँ, प्रतिक्रिया से पहले रुकें और पूर्ण कुंडली संतुलन देखें।",
+      "तुमच्या कुंडलीत मंगळ स्थिती: मंगळ {sign} मध्ये, लग्नापासून भाव {house} आणि जन्म चंद्रापासून भाव {m_house} ({nak}, नवांश {d9}) मध्ये आहे. भागीदारी आणि {matter} मध्ये तीव्र वाणी किंवा अधीरतेबाबत सावध राहा; संरक्षणात्मक उपाय करा, प्रतिक्रियेपूर्वी थांबा आणि पूर्ण कुंडली संतुलन पाहा."
+    ]
+  },
+  "match": {
+    "portrait_lagna": [
+      "Lagna {lagna} shows {temper}.",
+      "लग्न {lagna} यह स्वभाव दिखाता है: {temper}।",
+      "लग्न {lagna} हा स्वभाव दाखवते: {temper}."
+    ],
+    "portrait_moon": [
+      "The Moon in {moon_sign}, nakshatra {moon_nak}, pada {moon_pada}, sets the emotional habit: {temper}.",
+      "चंद्र {moon_sign} में, नक्षत्र {moon_nak}, चरण {moon_pada}, भावना की आदत तय करता है: {temper}।",
+      "चंद्र {moon_sign} मध्ये, नक्षत्र {moon_nak}, चरण {moon_pada}, भावनांची सवय ठरवतो: {temper}."
+    ],
+    "portrait_sun": [
+      "The Sun shows how this person wants dignity inside the marriage.",
+      "सूर्य बताता है कि विवाह में यह व्यक्ति सम्मान कैसे चाहता है।",
+      "सूर्य सांगतो की विवाहात ही व्यक्ती मान कसा राखू इच्छिते."
+    ],
+    "portrait_period": [
+      "Current period: {md} Mahadasha, {ad} Antardasha, through {ad_end}.",
+      "वर्तमान काल: {md} महादशा, {ad} अंतर्दशा, {ad_end} तक।",
+      "सध्याचा काळ: {md} महादशा, {ad} अंतरदशा, {ad_end} पर्यंत."
+    ],
+    "seventh_open": [
+      "The 7th house falls in {sign}. Its lord is {lord}.",
+      "सप्तम भाव {sign} में है। उसका स्वामी {lord} है।",
+      "सप्तम भाव {sign} मध्ये आहे. त्याचा स्वामी {lord} आहे."
+    ],
+    "venus_note": [
+      "Venus carries marriage, courtesy, and comfort.",
+      "शुक्र विवाह, शिष्टता और सुख का कारक है।",
+      "शुक्र विवाह, सौजन्य आणि सुखाचा कारक आहे."
+    ],
+    "koota_points": [
+      "{name} scores {scored} of {maximum}.",
+      "{name} में {maximum} में से {scored} अंक हैं।",
+      "{name} मध्ये {maximum} पैकी {scored} गुण आहेत."
+    ],
+    "varna_ok": [
+      "The two Moon signs share a work rhythm.",
+      "दोनों चंद्र राशियों की कार्य-लय मिलती है।",
+      "दोन्ही चंद्र राशींची कामाची लय जुळते."
+    ],
+    "varna_mix": [
+      "One Moon sign sets the work pace more often. Name that pace instead of treating it as a flaw.",
+      "एक चंद्र राशि काम की गति अधिक तय करती है। उसे दोष मानने के बजाय नाम देकर रखें।",
+      "एक चंद्र राशी कामाची गती अधिक ठरवते. तिला दोष न मानता नाव देऊन ठेवा."
+    ],
+    "vashya_ok": [
+      "Mutual support between the Moon signs comes readily.",
+      "चंद्र राशियों का परस्पर सहारा सहज बनता है।",
+      "चंद्र राशींचा परस्पर आधार सहज तयार होतो."
+    ],
+    "vashya_mix": [
+      "Support between the Moon signs needs a repeated, deliberate habit.",
+      "चंद्र राशियों का सहारा बार-बार के सचेत अभ्यास से बनता है।",
+      "चंद्र राशींचा आधार वारंवारच्या जाणीवपूर्वक सरावातून तयार होतो."
+    ],
+    "tara_ok": [
+      "The nakshatra count is a supportive Tara.",
+      "नक्षत्र गणना सहायक तारा है।",
+      "नक्षत्र मोजणी सहाय्यक तारा आहे."
+    ],
+    "tara_mix": [
+      "Tara is mixed. Speak health and travel plans aloud. Do not assume them.",
+      "तारा मिश्र है। स्वास्थ्य और यात्रा की योजना बोलकर रखें। अनुमान न करें।",
+      "तारा मिश्र आहे. आरोग्य आणि प्रवासाच्या योजना बोलून ठेवा. गृहित धरू नका."
+    ],
+    "yoni_high": [
+      "Instinctive timing matches.",
+      "सहज समय मिलता है।",
+      "सहज वेळ जुळतो."
+    ],
+    "yoni_mid": [
+      "Instinctive timing is workable.",
+      "सहज समय काम चलाऊ है।",
+      "सहज वेळ चालण्यासारखा आहे."
+    ],
+    "yoni_low": [
+      "Instinctive timing differs. A slow reply is not a refusal.",
+      "सहज समय अलग है। धीमा उत्तर अस्वीकार नहीं है।",
+      "सहज वेळ वेगळा आहे. मंद उत्तर नकार नाही."
+    ],
+    "maitri_ok": [
+      "The Moon-sign lords are the same, so mental friendship is direct.",
+      "चंद्र राशि के स्वामी एक हैं, इसलिए मानसिक मित्रता सीधी है।",
+      "चंद्र राशीचे स्वामी एकच आहेत, म्हणून मानसिक मैत्री सरळ आहे."
+    ],
+    "maitri_mix": [
+      "Mental friendship is partial. Explain the reason, not only the feeling.",
+      "मानसिक मित्रता आंशिक है। केवल भाव नहीं, कारण भी कहें।",
+      "मानसिक मैत्री अंशतः आहे. केवळ भावना नव्हे, कारणही सांगा."
+    ],
+    "gana_high": [
+      "Daily style matches.",
+      "दैनिक शैली मिलती है।",
+      "दैनंदिन शैली जुळते."
+    ],
+    "gana_mid": [
+      "Daily style can meet in the middle.",
+      "दैनिक शैली बीच का रास्ता निकाल सकती है।",
+      "दैनंदिन शैली मधला मार्ग काढू शकते."
+    ],
+    "gana_low": [
+      "Daily style clashes. Agree the quiet hours and the social hours of the house.",
+      "दैनिक शैली टकराती है। घर के शांत घंटे और मिलने के घंटे तय करें।",
+      "दैनंदिन शैली आदळते. घराचे शांत तास आणि भेटीचे तास ठरवा."
+    ],
+    "bhakoot_ok": [
+      "The Moon signs avoid the classical 2/12, 5/9, and 6/8 strain.",
+      "चंद्र राशियाँ शास्त्रीय 2/12, 5/9 और 6/8 तनाव से बची हैं।",
+      "चंद्र राशी शास्त्रीय 2/12, 5/9 आणि 6/8 ताणापासून दूर आहेत."
+    ],
+    "bhakoot_low": [
+      "Bhakoot is strained. Be cautious with family plans and shared money. Take protective measures before a large household decision. This sign pair is not favorable for haste.",
+      "भकूट तनाव में है। पारिवारिक योजना और साझे धन में सावधानी रखें। बड़े घरेलू निर्णय से पहले रक्षात्मक उपाय करें। यह राशि युग्म जल्दबाजी के लिए अनुकूल नहीं है।",
+      "भकूट ताणात आहे. कौटुंबिक योजना आणि सामायिक धनात सावध राहा. मोठ्या घरगुती निर्णयापूर्वी संरक्षणात्मक उपाय करा. ही राशी जोडी घाईसाठी अनुकूल नाही."
+    ],
+    "nadi_ok": [
+      "The nadis differ, so the classical vitality balance is present.",
+      "नाड़ी भिन्न है, इसलिए शास्त्रीय जीवन-संतुलन मौजूद है।",
+      "नाडी वेगळ्या आहेत, म्हणून शास्त्रीय जीवन-संतुलन आहे."
+    ],
+    "nadi_low": [
+      "Nadi is the same. Be cautious about children and shared vitality. This is not a final prohibition. Take protective measures and give the question time.",
+      "नाड़ी एक है। संतान और साझी जीवन-शक्ति के विषय में सावधानी रखें। यह अंतिम निषेध नहीं है। रक्षात्मक उपाय करें और प्रश्न को समय दें।",
+      "नाडी एकच आहे. अपत्य आणि सामायिक जीवनशक्तीबाबत सावध राहा. हा अंतिम निषेध नाही. संरक्षणात्मक उपाय करा आणि प्रश्नाला वेळ द्या."
+    ],
+    "mars_both": [
+      "Both charts carry unmitigated Mangal. Traditional reading treats the heat as mutual. Still pause before an argument becomes a contest.",
+      "दोनों कुंडली में बिना शमन का मंगल है। शास्त्र इस ताप को परस्पर मानता है। फिर भी विवाद को प्रतियोगिता बनने से पहले रुकें।",
+      "दोन्ही कुंडल्यांत शमनाशिवाय मंगळ आहे. शास्त्र हा ताप परस्पर मानते. तरी वाद स्पर्धा होण्यापूर्वी थांबा."
+    ],
+    "mars_one": [
+      "Mangal is active in {who} and not in the other. Mars energy is uneven. Keep sharp speech off the marriage, and let the chart with Mangal use Tuesday for a Hanuman observance.",
+      "मंगल {who} में सक्रिय है, दूसरी में नहीं। मंगल की ऊर्जा असमान है। तीखी वाणी विवाह से बाहर रखें, और मंगल वाली कुंडली मंगलवार को हनुमान की उपासना करे।",
+      "मंगळ {who} मध्ये सक्रिय आहे, दुसऱ्यामध्ये नाही. मंगळाची ऊर्जा असमान आहे. तीव्र वाणी विवाहाबाहेर ठेवा, आणि मंगळ असलेली कुंडली मंगळवारी हनुमान उपासना करो."
+    ],
+    "mars_none": [
+      "Mangal is absent or traditionally mitigated in both charts. Mars is not the strain to manage.",
+      "मंगल दोनों कुंडली में नहीं है, या शास्त्रीय शमन के साथ है। मंगल वह तनाव नहीं है जिसे सँभालना है।",
+      "मंगळ दोन्ही कुंडल्यांत नाही, किंवा शास्त्रीय शमनासह आहे. मंगळ हा ताण सांभाळायचा नाही."
+    ],
+    "strains_none": [
+      "Bhakoot, Nadi, and Gana are not in the strained band. The remaining work is ordinary care in speech and money.",
+      "भकूट, नाड़ी और गण तनाव वाले स्तर पर नहीं हैं। शेष काम वाणी और धन की साधारण सावधानी है।",
+      "भकूट, नाडी आणि गण ताणाच्या पातळीवर नाहीत. उरलेले काम वाणी आणि धनाची साधी सावधगिरी आहे."
+    ],
+    "strains_some": [
+      "Strained parameters: {named}. Be cautious there. Take protective measures before a family, money, or children decision. The configuration is not favorable for haste, and it is not a final prohibition.",
+      "तनाव वाले कारक: {named}। वहाँ सावधानी रखें। परिवार, धन या संतान के निर्णय से पहले रक्षात्मक उपाय करें। यह स्थिति जल्दबाजी के लिए अनुकूल नहीं है, और यह अंतिम निषेध नहीं है।",
+      "ताणाचे घटक: {named}. तेथे सावध राहा. कुटुंब, धन किंवा अपत्याच्या निर्णयापूर्वी संरक्षणात्मक उपाय करा. ही स्थिती घाईसाठी अनुकूल नाही, आणि हा अंतिम निषेध नाही."
+    ],
+    "bond_open": [
+      "{name_a} meets a partner through this temperament: {temp_a}. {name_b} meets a partner through this temperament: {temp_b}. The relationship is read from both 7th houses and from Venus. The Moon score does not replace that reading.",
+      "{name_a} साथी से इस स्वभाव से मिलता है: {temp_a}। {name_b} साथी से इस स्वभाव से मिलता है: {temp_b}। संबंध दोनों सप्तम भाव और शुक्र से पढ़ा जाता है। चंद्र का अंक उस पठन की जगह नहीं लेता।",
+      "{name_a} जोडीदाराला या स्वभावाने भेटते: {temp_a}. {name_b} जोडीदाराला या स्वभावाने भेटते: {temp_b}. नाते दोन्ही सप्तम भाव आणि शुक्र यांच्यावरून वाचले जाते. चंद्राचा गुण त्या वाचनाची जागा घेत नाही."
+    ],
+    "household": [
+      "For {name}, the marriage is lived through home, children, and family resources. The 4th house falls in {fourth}. Its lord is {fourth_lord}. {fourth_where} The 5th house, for children and affection, falls in {fifth}. {fifth_where} The 2nd house, for family resources and speech, falls in {second}. {second_where} {tone} Through {ad_end}, {md} Mahadasha and {ad} Antardasha are the period in which these houses are active for the marriage.",
+      "{name} के लिए विवाह घर, संतान और पारिवारिक साधनों से जिया जाता है। चतुर्थ भाव {fourth} में है। उसका स्वामी {fourth_lord} है। {fourth_where} संतान और स्नेह का पंचम भाव {fifth} में है। {fifth_where} पारिवारिक साधन और वाणी का द्वितीय भाव {second} में है। {second_where} {tone} {ad_end} तक {md} महादशा और {ad} अंतर्दशा वह काल है जिसमें ये भाव विवाह के लिए सक्रिय हैं।",
+      "{name} साठी विवाह घर, अपत्य आणि कौटुंबिक साधनांतून जगला जातो. चतुर्थ भाव {fourth} मध्ये आहे. त्याचा स्वामी {fourth_lord} आहे. {fourth_where} अपत्य आणि स्नेहाचा पंचम भाव {fifth} मध्ये आहे. {fifth_where} कौटुंबिक साधने आणि वाणीचा द्वितीय भाव {second} मध्ये आहे. {second_where} {tone} {ad_end} पर्यंत {md} महादशा आणि {ad} अंतरदशा हा काळ आहे ज्यात हे भाव विवाहासाठी सक्रिय आहेत."
+    ],
+    "motions_intro": [
+      "These are the current motions of Jupiter and Saturn measured from each birth Moon. They describe the season the marriage is in. They do not name an exact event date.",
+      "ये बृहस्पति और शनि की वर्तमान गति हैं, प्रत्येक जन्म चंद्र से मापी हुई। ये बताती हैं कि विवाह किस ऋतु में है। ये किसी घटना की ठीक तारीख नहीं बतातीं।",
+      "या बृहस्पति आणि शनीच्या सध्याच्या गती आहेत, प्रत्येक जन्म चंद्रापासून मोजलेल्या. त्या सांगतात की विवाह कोणत्या ऋतूत आहे. त्या एखाद्या घटनेची नेमकी तारीख सांगत नाहीत."
+    ],
+    "motions_person": [
+      "For {name}, on {date}, Jupiter transits {jup_sign}, house {jh} from the birth Moon, touching {j_matter}. Saturn transits {sat_sign}, house {sh} from the birth Moon, touching {s_matter}.",
+      "{name} के लिए, {date} को, बृहस्पति {jup_sign} से गोचर कर रहा है, जन्म चंद्र से भाव {jh}, जो {j_matter} को छूता है। शनि {sat_sign} में है, जन्म चंद्र से भाव {sh}, जो {s_matter} को छूता है।",
+      "{name} साठी, {date} रोजी, गुरू {jup_sign} मधून गोचर करतो, जन्म चंद्रापासून भाव {jh}, जो {j_matter} ला स्पर्श करतो. शनी {sat_sign} मध्ये आहे, जन्म चंद्रापासून भाव {sh}, जो {s_matter} ला स्पर्श करतो."
+    ],
+    "sade_on": [
+      "Saturn stands beside this birth Moon. Be cautious with pace, duty, and household decisions. Take protective measures. This period is not favorable for haste.",
+      "शनि इस जन्म चंद्र के पास है। गति, कर्तव्य और घरेलू निर्णयों में सावधानी रखें। रक्षात्मक उपाय करें। यह काल जल्दबाजी के लिए अनुकूल नहीं है।",
+      "शनी या जन्म चंद्राजवळ आहे. गती, कर्तव्य आणि घरगुती निर्णयांत सावध राहा. संरक्षणात्मक उपाय करा. हा काळ घाईसाठी अनुकूल नाही."
+    ],
+    "sade_off": [
+      "Saturn is not in the 12th, 1st, or 2nd from this birth Moon.",
+      "शनि इस जन्म चंद्र से बारहवें, पहले या दूसरे भाव में नहीं है।",
+      "शनी या जन्म चंद्रापासून बाराव्या, पहिल्या किंवा दुसऱ्या भावात नाही."
+    ],
+    "touch_7": [
+      "One of these transits occupies the 7th from the birth Moon, so the partnership itself is the topic of the current motion.",
+      "इन गोचरों में से एक जन्म चंद्र से सप्तम भाव में है, इसलिए साझेदारी ही वर्तमान गति का विषय है।",
+      "या गोचरांपैकी एक जन्म चंद्रापासून सप्तम भावात आहे, म्हणून भागीदारी ही सध्याच्या गतीचा विषय आहे."
+    ],
+    "touch_other": [
+      "Neither Jupiter nor Saturn occupies the 7th from this birth Moon. The marriage is touched through the houses named above, not by a direct transit on the partnership house.",
+      "बृहस्पति और शनि में से कोई भी इस जन्म चंद्र से सप्तम भाव में नहीं है। विवाह ऊपर बताए भावों से छूता है, साझेदारी भाव पर सीधे गोचर से नहीं।",
+      "गुरू आणि शनी यांपैकी एकही या जन्म चंद्रापासून सप्तम भावात नाही. विवाह वर सांगितलेल्या भावांतून स्पर्श होतो, भागीदारी भावावरील थेट गोचराने नाही."
+    ],
+    "conduct": [
+      "{name} is running {md} Mahadasha and {ad} Antardasha. In this marriage, {name} should {behavior}.",
+      "{name} की {md} महादशा और {ad} अंतर्दशा चल रही है। इस विवाह में {name} को {behavior}।",
+      "{name} ची {md} महादशा आणि {ad} अंतरदशा चालू आहे. या विवाहात {name} ने {behavior}."
+    ],
+    "frame_married": [
+      "The form says {name_a} and {name_b} are already married. This outlook is for that marriage.",
+      "प्रपत्र कहता है कि {name_a} और {name_b} पहले से विवाहित हैं। यह दृष्टिकोण उसी विवाह के लिए है।",
+      "प्रपत्र सांगते की {name_a} आणि {name_b} आधीच विवाहित आहेत. ही दृष्टी त्या विवाहासाठी आहे."
+    ],
+    "frame_unmarried": [
+      "The form does not record a marriage already underway. This outlook is how a marriage between {name_a} and {name_b} tends to move. It does not say that a wedding must happen.",
+      "प्रपत्र में चल रहा विवाह दर्ज नहीं है। यह दृष्टिकोण बताता है कि {name_a} और {name_b} का विवाह कैसे चलता है। यह नहीं कहता कि विवाह होना ही चाहिए।",
+      "प्रपत्रात सुरू असलेला विवाह नोंदलेला नाही. ही दृष्टी सांगते की {name_a} आणि {name_b} यांचा विवाह कसा चालतो. विवाह झालाच पाहिजे, असे ती म्हणत नाही."
+    ],
+    "limitations": [
+      "The 36-point score uses only the two Moon signs and nakshatras. The reading beside it uses both Lagnas, both 7th houses, Venus, Mangal, current transits, and the dasha each person is running.",
+      "36 अंक केवल दोनों चंद्र राशियों और नक्षत्रों से हैं। उसके साथ का पठन दोनों लग्न, दोनों सप्तम भाव, शुक्र, मंगल, वर्तमान गोचर और प्रत्येक की चल रही दशा से है।",
+      "36 गुण केवळ दोन्ही चंद्र राशी आणि नक्षत्रांवरून आहेत. सोबतचे वाचन दोन्ही लग्न, दोन्ही सप्तम भाव, शुक्र, मंगळ, सध्याचे गोचर आणि प्रत्येकाची चालू दशा यांच्यावरून आहे."
+    ]
+  }
+}

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -22,11 +21,13 @@ class AstroplanApiClient {
     String? baseUrl,
     http.Client? client,
     String? userId,
+    String? Function()? userIdProvider,
     Future<String?> Function()? tokenProvider,
     Duration? timeout,
   })  : baseUrl = baseUrl ?? _defaultBaseUrl,
         _client = client ?? http.Client(),
         _userId = userId ?? _configuredUser,
+        _userIdProvider = userIdProvider,
         _tokenProvider = tokenProvider,
         _timeout = timeout ?? requestTimeout;
 
@@ -46,6 +47,7 @@ class AstroplanApiClient {
   final String baseUrl;
   final http.Client _client;
   final String _userId;
+  final String? Function()? _userIdProvider;
   final Future<String?> Function()? _tokenProvider;
   final Duration _timeout;
 
@@ -55,7 +57,12 @@ class AstroplanApiClient {
       kDebugMode && _loopback && _tokenProvider == null;
   bool get authenticated =>
       _tokenProvider != null || (localDevelopment && _userId.isNotEmpty);
-  String? get userId => authenticated && _userId.isNotEmpty ? _userId : null;
+  String? get userId {
+    if (!authenticated) return null;
+    final dynamicUid = _userIdProvider?.call();
+    if (dynamicUid != null && dynamicUid.isNotEmpty) return dynamicUid;
+    return _userId.isNotEmpty ? _userId : null;
+  }
 
   Uri _uri(String path, Map<String, String> query) {
     final base = Uri.tryParse(baseUrl);

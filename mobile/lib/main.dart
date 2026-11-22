@@ -97,15 +97,22 @@ Future<void> main() async {
   runApp(AstroplanApp(
       notifier: FlutterLocalNotificationNotifier(),
       tokenProvider: anonymousFirebaseToken,
+      userIdProvider: currentFirebaseUidSync,
       userId: uid));
 }
 
 class AstroplanApp extends StatefulWidget {
   const AstroplanApp(
-      {super.key, this.notifier, this.api, this.tokenProvider, this.userId});
+      {super.key,
+      this.notifier,
+      this.api,
+      this.tokenProvider,
+      this.userIdProvider,
+      this.userId});
   final DailyInsightNotifier? notifier;
   final AstroplanApiClient? api;
   final Future<String?> Function()? tokenProvider;
+  final String? Function()? userIdProvider;
   final String? userId;
   @override
   State<AstroplanApp> createState() => _AstroplanAppState();
@@ -122,7 +129,9 @@ class _AstroplanAppState extends State<AstroplanApp> {
     tzdata.initializeTimeZones();
     _api = widget.api ??
         AstroplanApiClient(
-            tokenProvider: widget.tokenProvider, userId: widget.userId);
+            tokenProvider: widget.tokenProvider,
+            userIdProvider: widget.userIdProvider,
+            userId: widget.userId);
     _notifier = widget.notifier ?? FlutterLocalNotificationNotifier();
     _loadPreferences();
   }

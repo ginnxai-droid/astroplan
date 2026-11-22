@@ -1,15 +1,20 @@
-"""Chart-specific readings from houses, dasha, and gochara.
-
-Every sentence names a planet, sign, or house taken from the calculated chart.
-Supportive and pressured houses change the advice. No result is promised.
-"""
+"""Chart-specific readings from houses, D9 Navamsa, dasha, panchang, and gochara."""
 
 from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any
 
 from app.api.schemas import ChartResponse, LanguageCode, PlanetPosition
 from app.core.constants import RASHI_NAMES
 from app.interpretation.guardrails import verify_text
 from app.interpretation.terms import gloss
+
+_DATA: dict[str, Any] = json.loads(
+    Path(__file__).with_name("phala_text.json").read_text(encoding="utf-8")
+)
+_LANG_IDX = {"en": 0, "hi": 1, "mr": 2}
 
 _LORDS = {
     "Aries": "Mars",
@@ -24,6 +29,15 @@ _LORDS = {
     "Capricorn": "Saturn",
     "Aquarius": "Saturn",
     "Pisces": "Jupiter",
+}
+_VARA_LORDS = {
+    "Sunday": "Sun",
+    "Monday": "Moon",
+    "Tuesday": "Mars",
+    "Wednesday": "Mercury",
+    "Thursday": "Jupiter",
+    "Friday": "Venus",
+    "Saturday": "Saturn",
 }
 _PRESSURE = {6, 8, 12}
 _JUPITER_EASY = {2, 5, 7, 9, 11}
@@ -44,13 +58,12 @@ _MONTHS = {
     "December": ("December", "दिसंबर", "डिसेंबर"),
 }
 
-# deity, weekday, practice
 _REMEDY = {
     "Sun": (
         "Surya",
         "Sunday",
         {
-            "en": "offer water to the morning Sun and recite Aditya Hridayam once",
+            "en": "offer water to morning Surya and recite Aditya Hridayam once",
             "hi": "प्रातः सूर्य को जल दें और आदित्य हृदय एक बार पढ़ें",
             "mr": "सकाळी सूर्याला जल द्या आणि आदित्य हृदय एकदा म्हणा",
         },
@@ -59,7 +72,7 @@ _REMEDY = {
         "Shiva",
         "Monday",
         {
-            "en": "offer water on a Shiva linga and keep the evening quiet",
+            "en": "offer water on a Shiva linga and keep evening hours calm",
             "hi": "शिवलिंग पर जल दें और संध्या शांत रखें",
             "mr": "शिवलिंगावर जल द्या आणि संध्या शांत ठेवा",
         },
@@ -68,7 +81,7 @@ _REMEDY = {
         "Hanuman",
         "Tuesday",
         {
-            "en": "recite the Hanuman Chalisa before a Hanuman or Kartikeya image",
+            "en": "recite Hanuman Chalisa before a Hanuman or Kartikeya image",
             "hi": "हनुमान या कार्तिकेय की मूर्ति के आगे हनुमान चालीसा पढ़ें",
             "mr": "हनुमान किंवा कार्तिकेय मूर्तीसमोर हनुमान चालीसा म्हणा",
         },
@@ -86,7 +99,7 @@ _REMEDY = {
         "Brihaspati",
         "Thursday",
         {
-            "en": "offer a yellow flower or a banana and recite a Brihaspati name",
+            "en": "offer a yellow flower or banana and recite a Brihaspati name",
             "hi": "पीला फूल या केला अर्पित करें और बृहस्पति का नाम जपें",
             "mr": "पिवळे फूल किंवा केळी अर्पण करा आणि बृहस्पतीचे नाम जपा",
         },
@@ -104,7 +117,7 @@ _REMEDY = {
         "Shani",
         "Saturday",
         {
-            "en": "light a sesame-oil lamp for Shani and finish one slow, honest task the same day",
+            "en": "light a sesame-oil lamp for Shani and complete one steady duty that day",
             "hi": "शनि के लिए तिल के तेल का दीप जलाएँ और उसी दिन एक धीमा, ईमानदार काम पूरा करें",
             "mr": "शनीसाठी तीळतेलाचा दीप लावा आणि त्याच दिवशी एक सावकाश, प्रामाणिक काम पूर्ण करा",
         },
@@ -113,7 +126,7 @@ _REMEDY = {
         "Durga",
         "Saturday",
         {
-            "en": "recite a Durga name and finish one disciplined task the same day",
+            "en": "recite a Durga name and finish one disciplined task that day",
             "hi": "दुर्गा का नाम जपें और उसी दिन एक अनुशासित काम पूरा करें",
             "mr": "दुर्गेचे नाम जपा आणि त्याच दिवशी एक शिस्तबद्ध काम पूर्ण करा",
         },
@@ -122,16 +135,37 @@ _REMEDY = {
         "Ganesha",
         "Tuesday",
         {
-            "en": "recite a Ganesha name before the difficult task is begun",
+            "en": "recite a Ganesha name before starting a demanding task",
             "hi": "कठिन काम शुरू करने से पहले गणेश का नाम जपें",
             "mr": "कठीण काम सुरू करण्यापूर्वी गणेशाचे नाम जपा",
         },
     ),
 }
 
+_DEITY = {
+    "Surya": ("Surya", "सूर्य", "सूर्य"),
+    "Shiva": ("Shiva", "शिव", "शिव"),
+    "Hanuman": ("Hanuman", "हनुमान", "हनुमान"),
+    "Vishnu": ("Vishnu", "विष्णु", "विष्णू"),
+    "Brihaspati": ("Brihaspati", "बृहस्पति", "बृहस्पती"),
+    "Lakshmi": ("Lakshmi", "लक्ष्मी", "लक्ष्मी"),
+    "Shani": ("Shani", "शनि", "शनी"),
+    "Durga": ("Durga", "दुर्गा", "दुर्गा"),
+    "Ganesha": ("Ganesha", "गणेश", "गणेश"),
+}
+
 
 def _say(lang: str, en: str, hi: str, mr: str) -> str:
     return {"en": en, "hi": hi, "mr": mr}[lang]
+
+
+def _tpl(section: str, key: str, lang: str, **kwargs: object) -> str:
+    raw = str(_DATA[section][key][_LANG_IDX[lang]])
+    return raw.format(**kwargs) if kwargs else raw
+
+
+def _line(key: str, lang: str, **kwargs: object) -> str:
+    return _tpl("lines", key, lang, **kwargs)
 
 
 def _g(value: object, lang: str) -> str:
@@ -153,127 +187,36 @@ def _lord(chart: ChartResponse, house: int) -> tuple[str, PlanetPosition]:
 
 
 def _matter(house: int, lang: str) -> str:
-    return _say(
-        lang,
-        {
-            1: "the body, personal direction, and how people meet you",
-            2: "savings, family resources, and speech",
-            3: "effort, skill, siblings, and short journeys",
-            4: "home, the mother, and emotional rest",
-            5: "children, study, affection, and creative work",
-            6: "service, competition, debts, and daily obstacles",
-            7: "marriage, partnership, and one-to-one agreements",
-            8: "shared resources and changes that arrive without much warning",
-            9: "teachers, long journeys, and fortune",
-            10: "career, public duty, and reputation",
-            11: "income, gains, and the circle that supports you",
-            12: "expenses, rest, and time away from home",
-        }[house],
-        {
-            1: "शरीर, व्यक्तिगत दिशा और लोगों के सामने आपका ठहराव",
-            2: "बचत, पारिवारिक साधन और वाणी",
-            3: "परिश्रम, कौशल, सहोदर और छोटी यात्रा",
-            4: "घर, माता और मानसिक विश्राम",
-            5: "संतान, अध्ययन, स्नेह और रचनात्मक काम",
-            6: "सेवा, प्रतिस्पर्धा, ऋण और रोज के व्यवधान",
-            7: "विवाह, साझेदारी और आमने-सामने के समझौते",
-            8: "साझे साधन और वे परिवर्तन जो कम चेतावनी के साथ आते हैं",
-            9: "गुरु, लंबी यात्रा और भाग्य",
-            10: "करियर, सार्वजनिक कर्तव्य और प्रतिष्ठा",
-            11: "आय, लाभ और साथ देने वाला वृत्त",
-            12: "खर्च, विश्राम और घर से दूर का समय",
-        }[house],
-        {
-            1: "शरीर, वैयक्तिक दिशा आणि लोकांसमोर तुमचे ठराविक रूप",
-            2: "बचत, कौटुंबिक साधने आणि वाणी",
-            3: "परिश्रम, कौशल्य, भावंडे आणि छोट्या प्रवास",
-            4: "घर, माता आणि मानसिक विश्रांती",
-            5: "अपत्य, अभ्यास, स्नेह आणि निर्मितीचे काम",
-            6: "सेवा, स्पर्धा, कर्ज आणि रोजचे अडथळे",
-            7: "विवाह, भागीदारी आणि समोरासमोरचे करार",
-            8: "सामायिक साधने आणि कमी सूचना देऊन येणारे बदल",
-            9: "गुरु, लांब प्रवास आणि भाग्य",
-            10: "करिअर, सार्वजनिक कर्तव्य आणि प्रतिष्ठा",
-            11: "उत्पन्न, लाभ आणि साथ देणारे वर्तुळ",
-            12: "खर्च, विश्रांती आणि घरापासून दूरचा काळ",
-        }[house],
-    )
+    return _tpl("matter", str(house), lang)
 
 
 def _where(chart: ChartResponse, planet: PlanetPosition, lang: str) -> str:
-    base = _say(
+    del chart
+    base = _line(
+        "where",
         lang,
-        f"{_g(planet.planet, lang)} is in {_g(planet.sign_name, lang)}, house {planet.house}, nakshatra {_g(planet.nakshatra_name, lang)}, pada {planet.pada}",
-        f"{_g(planet.planet, lang)} {_g(planet.sign_name, lang)} में है, भाव {planet.house}, नक्षत्र {_g(planet.nakshatra_name, lang)}, चरण {planet.pada}",
-        f"{_g(planet.planet, lang)} {_g(planet.sign_name, lang)} मध्ये आहे, भाव {planet.house}, नक्षत्र {_g(planet.nakshatra_name, lang)}, चरण {planet.pada}",
+        planet=_g(planet.planet, lang),
+        sign=_g(planet.sign_name, lang),
+        house=planet.house,
+        nak=_g(planet.nakshatra_name, lang),
+        pada=planet.pada,
+        d9=_g(planet.navamsa_sign_name, lang),
     )
-    if not planet.is_retrograde:
-        return base + _say(lang, ".", "।", ".")
-    return base + _say(
-        lang,
-        ". It is retrograde, so the result tends to ripen after review.",
-        "। यह वक्री है, इसलिए फल पुनरावलोकन के बाद पकता है।",
-        ". तो वक्री आहे, म्हणून फळ पुनरावलोकनानंतर पक्व होते.",
-    )
+    tail = _line("retro_yes" if planet.is_retrograde else "retro_no", lang)
+    return base + tail
 
 
 def _tone(houses: list[int], lang: str) -> str:
-    if any(house in _PRESSURE for house in houses):
-        return _say(
-            lang,
-            "Be cautious here. Take protective measures before a large step, and do not rush. This configuration is not favorable for haste.",
-            "यहाँ सावधानी रखें। बड़े कदम से पहले रक्षात्मक उपाय करें और जल्दबाजी न करें। यह ग्रह स्थिति जल्दबाजी के लिए अनुकूल नहीं है।",
-            "येथे सावध राहा. मोठ्या पावलापूर्वी संरक्षणात्मक उपाय करा आणि घाई करू नका. ही ग्रहस्थिती घाईसाठी अनुकूल नाही.",
-        )
-    return _say(
-        lang,
-        "This configuration is supportive. Use it for the matters named here, and still check the practical details before you commit.",
-        "यह ग्रह स्थिति सहायक है। इसे यहाँ बताए विषयों के लिए उपयोग करें, और वचन से पहले व्यावहारिक विवरण जाँच लें।",
-        "ही ग्रहस्थिती सहाय्यक आहे. येथे सांगितलेल्या विषयांसाठी तिचा वापर करा, आणि वचन देण्यापूर्वी व्यावहारिक तपशील तपासा.",
-    )
+    key = "tone_pressure" if any(h in _PRESSURE for h in houses) else "tone_support"
+    return _line(key, lang)
 
 
 def _gochara(transits: dict[str, object], lang: str) -> str:
     jh = int(str(transits["jupiter_house_from_moon"]))
     sh = int(str(transits["saturn_house_from_moon"]))
-    jup = _say(
-        lang,
-        "Jupiter's transit is in a classically supportive house from the birth Moon."
-        if jh in _JUPITER_EASY
-        else "Jupiter's transit is not in a classically supportive house from the birth Moon, so growth asks for patience.",
-        "बृहस्पति का गोचर जन्म चंद्र से शास्त्रीय रूप से सहायक भाव में है।"
-        if jh in _JUPITER_EASY
-        else "बृहस्पति का गोचर जन्म चंद्र से शास्त्रीय रूप से सहायक भाव में नहीं है, इसलिए वृद्धि के लिए धैर्य चाहिए।",
-        "गुरूचे गोचर जन्म चंद्रापासून शास्त्रीय सहाय्यक भावात आहे."
-        if jh in _JUPITER_EASY
-        else "गुरूचे गोचर जन्म चंद्रापासून शास्त्रीय सहाय्यक भावात नाही, म्हणून वाढीसाठी धीर हवा.",
-    )
-    sat = _say(
-        lang,
-        "Saturn's transit is in a house where steady labour is rewarded."
-        if sh in _SATURN_EASY
-        else "Saturn's transit asks for slower commitments and cleaner routines.",
-        "शनि का गोचर उस भाव में है जहाँ स्थिर परिश्रम फल देता है।"
-        if sh in _SATURN_EASY
-        else "शनि का गोचर धीमे वचन और साफ दिनचर्या माँगता है।",
-        "शनीचे गोचर त्या भावात आहे जिथे स्थिर परिश्रम फळ देते."
-        if sh in _SATURN_EASY
-        else "शनीचे गोचर सावकाश वचन आणि स्वच्छ दिनक्रम मागते.",
-    )
+    jup = _line("jup_easy" if jh in _JUPITER_EASY else "jup_hard", lang)
+    sat = _line("sat_easy" if sh in _SATURN_EASY else "sat_hard", lang)
     return f"{jup} {sat}"
-
-
-_DEITY = {
-    "Surya": ("Surya", "सूर्य", "सूर्य"),
-    "Shiva": ("Shiva", "शिव", "शिव"),
-    "Hanuman": ("Hanuman", "हनुमान", "हनुमान"),
-    "Vishnu": ("Vishnu", "विष्णु", "विष्णू"),
-    "Brihaspati": ("Brihaspati", "बृहस्पति", "बृहस्पती"),
-    "Lakshmi": ("Lakshmi", "लक्ष्मी", "लक्ष्मी"),
-    "Shani": ("Shani", "शनि", "शनी"),
-    "Durga": ("Durga", "दुर्गा", "दुर्गा"),
-    "Ganesha": ("Ganesha", "गणेश", "गणेश"),
-}
 
 
 def _deity(name: str, lang: str) -> str:
@@ -284,172 +227,201 @@ def _deity(name: str, lang: str) -> str:
 def _observance(chart: ChartResponse, planet_name: str, lang: str) -> str:
     planet = _planet(chart, planet_name)
     deity, weekday, practice = _REMEDY[planet_name]
-    shown = _deity(deity, lang)
-    return _say(
+    return _line(
+        "observance",
         lang,
-        f"For {_g(planet_name, lang)} in house {planet.house}, the fitting observance is {shown} on {_g(weekday, lang)}: {practice[lang]}. This is aimed at {_matter(planet.house, lang)}. The practice asks for no purchase, and it does not force a result.",
-        f"भाव {planet.house} में {_g(planet_name, lang)} के लिए उपयुक्त उपासना {_g(weekday, lang)} को {shown} की है: {practice[lang]}। यह {_matter(planet.house, lang)} के लिए है। इस अभ्यास में कोई खरीद नहीं है, और यह फल को बाध्य नहीं करता।",
-        f"भाव {planet.house} मधील {_g(planet_name, lang)} साठी योग्य उपासना {_g(weekday, lang)} रोजी {shown} ची आहे: {practice[lang]}. हे {_matter(planet.house, lang)} साठी आहे. या अभ्यासात खरेदी नाही, आणि तो फळाला बंधनकारक करत नाही.",
+        planet=_g(planet_name, lang),
+        house=planet.house,
+        deity=_deity(deity, lang),
+        weekday=_g(weekday, lang),
+        practice=practice[lang],
+        matter=_matter(planet.house, lang),
     )
 
 
-def _outlook(chart: ChartResponse, dasha: dict[str, object], transits: dict[str, object], lang: str) -> str:
+def _anchor_and_period(chart: ChartResponse, dasha: dict[str, object], lang: str) -> str:
+    moon = _planet(chart, "Moon")
     md = str(dasha["active_mahadasha"])
     ad = str(dasha["active_antardasha"])
-    pd = str(dasha["active_pratyantardasha"])
-    moon = _planet(chart, "Moon")
+    pd = str(dasha.get("active_pratyantardasha") or ad)
     return " ".join(
         (
-            _say(
+            _line(
+                "chart_anchor",
                 lang,
-                f"Lagna is {_g(chart.lagna_sign_name, lang)}. Birth Moon is {_g(moon.sign_name, lang)}, nakshatra {_g(moon.nakshatra_name, lang)}, pada {moon.pada}.",
-                f"लग्न {_g(chart.lagna_sign_name, lang)} है। जन्म चंद्र {_g(moon.sign_name, lang)} है, नक्षत्र {_g(moon.nakshatra_name, lang)}, चरण {moon.pada}।",
-                f"लग्न {_g(chart.lagna_sign_name, lang)} आहे. जन्म चंद्र {_g(moon.sign_name, lang)} आहे, नक्षत्र {_g(moon.nakshatra_name, lang)}, चरण {moon.pada}.",
+                lagna=_g(chart.lagna_sign_name, lang),
+                moon_sign=_g(moon.sign_name, lang),
+                moon_nak=_g(moon.nakshatra_name, lang),
+                moon_pada=moon.pada,
+                moon_d9=_g(moon.navamsa_sign_name, lang),
             ),
-            _say(
+            _line(
+                "period_full",
                 lang,
-                f"The period is {_g(md, lang)} Mahadasha, {_g(ad, lang)} Antardasha, {_g(pd, lang)} Pratyantar, through {dasha['antardasha_end_date']}.",
-                f"काल {_g(md, lang)} महादशा, {_g(ad, lang)} अंतर्दशा, {_g(pd, lang)} प्रत्यंतर है, {dasha['antardasha_end_date']} तक।",
-                f"काळ {_g(md, lang)} महादशा, {_g(ad, lang)} अंतरदशा, {_g(pd, lang)} प्रत्यंतर आहे, {dasha['antardasha_end_date']} पर्यंत.",
+                md=_g(md, lang),
+                ad=_g(ad, lang),
+                pd=_g(pd, lang),
+                ad_end=dasha["antardasha_end_date"],
             ),
-            _where(chart, _planet(chart, md), lang),
-            _where(chart, _planet(chart, ad), lang),
-            _say(
-                lang,
-                f"Jupiter transits {_g(transits['jupiter_transit_sign'], lang)}, house {transits['jupiter_house_from_moon']} from the birth Moon. Saturn transits {_g(transits['saturn_transit_sign'], lang)}, house {transits['saturn_house_from_moon']} from that Moon.",
-                f"बृहस्पति {_g(transits['jupiter_transit_sign'], lang)} से गोचर कर रहा है, जन्म चंद्र से भाव {transits['jupiter_house_from_moon']}। शनि {_g(transits['saturn_transit_sign'], lang)} में है, उसी चंद्र से भाव {transits['saturn_house_from_moon']}।",
-                f"गुरू {_g(transits['jupiter_transit_sign'], lang)} मधून गोचर करतो, जन्म चंद्रापासून भाव {transits['jupiter_house_from_moon']}. शनी {_g(transits['saturn_transit_sign'], lang)} मध्ये आहे, त्याच चंद्रापासून भाव {transits['saturn_house_from_moon']}.",
-            ),
-            _gochara(transits, lang),
         )
     )
+
+
+def _outlook(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    lang: str,
+) -> str:
+    md = str(dasha["active_mahadasha"])
+    ad = str(dasha["active_antardasha"])
+    parts = [
+        _anchor_and_period(chart, dasha, lang),
+        _where(chart, _planet(chart, md), lang),
+    ]
+    if ad != md:
+        parts.append(_where(chart, _planet(chart, ad), lang))
+    parts.append(
+        _line(
+            "jup_sat_transit",
+            lang,
+            jup_sign=_g(transits["jupiter_transit_sign"], lang),
+            jup_h=transits["jupiter_house_from_moon"],
+            sat_sign=_g(transits["saturn_transit_sign"], lang),
+            sat_h=transits["saturn_house_from_moon"],
+        )
+    )
+    parts.append(_gochara(transits, lang))
+    return " ".join(parts)
 
 
 def _career(chart: ChartResponse, lang: str) -> str:
     sign, lord = _lord(chart, 10)
     sun = _planet(chart, "Sun")
-    return " ".join(
-        (
-            _say(
-                lang,
-                f"Career. The 10th house falls in {_g(sign, lang)} and its lord is {_g(lord.planet, lang)}.",
-                f"करियर। दशम भाव {_g(sign, lang)} में पड़ता है और उसका स्वामी {_g(lord.planet, lang)} है।",
-                f"करिअर. दशम भाव {_g(sign, lang)} मध्ये येतो आणि त्याचा स्वामी {_g(lord.planet, lang)} आहे.",
-            ),
-            _where(chart, lord, lang),
-            _say(
-                lang,
-                "The Sun carries authority and public role.",
-                "सूर्य अधिकार और सार्वजनिक भूमिका का कारक है।",
-                "सूर्य अधिकार आणि सार्वजनिक भूमिकेचा कारक आहे.",
-            ),
-            _where(chart, sun, lang),
-            _say(
-                lang,
-                f"The lord's house describes {_matter(lord.house, lang)}.",
-                f"स्वामी का भाव {_matter(lord.house, lang)} बताता है।",
-                f"स्वामीचा भाव {_matter(lord.house, lang)} सांगतो.",
-            ),
-            _tone([lord.house, sun.house], lang),
+    parts = [
+        _line("career_open", lang, sign=_g(sign, lang), lord=_g(lord.planet, lang)),
+        _where(chart, lord, lang),
+    ]
+    if sun.planet != lord.planet:
+        parts.append(_line("sun_role", lang))
+        parts.append(_where(chart, sun, lang))
+    parts.append(
+        _line(
+            "lord_matter",
+            lang,
+            lord=_g(lord.planet, lang),
+            house=lord.house,
+            matter=_matter(lord.house, lang),
         )
     )
+    parts.append(_tone([lord.house, sun.house], lang))
+    return " ".join(parts)
 
 
 def _relationship(chart: ChartResponse, lang: str) -> str:
     seventh, lord = _lord(chart, 7)
     fifth, fifth_lord = _lord(chart, 5)
     venus = _planet(chart, "Venus")
-    return " ".join(
-        (
-            _say(
-                lang,
-                f"Relationships, marriage, and children. The 7th house falls in {_g(seventh, lang)} and its lord is {_g(lord.planet, lang)}.",
-                f"संबंध, विवाह और संतान। सप्तम भाव {_g(seventh, lang)} में पड़ता है और उसका स्वामी {_g(lord.planet, lang)} है।",
-                f"नाते, विवाह आणि अपत्य. सप्तम भाव {_g(seventh, lang)} मध्ये येतो आणि त्याचा स्वामी {_g(lord.planet, lang)} आहे.",
-            ),
-            _where(chart, lord, lang),
-            _say(
-                lang,
-                "Venus carries marriage, comfort, and agreement.",
-                "शुक्र विवाह, सुख और समझौते का कारक है।",
-                "शुक्र विवाह, सुख आणि कराराचा कारक आहे.",
-            ),
-            _where(chart, venus, lang),
-            _say(
-                lang,
-                f"The 5th house, for children and affection, falls in {_g(fifth, lang)}.",
-                f"संतान और स्नेह का पंचम भाव {_g(fifth, lang)} में पड़ता है।",
-                f"अपत्य आणि स्नेहाचा पंचम भाव {_g(fifth, lang)} मध्ये येतो.",
-            ),
-            _where(chart, fifth_lord, lang),
-            _tone([lord.house, venus.house, fifth_lord.house], lang),
+    parts = [
+        _line(
+            "rel_open",
+            lang,
+            seventh=_g(seventh, lang),
+            lord=_g(lord.planet, lang),
+        ),
+        _where(chart, lord, lang),
+    ]
+    if venus.planet == lord.planet:
+        parts.append(_line("venus_same_lord", lang, d9=_g(venus.navamsa_sign_name, lang)))
+    else:
+        parts.append(_line("venus_role", lang))
+        parts.append(_where(chart, venus, lang))
+    parts.append(
+        _line(
+            "fifth_open",
+            lang,
+            fifth=_g(fifth, lang),
+            fifth_lord=_g(fifth_lord.planet, lang),
         )
     )
+    if fifth_lord.planet not in {lord.planet, venus.planet}:
+        parts.append(_where(chart, fifth_lord, lang))
+    parts.append(_tone([lord.house, venus.house, fifth_lord.house], lang))
+    return " ".join(parts)
 
 
 def _money(chart: ChartResponse, transits: dict[str, object], lang: str) -> str:
     second, second_lord = _lord(chart, 2)
     eleventh, eleventh_lord = _lord(chart, 11)
     jupiter = _planet(chart, "Jupiter")
-    return " ".join(
-        (
-            _say(
-                lang,
-                f"Money. The 2nd house falls in {_g(second, lang)} and its lord is {_g(second_lord.planet, lang)}.",
-                f"धन। द्वितीय भाव {_g(second, lang)} में पड़ता है और उसका स्वामी {_g(second_lord.planet, lang)} है।",
-                f"धन. द्वितीय भाव {_g(second, lang)} मध्ये येतो आणि त्याचा स्वामी {_g(second_lord.planet, lang)} आहे.",
-            ),
-            _where(chart, second_lord, lang),
-            _say(
-                lang,
-                f"The 11th house falls in {_g(eleventh, lang)} and its lord is {_g(eleventh_lord.planet, lang)}.",
-                f"एकादश भाव {_g(eleventh, lang)} में पड़ता है और उसका स्वामी {_g(eleventh_lord.planet, lang)} है।",
-                f"एकादश भाव {_g(eleventh, lang)} मध्ये येतो आणि त्याचा स्वामी {_g(eleventh_lord.planet, lang)} आहे.",
-            ),
-            _where(chart, eleventh_lord, lang),
-            _say(
-                lang,
-                "Natal Jupiter carries increase.",
-                "जन्म का बृहस्पति वृद्धि का कारक है।",
-                "जन्म कुंडलीतील गुरू वाढीचा कारक आहे.",
-            ),
-            _where(chart, jupiter, lang),
-            _say(
-                lang,
-                f"By transit, Jupiter is in {_g(transits['jupiter_transit_sign'], lang)}, house {transits['jupiter_house_from_moon']} from the birth Moon.",
-                f"गोचर में बृहस्पति {_g(transits['jupiter_transit_sign'], lang)} में है, जन्म चंद्र से भाव {transits['jupiter_house_from_moon']}।",
-                f"गोचरात गुरू {_g(transits['jupiter_transit_sign'], lang)} मध्ये आहे, जन्म चंद्रापासून भाव {transits['jupiter_house_from_moon']}.",
-            ),
-            _tone([second_lord.house, eleventh_lord.house, jupiter.house], lang),
+    jh = int(str(transits["jupiter_house_from_moon"]))
+    parts = [
+        _line(
+            "money_open",
+            lang,
+            second=_g(second, lang),
+            second_lord=_g(second_lord.planet, lang),
+            eleventh=_g(eleventh, lang),
+            eleventh_lord=_g(eleventh_lord.planet, lang),
+        ),
+        _where(chart, second_lord, lang),
+    ]
+    if eleventh_lord.planet != second_lord.planet:
+        parts.append(_where(chart, eleventh_lord, lang))
+    if jupiter.planet not in {second_lord.planet, eleventh_lord.planet}:
+        parts.append(_line("natal_jup", lang))
+        parts.append(_where(chart, jupiter, lang))
+    parts.append(
+        _line(
+            "transit_jup_money",
+            lang,
+            jup_sign=_g(transits["jupiter_transit_sign"], lang),
+            jup_h=jh,
+            matter=_matter(jh, lang),
         )
     )
+    parts.append(_tone([second_lord.house, eleventh_lord.house, jupiter.house], lang))
+    return " ".join(parts)
 
 
 def _home(chart: ChartResponse, transits: dict[str, object], lang: str) -> str:
     sign, lord = _lord(chart, 4)
     moon = _planet(chart, "Moon")
-    return " ".join(
-        (
-            _say(
+    sh = int(str(transits["saturn_house_from_moon"]))
+    parts = [
+        _line("home_open", lang, sign=_g(sign, lang), lord=_g(lord.planet, lang)),
+        _where(chart, lord, lang),
+    ]
+    if moon.planet == lord.planet:
+        parts.append(
+            _line(
+                "moon_same_fourth",
                 lang,
-                f"Home and family. The 4th house falls in {_g(sign, lang)} and its lord is {_g(lord.planet, lang)}.",
-                f"घर और परिवार। चतुर्थ भाव {_g(sign, lang)} में पड़ता है और उसका स्वामी {_g(lord.planet, lang)} है।",
-                f"घर आणि कुटुंब. चतुर्थ भाव {_g(sign, lang)} मध्ये येतो आणि त्याचा स्वामी {_g(lord.planet, lang)} आहे.",
-            ),
-            _where(chart, lord, lang),
-            _where(chart, moon, lang),
-            _say(
-                lang,
-                f"Saturn by transit is in house {transits['saturn_house_from_moon']} from the birth Moon, so domestic plans follow that pace.",
-                f"शनि का गोचर जन्म चंद्र से भाव {transits['saturn_house_from_moon']} में है, इसलिए घरेलू योजना उसी गति से चलती है।",
-                f"शनीचे गोचर जन्म चंद्रापासून भाव {transits['saturn_house_from_moon']} मध्ये आहे, म्हणून घरातील योजना त्या गतीने चालतात.",
-            ),
-            _tone([lord.house, moon.house], lang),
+                matter=_matter(moon.house, lang),
+                d9=_g(moon.navamsa_sign_name, lang),
+            )
+        )
+    else:
+        parts.append(_where(chart, moon, lang))
+    parts.append(
+        _line(
+            "sat_home",
+            lang,
+            sat_sign=_g(transits["saturn_transit_sign"], lang),
+            sat_h=sh,
+            matter=_matter(sh, lang),
         )
     )
+    parts.append(_tone([lord.house, moon.house], lang))
+    return " ".join(parts)
 
 
-def _months(months: tuple[str, str, str], dasha: dict[str, object], transits: dict[str, object], lang: str) -> str:
+def _months(
+    months: tuple[str, str, str],
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    lang: str,
+) -> str:
     md = _g(dasha["active_mahadasha"], lang)
     ad = _g(dasha["active_antardasha"], lang)
     jup = _g(transits["jupiter_transit_sign"], lang)
@@ -457,17 +429,26 @@ def _months(months: tuple[str, str, str], dasha: dict[str, object], transits: di
     focuses = (
         _say(lang, "career and reputation", "करियर और प्रतिष्ठा", "करिअर आणि प्रतिष्ठा"),
         _say(lang, "money and partnership", "धन और साझेदारी", "धन आणि भागीदारी"),
-        _say(lang, "home, children, and the care points already named", "घर, संतान और ऊपर बताए सावध बिंदु", "घर, अपत्य आणि वर सांगितलेले सावध मुद्दे"),
+        _say(
+            lang,
+            "home, children, and steady follow-through",
+            "घर, संतान और स्थिर अनुसरण",
+            "घर, अपत्य आणि सातत्यपूर्ण काम",
+        ),
     )
     lines = []
     for name, focus in zip(months, focuses, strict=True):
-        local = _MONTHS[name][{"en": 0, "hi": 1, "mr": 2}[lang]]
+        local = _MONTHS[name][_LANG_IDX[lang]]
         lines.append(
-            _say(
+            _line(
+                "month_line",
                 lang,
-                f"{local}. The same {md}-{ad} period applies, with Jupiter in {jup} and Saturn in {sat}. Give this month's working weight to {focus}.",
-                f"{local}। वही {md}-{ad} काल लागू है, बृहस्पति {jup} में और शनि {sat} में। इस माह का कार्यभार {focus} पर रखें।",
-                f"{local}. तोच {md}-{ad} काळ लागू आहे, गुरू {jup} मध्ये आणि शनी {sat} मध्ये. या महिन्याचा कार्यभार {focus} वर ठेवा.",
+                month=local,
+                md=md,
+                ad=ad,
+                jup=jup,
+                sat=sat,
+                focus=focus,
             )
         )
     return " ".join(lines)
@@ -478,13 +459,13 @@ def _check(text: str, lang: str) -> str:
     return text
 
 
-def year_reading(chart: ChartResponse, dasha: dict[str, object], transits: dict[str, object], lang: LanguageCode) -> str:
-    close = _say(
-        lang,
-        "The quarters below follow this same birth chart. Each one uses the dasha and the Jupiter and Saturn positions of that quarter for career, partnership, children, money, and home.",
-        "नीचे की तिमाहियाँ इसी जन्म कुंडली से बनती हैं। हर तिमाही उस काल की दशा और बृहस्पति-शनि की स्थिति से करियर, साझेदारी, संतान, धन और घर बताती है।",
-        "खालील तिमाही याच जन्म कुंडलीतून येतात. प्रत्येक तिमाही त्या काळातील दशा आणि गुरू-शनीच्या स्थितीतून करिअर, भागीदारी, अपत्य, धन आणि घर सांगते.",
-    )
+def year_reading(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    lang: LanguageCode,
+) -> str:
+    close = _line("year_close", lang)
     return _check(f"{_outlook(chart, dasha, transits, lang)} {close}", lang)
 
 
@@ -513,29 +494,6 @@ def quarter_reading(
     return _check(" ".join(parts), lang)
 
 
-def _header(chart: ChartResponse, dasha: dict[str, object], lang: str) -> str:
-    moon = _planet(chart, "Moon")
-    md = str(dasha["active_mahadasha"])
-    ad = str(dasha["active_antardasha"])
-    return " ".join(
-        (
-            _say(
-                lang,
-                f"Lagna is {_g(chart.lagna_sign_name, lang)}. Birth Moon is {_g(moon.sign_name, lang)}, nakshatra {_g(moon.nakshatra_name, lang)}, pada {moon.pada}.",
-                f"लग्न {_g(chart.lagna_sign_name, lang)} है। जन्म चंद्र {_g(moon.sign_name, lang)} है, नक्षत्र {_g(moon.nakshatra_name, lang)}, चरण {moon.pada}।",
-                f"लग्न {_g(chart.lagna_sign_name, lang)} आहे. जन्म चंद्र {_g(moon.sign_name, lang)} आहे, नक्षत्र {_g(moon.nakshatra_name, lang)}, चरण {moon.pada}.",
-            ),
-            _say(
-                lang,
-                f"The period is {_g(md, lang)} Mahadasha and {_g(ad, lang)} Antardasha.",
-                f"काल {_g(md, lang)} महादशा और {_g(ad, lang)} अंतर्दशा है।",
-                f"काळ {_g(md, lang)} महादशा आणि {_g(ad, lang)} अंतरदशा आहे.",
-            ),
-            _where(chart, _planet(chart, md), lang),
-        )
-    )
-
-
 def area_reading(
     chart: ChartResponse,
     dasha: dict[str, object],
@@ -549,8 +507,80 @@ def area_reading(
         "finances": _money(chart, transits, lang),
         "home": _home(chart, transits, lang),
     }[area]
+    house_for_area = {"career": 10, "relationships": 7, "finances": 2, "home": 4}[area]
+    _, area_lord = _lord(chart, house_for_area)
     md = str(dasha["active_mahadasha"])
-    return _check(" ".join((_header(chart, dasha, lang), body, _observance(chart, md, lang))), lang)
+    parts = [_anchor_and_period(chart, dasha, lang)]
+    if md != area_lord.planet:
+        parts.append(_where(chart, _planet(chart, md), lang))
+    parts.append(body)
+    parts.append(_observance(chart, area_lord.planet, lang))
+    return _check(" ".join(parts), lang)
+
+
+def area_pro_reading(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    lang: LanguageCode,
+    area: str,
+) -> str:
+    house_for_area = {"career": 10, "relationships": 7, "finances": 2, "home": 4}[area]
+    karaka_name = {
+        "career": "Sun",
+        "relationships": "Venus",
+        "finances": "Jupiter",
+        "home": "Moon",
+    }[area]
+    label = {
+        "career": _say(lang, "10th-house Career", "दशम भाव करियर", "दशम भाव करिअर"),
+        "relationships": _say(lang, "7th-house Partnership", "सप्तम भाव संबंध", "सप्तम भाव नाते"),
+        "finances": _say(lang, "2nd/11th-house Finance", "द्वितीय/एकादश धन", "द्वितीय/एकादश धन"),
+        "home": _say(lang, "4th-house Domestic", "चतुर्थ भाव गृह", "चतुर्थ भाव गृह"),
+    }[area]
+    sign, lord = _lord(chart, house_for_area)
+    karaka = _planet(chart, karaka_name)
+    moon = _planet(chart, "Moon")
+    md = str(dasha["active_mahadasha"])
+    ad = str(dasha["active_antardasha"])
+    pd = str(dasha.get("active_pratyantardasha") or ad)
+    return _check(
+        _line(
+            "area_pro",
+            lang,
+            area_label=label,
+            lagna=_g(chart.lagna_sign_name, lang),
+            moon_sign=_g(moon.sign_name, lang),
+            moon_nak=_g(moon.nakshatra_name, lang),
+            moon_pada=moon.pada,
+            sign=_g(sign, lang),
+            lord=_g(lord.planet, lang),
+            lord_h=lord.house,
+            lord_sign=_g(lord.sign_name, lang),
+            lord_nak=_g(lord.nakshatra_name, lang),
+            lord_pada=lord.pada,
+            lord_d9=_g(lord.navamsa_sign_name, lang),
+            karaka=_g(karaka.planet, lang),
+            karaka_h=karaka.house,
+            karaka_sign=_g(karaka.sign_name, lang),
+            karaka_d9=_g(karaka.navamsa_sign_name, lang),
+            md=_g(md, lang),
+            ad=_g(ad, lang),
+            pd=_g(pd, lang),
+            ad_end=dasha["antardasha_end_date"],
+            jup_sign=_g(transits["jupiter_transit_sign"], lang),
+            jup_h=transits["jupiter_house_from_moon"],
+            sat_sign=_g(transits["saturn_transit_sign"], lang),
+            sat_h=transits["saturn_house_from_moon"],
+        ),
+        lang,
+    )
+
+
+def _transit_moon_lagna_house(chart: ChartResponse, transits: dict[str, object]) -> int:
+    t_sign = str(transits["moon_transit_sign"])
+    t_idx = RASHI_NAMES.index(t_sign) + 1
+    return ((t_idx - chart.lagna_sign_index) % 12) + 1
 
 
 def daily_reading(
@@ -558,50 +588,245 @@ def daily_reading(
     panchang: dict[str, object],
     transits: dict[str, object],
     lang: LanguageCode,
+    dasha: dict[str, object] | None = None,
 ) -> str:
     moon = _planet(chart, "Moon")
-    house = int(str(transits["moon_house_from_natal_moon"]))
-    text = " ".join(
-        (
-            _say(
+    m_house = int(str(transits["moon_house_from_natal_moon"]))
+    l_house = _transit_moon_lagna_house(chart, transits)
+    vara_raw = str(panchang["vara"])
+    vara_lord_name = _VARA_LORDS.get(vara_raw, "Sun")
+    vara_lord = _planet(chart, vara_lord_name)
+    who = chart.input_summary.name
+    parts = [
+        _line(
+            "daily_open",
+            lang,
+            who=who,
+            lagna=_g(chart.lagna_sign_name, lang),
+            moon_sign=_g(moon.sign_name, lang),
+            moon_nak=_g(moon.nakshatra_name, lang),
+            moon_pada=moon.pada,
+            date=panchang["date"],
+            vara=_g(vara_raw, lang),
+            tithi=_g(panchang["tithi"], lang),
+            yoga=_g(panchang["yoga"], lang),
+        ),
+        _line(
+            "daily_moon",
+            lang,
+            t_sign=_g(transits["moon_transit_sign"], lang),
+            t_nak=_g(transits["moon_transit_nakshatra"], lang),
+            m_house=m_house,
+            m_matter=_matter(m_house, lang),
+            l_house=l_house,
+            lagna=_g(chart.lagna_sign_name, lang),
+            l_matter=_matter(l_house, lang),
+        ),
+        _line(
+            "daily_vara",
+            lang,
+            vara_lord=_g(vara_lord.planet, lang),
+            vara_where=_where(chart, vara_lord, lang),
+            vara_h=vara_lord.house,
+            vara_matter=_matter(vara_lord.house, lang),
+        ),
+    ]
+    if dasha is not None:
+        md = str(dasha["active_mahadasha"])
+        ad = str(dasha["active_antardasha"])
+        pd = str(dasha.get("active_pratyantardasha") or ad)
+        parts.append(
+            _line(
+                "period_full",
                 lang,
-                f"Today is read from the birth Moon in {_g(moon.sign_name, lang)}, nakshatra {_g(moon.nakshatra_name, lang)}, pada {moon.pada}.",
-                f"आज का पठन जन्म चंद्र {_g(moon.sign_name, lang)}, नक्षत्र {_g(moon.nakshatra_name, lang)}, चरण {moon.pada} से है।",
-                f"आजचे वाचन जन्म चंद्र {_g(moon.sign_name, lang)}, नक्षत्र {_g(moon.nakshatra_name, lang)}, चरण {moon.pada} पासून आहे.",
-            ),
-            _say(
-                lang,
-                f"The Moon now travels through {_g(transits['moon_transit_sign'], lang)}, nakshatra {_g(transits['moon_transit_nakshatra'], lang)}, house {house} from that birth Moon.",
-                f"चंद्र इस समय {_g(transits['moon_transit_sign'], lang)} में है, नक्षत्र {_g(transits['moon_transit_nakshatra'], lang)}, उस जन्म चंद्र से भाव {house}।",
-                f"चंद्र सध्या {_g(transits['moon_transit_sign'], lang)} मध्ये आहे, नक्षत्र {_g(transits['moon_transit_nakshatra'], lang)}, त्या जन्म चंद्रापासून भाव {house}.",
-            ),
-            _say(
-                lang,
-                f"House {house} from the birth Moon describes {_matter(house, lang)}.",
-                f"जन्म चंद्र से भाव {house} {_matter(house, lang)} बताता है।",
-                f"जन्म चंद्रापासून भाव {house} {_matter(house, lang)} सांगतो.",
-            ),
-            _tone([house], lang),
-            _say(
-                lang,
-                f"Tithi is {_g(panchang['tithi'], lang)}. Yoga is {_g(panchang['yoga'], lang)}. Vara is {_g(panchang['vara'], lang)}.",
-                f"तिथि {_g(panchang['tithi'], lang)} है। योग {_g(panchang['yoga'], lang)} है। वार {_g(panchang['vara'], lang)} है।",
-                f"तिथी {_g(panchang['tithi'], lang)} आहे. योग {_g(panchang['yoga'], lang)} आहे. वार {_g(panchang['vara'], lang)} आहे.",
-            ),
-            _gochara(transits, lang),
+                md=_g(md, lang),
+                ad=_g(ad, lang),
+                pd=_g(pd, lang),
+                ad_end=dasha["antardasha_end_date"],
+            )
         )
+    parts.append(_tone([m_house, l_house, vara_lord.house], lang))
+    parts.append(_gochara(transits, lang))
+    parts.append(_observance(chart, vara_lord_name, lang))
+    return _check(" ".join(parts), lang)
+
+
+def daily_pro_reading(
+    chart: ChartResponse,
+    panchang: dict[str, object],
+    transits: dict[str, object],
+    lang: LanguageCode,
+    dasha: dict[str, object] | None = None,
+) -> str:
+    moon = _planet(chart, "Moon")
+    m_house = int(str(transits["moon_house_from_natal_moon"]))
+    l_house = _transit_moon_lagna_house(chart, transits)
+    vara_raw = str(panchang["vara"])
+    vara_lord = _planet(chart, _VARA_LORDS.get(vara_raw, "Sun"))
+    if dasha is not None:
+        md = _g(dasha["active_mahadasha"], lang)
+        ad = _g(dasha["active_antardasha"], lang)
+        pd = _g(dasha.get("active_pratyantardasha") or dasha["active_antardasha"], lang)
+        dasha_tag = f"Vimshottari {md}-{ad}-{pd}"
+    else:
+        dasha_tag = _g(vara_raw, lang)
+    return _check(
+        _line(
+            "daily_pro",
+            lang,
+            lagna=_g(chart.lagna_sign_name, lang),
+            moon_sign=_g(moon.sign_name, lang),
+            moon_nak=_g(moon.nakshatra_name, lang),
+            moon_pada=moon.pada,
+            t_sign=_g(transits["moon_transit_sign"], lang),
+            t_nak=_g(transits["moon_transit_nakshatra"], lang),
+            m_house=m_house,
+            l_house=l_house,
+            vara=_g(vara_raw, lang),
+            vara_lord=_g(vara_lord.planet, lang),
+            vara_h=vara_lord.house,
+            vara_sign=_g(vara_lord.sign_name, lang),
+            vara_d9=_g(vara_lord.navamsa_sign_name, lang),
+            tithi=_g(panchang["tithi"], lang),
+            yoga=_g(panchang["yoga"], lang),
+            dasha_tag=dasha_tag,
+            jup_sign=_g(transits["jupiter_transit_sign"], lang),
+            jup_h=transits["jupiter_house_from_moon"],
+            sat_sign=_g(transits["saturn_transit_sign"], lang),
+            sat_h=transits["saturn_house_from_moon"],
+        ),
+        lang,
     )
-    return _check(text, lang)
+
+
+def daily_area_reading(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    panchang: dict[str, object],
+    lang: LanguageCode,
+    area: str,
+) -> tuple[str, str]:
+    moon = _planet(chart, "Moon")
+    m_house = int(str(transits["moon_house_from_natal_moon"]))
+    l_house = _transit_moon_lagna_house(chart, transits)
+    md = _g(dasha["active_mahadasha"], lang)
+    ad = _g(dasha["active_antardasha"], lang)
+    pd = _g(dasha.get("active_pratyantardasha") or dasha["active_antardasha"], lang)
+    vara_raw = str(panchang["vara"])
+    vara_lord = _planet(chart, _VARA_LORDS.get(vara_raw, "Sun"))
+
+    if area == "relationships":
+        seventh, lord = _lord(chart, 7)
+        venus = _planet(chart, "Venus")
+        lead = _line(
+            "daily_rel",
+            lang,
+            date=panchang["date"],
+            t_sign=_g(transits["moon_transit_sign"], lang),
+            t_nak=_g(transits["moon_transit_nakshatra"], lang),
+            m_house=m_house,
+            moon_sign=_g(moon.sign_name, lang),
+            l_house=l_house,
+            lagna=_g(chart.lagna_sign_name, lang),
+            l_matter=_matter(l_house, lang),
+            tithi=_g(panchang["tithi"], lang),
+            seventh=_g(seventh, lang),
+            lord=_g(lord.planet, lang),
+            lord_h=lord.house,
+            lord_d9=_g(lord.navamsa_sign_name, lang),
+            venus_sign=_g(venus.sign_name, lang),
+            venus_h=venus.house,
+            venus_d9=_g(venus.navamsa_sign_name, lang),
+            md=md,
+            ad=ad,
+            pd=pd,
+        )
+        simple = f"{lead} {_tone([m_house, lord.house, venus.house], lang)}"
+    elif area == "career":
+        tenth, lord = _lord(chart, 10)
+        sun = _planet(chart, "Sun")
+        lead = _line(
+            "daily_work",
+            lang,
+            date=panchang["date"],
+            vara=_g(vara_raw, lang),
+            vara_lord=_g(vara_lord.planet, lang),
+            vara_h=vara_lord.house,
+            vara_sign=_g(vara_lord.sign_name, lang),
+            vara_d9=_g(vara_lord.navamsa_sign_name, lang),
+            vara_matter=_matter(vara_lord.house, lang),
+            tenth=_g(tenth, lang),
+            lord=_g(lord.planet, lang),
+            lord_h=lord.house,
+            lord_nak=_g(lord.nakshatra_name, lang),
+            lord_d9=_g(lord.navamsa_sign_name, lang),
+            sun_sign=_g(sun.sign_name, lang),
+            sun_h=sun.house,
+            l_house=l_house,
+            md=md,
+            ad=ad,
+            pd=pd,
+        )
+        simple = f"{lead} {_tone([l_house, vara_lord.house, lord.house], lang)}"
+    elif area == "finances":
+        second, second_lord = _lord(chart, 2)
+        eleventh, eleventh_lord = _lord(chart, 11)
+        lead = _line(
+            "daily_money",
+            lang,
+            date=panchang["date"],
+            t_sign=_g(transits["moon_transit_sign"], lang),
+            m_house=m_house,
+            m_matter=_matter(m_house, lang),
+            l_house=l_house,
+            second=_g(second, lang),
+            second_lord=_g(second_lord.planet, lang),
+            second_h=second_lord.house,
+            second_d9=_g(second_lord.navamsa_sign_name, lang),
+            eleventh=_g(eleventh, lang),
+            eleventh_lord=_g(eleventh_lord.planet, lang),
+            eleventh_h=eleventh_lord.house,
+            jup_sign=_g(transits["jupiter_transit_sign"], lang),
+            jup_h=transits["jupiter_house_from_moon"],
+        )
+        simple = f"{lead} {_tone([m_house, second_lord.house, eleventh_lord.house], lang)}"
+    else:
+        fourth, lord = _lord(chart, 4)
+        lead = _line(
+            "daily_home",
+            lang,
+            date=panchang["date"],
+            fourth=_g(fourth, lang),
+            lord=_g(lord.planet, lang),
+            lord_h=lord.house,
+            lord_sign=_g(lord.sign_name, lang),
+            lord_d9=_g(lord.navamsa_sign_name, lang),
+            moon_sign=_g(moon.sign_name, lang),
+            moon_h=moon.house,
+            t_sign=_g(transits["moon_transit_sign"], lang),
+            t_nak=_g(transits["moon_transit_nakshatra"], lang),
+            sat_sign=_g(transits["saturn_transit_sign"], lang),
+            sat_h=transits["saturn_house_from_moon"],
+            abhijit=panchang["abhijit_muhurat"],
+            rahu=panchang["rahu_kaal"],
+        )
+        simple = f"{lead} {_tone([m_house, lord.house, moon.house], lang)}"
+
+    pro = area_pro_reading(chart, dasha, transits, lang, area)
+    return _check(simple, lang), pro
 
 
 def transit_note(transits: dict[str, object], lang: str) -> str:
     sade = transits["sade_sati"]
-    note = _say(
+    note = _line(
+        "transit_quarter",
         lang,
-        f"Jupiter in {_g(transits['jupiter_transit_sign'], lang)}, house {transits['jupiter_house_from_moon']} from the birth Moon, and Saturn in {_g(transits['saturn_transit_sign'], lang)}, house {transits['saturn_house_from_moon']} from the birth Moon, colour this quarter.",
-        f"बृहस्पति {_g(transits['jupiter_transit_sign'], lang)} में, जन्म चंद्र से भाव {transits['jupiter_house_from_moon']}, और शनि {_g(transits['saturn_transit_sign'], lang)} में, जन्म चंद्र से भाव {transits['saturn_house_from_moon']}, इस तिमाही को रंग देते हैं।",
-        f"गुरू {_g(transits['jupiter_transit_sign'], lang)} मध्ये, जन्म चंद्रापासून भाव {transits['jupiter_house_from_moon']}, आणि शनी {_g(transits['saturn_transit_sign'], lang)} मध्ये, जन्म चंद्रापासून भाव {transits['saturn_house_from_moon']}, या तिमाहीला रंग देतात.",
+        jup_sign=_g(transits["jupiter_transit_sign"], lang),
+        jup_h=transits["jupiter_house_from_moon"],
+        sat_sign=_g(transits["saturn_transit_sign"], lang),
+        sat_h=transits["saturn_house_from_moon"],
     )
     if isinstance(sade, dict) and sade.get("is_active"):
-        note = f"{note} {_say(lang, 'Sade Sati is active from the birth Moon: keep routines steady and do not treat a delay as a final outcome.', 'जन्म चंद्र से साढ़ेसाती सक्रिय है: दिनचर्या स्थिर रखें और देरी को अंतिम फल न मानें।', 'जन्म चंद्रापासून साडेसाती सक्रिय आहे: दिनक्रम स्थिर ठेवा आणि विलंबाला अंतिम फळ मानू नका.')}"
+        note = f"{note} {_line('sade_sati_note', lang)}"
     return _check(note, lang)

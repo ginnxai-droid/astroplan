@@ -12,7 +12,13 @@ from app.api.schemas import (
 )
 from app.interpretation.guardrails import verify_text
 from app.interpretation.language import Catalog
-from app.interpretation.phala import area_reading, daily_reading
+from app.interpretation.phala import (
+    area_pro_reading,
+    area_reading,
+    daily_area_reading,
+    daily_pro_reading,
+    daily_reading,
+)
 from app.interpretation.rules import Rule
 from app.interpretation.terms import gloss
 
@@ -70,6 +76,7 @@ def generate_life_area_readings(
     catalog: Catalog,
     lang: LanguageCode,
 ) -> dict[LifeAreaCategory, list[ExplainedStatement]]:
+    del catalog
     ctx = _ctx(chart, dasha, transits)
     window = f"Active {ctx.md}-{ctx.ad} Dasha (until {ctx.ad_end_date})"
     out: dict[LifeAreaCategory, list[ExplainedStatement]] = {
@@ -82,7 +89,7 @@ def generate_life_area_readings(
         if rule.category not in out:
             continue
         simple = area_reading(chart, dasha, transits, lang, rule.category)
-        pro = catalog.get(f"{rule.text_key}.pro", lang)
+        pro = area_pro_reading(chart, dasha, transits, lang, rule.category)
         verify_text(pro, languages=(lang,))
         evidence = rule.evidence_template.format(
             **{name: gloss(value, lang) for name, value in vars(ctx).items()}
@@ -106,29 +113,67 @@ def generate_life_area_readings(
     return out
 
 
+def generate_daily_area_readings(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    panchang: dict[str, object],
+    rules: list[Rule],
+    lang: LanguageCode,
+) -> dict[LifeAreaCategory, list[ExplainedStatement]]:
+    ctx = _ctx(chart, dasha, transits)
+    date_str = str(panchang["date"])
+    window = f"{date_str} · {ctx.md}-{ctx.ad} Dasha"
+    out: dict[LifeAreaCategory, list[ExplainedStatement]] = {
+        "career": [],
+        "relationships": [],
+        "finances": [],
+        "home": [],
+    }
+    for rule in rules:
+        if rule.category not in out:
+            continue
+        simple, pro = daily_area_reading(chart, dasha, transits, panchang, lang, rule.category)
+        evidence = rule.evidence_template.format(
+            **{name: gloss(value, lang) for name, value in vars(ctx).items()}
+        )
+        out[rule.category].append(
+            ExplainedStatement(
+                statement_id=(
+                    f"DAILY_{rule.id}_{date_str}_{chart.lagna_sign_index}_{chart.moon_sign_index}"
+                ),
+                category=rule.category,
+                time_window=window,
+                simple_text=simple,
+                pro_text=pro,
+                why_this=WhyThisExplanation(
+                    rule_id=rule.id,
+                    placement_evidence=evidence,
+                    classical_source=rule.classical_source,
+                    strength_grade=rule.strength_grade,
+                ),
+                safety_verified=True,
+            )
+        )
+    return out
+
+
 def generate_daily_insight(
     chart: ChartResponse,
     panchang: dict[str, object],
     transits: dict[str, object],
     catalog: Catalog,
     lang: LanguageCode,
+    dasha: dict[str, object] | None = None,
 ) -> ExplainedStatement:
+    del catalog
     moon_house = int(str(transits["moon_house_from_natal_moon"]))
     transit_moon_sign = str(transits["moon_transit_sign"])
     tithi = str(panchang["tithi"])
-    yoga = str(panchang["yoga"])
     date_str = str(panchang["date"])
 
-    simple = daily_reading(chart, panchang, transits, lang)
-    pro = catalog.format(
-        "daily_insight.pro",
-        lang,
-        transit_moon_sign=transit_moon_sign,
-        moon_house=moon_house,
-        natal_moon=chart.moon_sign_name,
-        tithi=tithi,
-        yoga=yoga,
-    )
+    simple = daily_reading(chart, panchang, transits, lang, dasha=dasha)
+    pro = daily_pro_reading(chart, panchang, transits, lang, dasha=dasha)
     verify_text(simple, languages=(lang,))
     verify_text(pro, languages=(lang,))
 

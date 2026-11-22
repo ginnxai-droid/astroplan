@@ -140,3 +140,34 @@ def test_create_app_wires_configured_field_encryption_keys(tmp_path: Path) -> No
     export = restarted.get("/v1/privacy/export", headers={"X-User-Id": "U_KEYS"})
     assert export.status_code == 200
     assert "Asha Keys" in json.dumps(export.json())
+
+    partner_save = restarted.post(
+        "/v1/user/chart",
+        headers={"X-User-Id": "U_KEYS"},
+        json={
+            "details": {
+                "name": "Rohan Keys",
+                "birth_date": "1989-08-22",
+                "birth_time": "16:20:00",
+                "place_name": "Mumbai",
+                "country": "India",
+                "latitude": 19.076,
+                "longitude": 72.8777,
+                "timezone_override": "Asia/Kolkata",
+            },
+            "dpdp_consent_granted": True,
+            "age_verified_18_plus": True,
+            "is_third_party_chart": True,
+            "third_party_permission_confirmed": True,
+            "already_married": True,
+        },
+    )
+    assert partner_save.status_code == 200, partner_save.text
+
+    prof = restarted.get("/v1/user/profile", headers={"X-User-Id": "U_KEYS"})
+    assert prof.status_code == 200
+    body = prof.json()
+    assert body["saved"] is True
+    assert body["self_chart"]["name"] == "Asha Keys"
+    assert body["partner_chart"]["name"] == "Rohan Keys"
+    assert body["partner_chart"]["already_married"] is True

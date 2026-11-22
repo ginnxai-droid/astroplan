@@ -301,7 +301,7 @@ def _lexicon(lang: str) -> dict[str, str]:
 
 
 def gloss(value: object, lang: str) -> object:
-    """Return a vernacular label with the English term in brackets."""
+    """Format canonical astrology term with vernacular name first."""
     if lang not in ("hi", "mr") or not isinstance(value, str):
         return value
     local = _lexicon(lang).get(value)

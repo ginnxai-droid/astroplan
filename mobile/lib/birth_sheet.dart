@@ -13,9 +13,18 @@ class BirthSubmission {
 }
 
 class BirthForm extends StatefulWidget {
-  const BirthForm({super.key, this.initial, this.partner = false});
+  const BirthForm(
+      {super.key,
+      this.initial,
+      this.partner = false,
+      this.preConsented = false,
+      this.initialAdult = true,
+      this.initialParental = false});
   final Json? initial;
   final bool partner;
+  final bool preConsented;
+  final bool initialAdult;
+  final bool initialParental;
   @override
   State<BirthForm> createState() => _BirthFormState();
 }
@@ -40,12 +49,24 @@ class _BirthFormState extends State<BirthForm> {
       'timezone_override',
       'uncertainty_minutes'
     ]) {
-      _fields[name] = TextEditingController(
-          text: widget.initial?[name]?.toString() ??
-              (name == 'uncertainty_minutes' ? '0' : ''));
+      var initialText = widget.initial?[name]?.toString() ??
+          (name == 'uncertainty_minutes' ? '0' : '');
+      if (name == 'birth_time' &&
+          RegExp(r'^\d{2}:\d{2}:00$').hasMatch(initialText)) {
+        initialText = initialText.substring(0, 5);
+      }
+      _fields[name] = TextEditingController(text: initialText);
     }
     node = widget.initial?['node_type']?.toString() ?? 'MEAN';
     married = widget.initial?['already_married'] == true;
+    if (widget.preConsented && widget.initial != null) {
+      dpdp = true;
+      adult = widget.initialAdult;
+      parental = !widget.initialAdult && widget.initialParental;
+      if (widget.partner) {
+        permission = true;
+      }
+    }
   }
 
   @override

@@ -94,6 +94,10 @@ class PrivacyRepo:
         is_third_party_chart: bool = False,
         third_party_permission_confirmed: bool = False,
         notification_time: time | None = None,
+        uncertainty_minutes: int = 0,
+        node_type: str = "MEAN",
+        preferred_language: str = "en",
+        already_married: bool = False,
     ) -> None:
         if not dpdp_consent_granted:
             raise ValueError("dpdp_consent_required")
@@ -107,12 +111,18 @@ class PrivacyRepo:
                 s.add(
                     UserRow(
                         user_id=user_id,
+                        preferred_language=preferred_language,
                         dpdp_consent_granted=dpdp_consent_granted,
                         age_verified_18_plus=age_verified_18_plus,
                         parental_consent_verified=parental_consent_verified,
                         notification_time=notification_time,
                     )
                 )
+            else:
+                existing.preferred_language = preferred_language
+                existing.dpdp_consent_granted = dpdp_consent_granted
+                existing.age_verified_18_plus = age_verified_18_plus
+                existing.parental_consent_verified = parental_consent_verified
             s.merge(
                 BirthChartRow(
                     chart_id=chart_id,
@@ -125,9 +135,66 @@ class PrivacyRepo:
                     latitude_encrypted=encrypt_str(str(lat)),
                     longitude_encrypted=encrypt_str(str(lon)),
                     timezone_iana=tz_iana,
+                    uncertainty_minutes=uncertainty_minutes,
+                    node_type=node_type,
+                    ayanamsa_mode="MARRIED" if already_married else "LAHIRI",
                     third_party_permission_confirmed=third_party_permission_confirmed,
                 )
             )
+
+    def _decrypt_chart_row(self, c: BirthChartRow, lang: str = "en") -> dict[str, object]:
+        return {
+            "chart_id": c.chart_id,
+            "name": decrypt_str(c.name_encrypted),
+            "birth_date": c.birth_date.isoformat(),
+            "birth_time": c.birth_time.strftime("%H:%M:%S"),
+            "place_name": decrypt_str(c.place_name_encrypted),
+            "country": decrypt_str(c.country_encrypted) if c.country_encrypted else "India",
+            "latitude": float(decrypt_str(c.latitude_encrypted)),
+            "longitude": float(decrypt_str(c.longitude_encrypted)),
+            "timezone_override": c.timezone_iana,
+            "uncertainty_minutes": c.uncertainty_minutes,
+            "node_type": c.node_type,
+            "language": lang,
+            "already_married": c.ayanamsa_mode == "MARRIED",
+            "third_party_permission_confirmed": c.third_party_permission_confirmed,
+        }
+
+    def get_user_profile(self, user_id: str) -> dict[str, object]:
+        with self._session_factory() as s:
+            user = s.scalar(select(UserRow).where(UserRow.user_id == user_id))
+            if user is None:
+                return {"saved": False, "user_id": user_id}
+            charts = s.scalars(select(BirthChartRow).where(BirthChartRow.user_id == user_id)).all()
+            if not charts:
+                return {
+                    "saved": False,
+                    "user_id": user_id,
+                    "preferred_language": user.preferred_language,
+                    "dpdp_consent_granted": user.dpdp_consent_granted,
+                    "age_verified_18_plus": user.age_verified_18_plus,
+                    "parental_consent_verified": user.parental_consent_verified,
+                }
+            self_row: BirthChartRow | None = None
+            partner_row: BirthChartRow | None = None
+            for row in charts:
+                if row.chart_id.endswith(":partner") or row.third_party_permission_confirmed:
+                    partner_row = row
+                else:
+                    self_row = row
+            lang = user.preferred_language or "en"
+            return {
+                "saved": self_row is not None,
+                "user_id": user.user_id,
+                "preferred_language": lang,
+                "dpdp_consent_granted": user.dpdp_consent_granted,
+                "age_verified_18_plus": user.age_verified_18_plus,
+                "parental_consent_verified": user.parental_consent_verified,
+                "self_chart": self._decrypt_chart_row(self_row, lang) if self_row else None,
+                "partner_chart": (
+                    self._decrypt_chart_row(partner_row, lang) if partner_row else None
+                ),
+            }
 
     def get_raw_ciphertext(self, chart_id: str) -> tuple[bytes, bytes]:
         with self._session_factory() as s:

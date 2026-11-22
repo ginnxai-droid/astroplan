@@ -1,4 +1,4 @@
-"""Deterministic single-chart Yoga and Dosha detection driven by reviewed YAML rules (Gap 3, N7)."""
+"""Deterministic single-chart Yoga and Dosha detection driven by reviewed YAML rules."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from app.api.schemas import (
 )
 from app.interpretation.guardrails import verify_text
 from app.interpretation.language import Catalog
+from app.interpretation.phala import _g, _line, _matter
 from app.interpretation.rules import Rule
 from app.interpretation.terms import gloss
 
@@ -32,10 +33,33 @@ def detect_yogas_and_doshas(
     jup_from_moon = ((jupiter.sign_index - moon.sign_index) % 12) + 1
     if jup_from_moon in (1, 4, 7, 10):
         r_gk = rule_map.get("RULE_PARASHARI_YOGA_GAJAKESARI")
-        text_key = r_gk.text_key if r_gk else "yoga.gajakesari"
         source = r_gk.classical_source if r_gk else "Brihat Parashara Hora Shastra (BPHS), Ch. 36"
-        simple = catalog.get(f"{text_key}.simple", lang)
-        pro = catalog.get(f"{text_key}.pro", lang)
+        simple = _line(
+            "yoga_gajakesari_simple",
+            lang,
+            jup_sign=_g(jupiter.sign_name, lang),
+            jup_h=jupiter.house,
+            jup_nak=_g(jupiter.nakshatra_name, lang),
+            jup_d9=_g(jupiter.navamsa_sign_name, lang),
+            from_moon=jup_from_moon,
+            moon_sign=_g(moon.sign_name, lang),
+            moon_nak=_g(moon.nakshatra_name, lang),
+            matter=_matter(jupiter.house, lang),
+        )
+        pro = _line(
+            "yoga_gajakesari_pro",
+            lang,
+            jup_sign=_g(jupiter.sign_name, lang),
+            jup_h=jupiter.house,
+            jup_nak=_g(jupiter.nakshatra_name, lang),
+            jup_pada=jupiter.pada,
+            jup_d9=_g(jupiter.navamsa_sign_name, lang),
+            from_moon=jup_from_moon,
+            moon_sign=_g(moon.sign_name, lang),
+            moon_h=moon.house,
+            moon_nak=_g(moon.nakshatra_name, lang),
+            moon_pada=moon.pada,
+        )
         verify_text(simple, languages=(lang,))
         verify_text(pro, languages=(lang,))
         results.append(
@@ -62,10 +86,30 @@ def detect_yogas_and_doshas(
 
     if sun.sign_index == mercury.sign_index:
         r_ba = rule_map.get("RULE_PARASHARI_YOGA_BUDHADITYA")
-        text_key = r_ba.text_key if r_ba else "yoga.budhaditya"
         source = r_ba.classical_source if r_ba else "Phaladeepika, Ch. 6"
-        simple = catalog.get(f"{text_key}.simple", lang)
-        pro = catalog.get(f"{text_key}.pro", lang)
+        simple = _line(
+            "yoga_budhaditya_simple",
+            lang,
+            sun_nak=_g(sun.nakshatra_name, lang),
+            merc_nak=_g(mercury.nakshatra_name, lang),
+            merc_d9=_g(mercury.navamsa_sign_name, lang),
+            sign=_g(sun.sign_name, lang),
+            house=sun.house,
+            matter=_matter(sun.house, lang),
+        )
+        pro = _line(
+            "yoga_budhaditya_pro",
+            lang,
+            sun_nak=_g(sun.nakshatra_name, lang),
+            sun_pada=sun.pada,
+            sun_d9=_g(sun.navamsa_sign_name, lang),
+            merc_nak=_g(mercury.nakshatra_name, lang),
+            merc_pada=mercury.pada,
+            merc_d9=_g(mercury.navamsa_sign_name, lang),
+            sign=_g(sun.sign_name, lang),
+            house=sun.house,
+            lagna=_g(chart.lagna_sign_name, lang),
+        )
         verify_text(simple, languages=(lang,))
         verify_text(pro, languages=(lang,))
         results.append(
@@ -78,7 +122,8 @@ def detect_yogas_and_doshas(
                 why_this=WhyThisExplanation(
                     rule_id="RULE_PARASHARI_YOGA_BUDHADITYA",
                     placement_evidence=(
-                        f"Sun and Mercury conjoined in {gloss(sun.sign_name, lang)} (House {sun.house})"
+                        f"Sun and Mercury conjoined in {gloss(sun.sign_name, lang)} "
+                        f"(House {sun.house})"
                     ),
                     classical_source=source,
                     strength_grade="supported",
@@ -89,14 +134,30 @@ def detect_yogas_and_doshas(
 
     if jupiter.sign_index in (4, 9, 12) and jupiter.house in (1, 4, 7, 10):
         r_hm = rule_map.get("RULE_PARASHARI_YOGA_HAMSA")
-        text_key = r_hm.text_key if r_hm else "yoga.hamsa"
         source = (
             r_hm.classical_source
             if r_hm
             else "Brihat Parashara Hora Shastra (BPHS), Ch. 75 (Pancha Mahapurusha)"
         )
-        simple = catalog.get(f"{text_key}.simple", lang)
-        pro = catalog.get(f"{text_key}.pro", lang)
+        simple = _line(
+            "yoga_hamsa_simple",
+            lang,
+            sign=_g(jupiter.sign_name, lang),
+            house=jupiter.house,
+            nak=_g(jupiter.nakshatra_name, lang),
+            d9=_g(jupiter.navamsa_sign_name, lang),
+            matter=_matter(jupiter.house, lang),
+        )
+        pro = _line(
+            "yoga_hamsa_pro",
+            lang,
+            sign=_g(jupiter.sign_name, lang),
+            lagna=_g(chart.lagna_sign_name, lang),
+            house=jupiter.house,
+            nak=_g(jupiter.nakshatra_name, lang),
+            pada=jupiter.pada,
+            d9=_g(jupiter.navamsa_sign_name, lang),
+        )
         verify_text(simple, languages=(lang,))
         verify_text(pro, languages=(lang,))
         results.append(
@@ -125,7 +186,16 @@ def detect_yogas_and_doshas(
         text_key = r_mg.text_key if r_mg else "dosha.mangal_context"
         source = r_mg.classical_source if r_mg else "Brihat Parashara Hora Shastra (BPHS), Ch. 80"
         mitigated = mars.sign_index in (1, 8, 10)
-        simple = catalog.get(f"{text_key}.simple", lang)
+        simple = _line(
+            "dosha_mangal_mitigated" if mitigated else "dosha_mangal_active",
+            lang,
+            sign=_g(mars.sign_name, lang),
+            house=mars.house,
+            m_house=mars_from_moon,
+            nak=_g(mars.nakshatra_name, lang),
+            d9=_g(mars.navamsa_sign_name, lang),
+            matter=_matter(mars.house, lang),
+        )
         pro = catalog.format(
             f"{text_key}.pro",
             lang,

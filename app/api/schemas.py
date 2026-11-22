@@ -75,14 +75,15 @@ class ConsentGrantRequest(BaseModel):
 
 
 class UserChartSaveRequest(BaseModel):
-    user_id: str = Field(..., min_length=2)
-    chart_id: str = Field(..., min_length=2)
+    user_id: str | None = Field(default=None, min_length=2)
+    chart_id: str | None = Field(default=None, min_length=2)
     details: BirthDetailsInput
     dpdp_consent_granted: bool = False
     age_verified_18_plus: bool = False
     parental_consent_verified: bool = False
     is_third_party_chart: bool = False
     third_party_permission_confirmed: bool = False
+    already_married: bool = False
 
     @model_validator(mode="after")
     def _verify_dpdp_and_age_gate(self) -> UserChartSaveRequest:

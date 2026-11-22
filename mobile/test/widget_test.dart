@@ -683,4 +683,77 @@ void main() {
     await fillBirth(tester);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+      'saved profile auto-loads on startup, edits cleanly, and uses daily_areas on Today',
+      (tester) async {
+    final h = ApiHarness();
+    h.override = (r) {
+      if (r.url.path == '/v1/user/profile') {
+        return reply({
+          'saved': true,
+          'dpdp_consent_granted': true,
+          'age_verified_18_plus': true,
+          'self_chart': {
+            'name': 'Saved User',
+            'birth_date': '1992-04-18',
+            'birth_time': '09:30:00',
+            'place_name': 'Pune',
+            'country': 'India',
+            'latitude': 18.5204,
+            'longitude': 73.8567,
+            'timezone_override': 'Asia/Kolkata',
+            'uncertainty_minutes': 5,
+            'node_type': 'MEAN',
+          },
+        });
+      }
+      if (r.url.path == '/v1/readings/life-areas') {
+        return reply({
+          'life_areas': {
+            'career': [verifiedStatement('Chart career multi-year analysis.')],
+          },
+          'daily_areas': {
+            'career': [verifiedStatement('Today work transit guidance.')],
+          },
+        });
+      }
+      return null;
+    };
+    await tester.pumpWidget(
+        AstroplanApp(api: h.api, notifier: RecordingNotifier()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Saved User'), findsOneWidget);
+    expect(find.text('Today work transit guidance.'), findsOneWidget);
+    expect(find.text('Chart career multi-year analysis.'), findsNothing);
+
+    await tapVisible(tester, find.byKey(const Key('tab_1')));
+    expect(find.text('Chart career multi-year analysis.'), findsOneWidget);
+
+    await tapVisible(tester, find.byKey(const Key('chart_edit_details')));
+    expect(
+        tester
+            .widget<TextFormField>(find.byKey(const Key('name')))
+            .controller!
+            .text,
+        'Saved User');
+    expect(
+        tester
+            .widget<TextFormField>(find.byKey(const Key('birth_time')))
+            .controller!
+            .text,
+        '09:30');
+    await tester.enterText(find.byKey(const Key('name')), 'Updated User');
+    tester.testTextInput.hide();
+    await tester.drag(
+        find.byType(SingleChildScrollView).last, const Offset(0, -700));
+    await tester.pumpAndSettle();
+    await tapVisible(tester, find.byKey(const Key('calculate_chart')));
+
+    expect(find.text('Updated User'), findsOneWidget);
+    expect(h.at('/user/chart'), isNotEmpty);
+    expect(jsonDecode(h.at('/user/chart').last.body)['details']['name'],
+        'Updated User');
+  });
 }

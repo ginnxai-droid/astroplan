@@ -852,10 +852,22 @@
             "title": "Age Verified 18 Plus",
             "type": "boolean"
           },
+          "already_married": {
+            "default": false,
+            "title": "Already Married",
+            "type": "boolean"
+          },
           "chart_id": {
-            "minLength": 2,
-            "title": "Chart Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chart Id"
           },
           "details": {
             "$ref": "#/components/schemas/BirthDetailsInput"
@@ -881,14 +893,19 @@
             "type": "boolean"
           },
           "user_id": {
-            "minLength": 2,
-            "title": "User Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
           }
         },
         "required": [
-          "user_id",
-          "chart_id",
           "details"
         ],
         "title": "UserChartSaveRequest",
@@ -2968,6 +2985,70 @@
           }
         },
         "summary": "Set Notification Preferences"
+      }
+    },
+    "/v1/user/profile": {
+      "get": {
+        "operationId": "get_user_profile_v1_user_profile_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-User-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get User Profile V1 User Profile Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get User Profile"
       }
     },
     "/v1/user/{user_id}": {

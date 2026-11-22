@@ -10,6 +10,7 @@ import 'api.dart';
 import 'ask_area.dart';
 import 'birth_sheet.dart';
 import 'celestial_widgets.dart';
+import 'firebase_session.dart';
 import 'l10n/app_localizations.dart';
 import 'licensing.dart';
 import 'terms.dart';
@@ -36,7 +37,12 @@ class _CelestialHomeState extends State<CelestialHome> {
   final annualAnchor = GlobalKey();
   bool showChartDetails = false;
   int year = DateTime.now().year;
-  bool d9 = false, consentRecorded = false, notificationBusy = false;
+  bool d9 = false,
+      consentRecorded = false,
+      notificationBusy = false,
+      authBusy = false,
+      _savedAdult = true,
+      _savedParental = false;
   Json? profile, partner;
   final data = <String, Json>{};
   final errors = <String, Object>{};
@@ -66,6 +72,136 @@ class _CelestialHomeState extends State<CelestialHome> {
       profile?['timezone_override'] != null || data['chart'] != null
           ? {'target_date': targetDate}
           : {};
+  @override
+  void initState() {
+    super.initState();
+    if (api.authenticated) {
+      _restoreSavedProfile();
+    }
+  }
+
+  Future<void> _restoreSavedProfile({bool overwrite = false}) async {
+    if (!api.authenticated) return;
+    final generation = epoch;
+    try {
+      final saved = await api.get('/user/profile', protected: true);
+      if (!mounted || epoch != generation) return;
+      if (saved['saved'] != true || saved['self_chart'] is! Map) return;
+      if (!overwrite && profile != null) return;
+      final selfMap = jsonMap(saved['self_chart']);
+      final partnerMap =
+          saved['partner_chart'] is Map ? jsonMap(saved['partner_chart']) : null;
+      setState(() {
+        profile = selfMap;
+        partner = partnerMap;
+        consentRecorded = saved['dpdp_consent_granted'] == true;
+        _savedAdult = saved['age_verified_18_plus'] != false;
+        _savedParental = saved['parental_consent_verified'] == true;
+      });
+      _loadProfile();
+      if (partnerMap != null) _loadMatch();
+    } catch (_) {
+      // Honest empty onboarding remains if no saved profile exists yet.
+    }
+  }
+
+  Future<void> _persistChart(Json chartDetails,
+      {required bool adult,
+      required bool parental,
+      bool isPartner = false,
+      bool partnerPermission = false}) async {
+    if (!api.authenticated) return;
+    try {
+      await api.post(
+          '/user/chart',
+          {
+            if (api.userId != null) 'user_id': api.userId,
+            'details': {
+              ...chartDetails,
+              'language': widget.locale.languageCode,
+            },
+            'dpdp_consent_granted': true,
+            'age_verified_18_plus': adult,
+            'parental_consent_verified': !adult && parental,
+            'is_third_party_chart': isPartner,
+            'third_party_permission_confirmed': isPartner && partnerPermission,
+            'already_married': chartDetails['already_married'] == true,
+          },
+          protected: true);
+    } catch (_) {
+      // In-memory session continues even if background persistence fails.
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    if (authBusy) return;
+    final previousProfile = profile;
+    final previousPartner = partner;
+    setState(() => authBusy = true);
+    try {
+      final ok = await signInWithGoogleAccount();
+      if (!mounted) return;
+      if (!ok) {
+        toast(t.googleSignInFailed);
+        return;
+      }
+      final saved = await api.get('/user/profile', protected: true);
+      if (!mounted) return;
+      if (saved['saved'] == true && saved['self_chart'] is Map) {
+        clearSession();
+        setState(() {
+          profile = jsonMap(saved['self_chart']);
+          partner = saved['partner_chart'] is Map
+              ? jsonMap(saved['partner_chart'])
+              : null;
+          consentRecorded = saved['dpdp_consent_granted'] == true;
+          _savedAdult = saved['age_verified_18_plus'] != false;
+          _savedParental = saved['parental_consent_verified'] == true;
+        });
+        _loadProfile();
+        if (partner != null) _loadMatch();
+      } else if (previousProfile != null) {
+        await api.post(
+            '/privacy/consent',
+            {
+              if (api.userId != null) 'user_id': api.userId,
+              'dpdp_consent_granted': true,
+              'age_verified_18_plus': _savedAdult,
+              'parental_consent_verified': !_savedAdult && _savedParental,
+              'preferred_language': widget.locale.languageCode,
+            },
+            protected: true);
+        await _persistChart(previousProfile,
+            adult: _savedAdult, parental: _savedParental);
+        if (previousPartner != null) {
+          await _persistChart(previousPartner,
+              adult: _savedAdult,
+              parental: _savedParental,
+              isPartner: true,
+              partnerPermission: true);
+        }
+        if (mounted) setState(() => consentRecorded = true);
+      }
+      if (mounted) setState(() {});
+    } catch (_) {
+      if (mounted) toast(t.googleSignInFailed);
+    } finally {
+      if (mounted) setState(() => authBusy = false);
+    }
+  }
+
+  Future<void> _handleSignOut() async {
+    if (authBusy) return;
+    setState(() => authBusy = true);
+    try {
+      await signOutToAnonymous();
+      if (!mounted) return;
+      clearSession();
+    } finally {
+      if (mounted) setState(() => authBusy = false);
+    }
+  }
+
   @override
   void didUpdateWidget(covariant CelestialHome oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -138,11 +274,17 @@ class _CelestialHomeState extends State<CelestialHome> {
     });
   }
 
-  Future<void> editBirth({bool forPartner = false}) async {
+  Future<void> editBirth(
+      {bool forPartner = false, bool preConsented = false}) async {
+    final initialData = forPartner ? partner : profile;
     final result = await goldSheet<BirthSubmission>(context,
         title: forPartner ? t.partnerDetails : t.birthDetails,
         child: BirthForm(
-            initial: forPartner ? partner : profile, partner: forPartner));
+            initial: initialData,
+            partner: forPartner,
+            preConsented: preConsented && initialData != null,
+            initialAdult: _savedAdult,
+            initialParental: _savedParental));
     if (result == null || !mounted) return;
     if (forPartner) {
       if (!result.partnerPermission || profile == null) return;
@@ -152,11 +294,22 @@ class _CelestialHomeState extends State<CelestialHome> {
         errors.remove('match');
       });
       _loadMatch();
+      if (accountReady) {
+        await _persistChart(result.details,
+            adult: _savedAdult || result.adult,
+            parental: _savedParental || result.parental,
+            isPartner: true,
+            partnerPermission: true);
+      }
       return;
     }
     // Invalidate all in-flight responses before accepting a different person's details.
     clearSession();
-    setState(() => profile = result.details);
+    setState(() {
+      profile = result.details;
+      _savedAdult = result.adult;
+      _savedParental = result.parental;
+    });
     _loadProfile();
     if (api.authenticated) {
       final generation = epoch;
@@ -173,7 +326,12 @@ class _CelestialHomeState extends State<CelestialHome> {
               },
               protected: true));
       if (mounted && epoch == generation) {
-        setState(() => consentRecorded = response != null);
+        final ok = response != null;
+        setState(() => consentRecorded = ok);
+        if (ok) {
+          await _persistChart(result.details,
+              adult: result.adult, parental: result.parental);
+        }
       }
     }
   }
@@ -316,9 +474,68 @@ class _CelestialHomeState extends State<CelestialHome> {
                 onPressed: editBirth,
                 icon: const Icon(Icons.add, size: 18),
                 label: Text(t.birthDetails))),
+        if (firebaseAvailable && !isGoogleSignedIn) ...[
+          gap(10),
+          SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                  key: const Key('google_sign_in_onboarding'),
+                  onPressed: authBusy ? null : _handleGoogleSignIn,
+                  icon: const Icon(Icons.login, size: 18),
+                  label: Text(t.googleSignIn))),
+          gap(8),
+          note(t.googleSignInHint),
+        ],
         gap(12),
         note(t.sessionPrivacy),
       ]));
+
+  Widget savedProfileCard({required String keyPrefix}) {
+    final p = profile;
+    if (p == null) return const SizedBox.shrink();
+    final timeRaw = shown(p['birth_time']);
+    final timeClean = RegExp(r'^\d{2}:\d{2}:00$').hasMatch(timeRaw)
+        ? timeRaw.substring(0, 5)
+        : timeRaw;
+    final summary =
+        '${shown(p['birth_date'])} · $timeClean · ${shown(p['place_name'])}, ${shown(p['country'])}';
+    final account = currentAccountLabel;
+    return GoldPanel(
+        padding: 14,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(shown(p['name']), style: serif(21)),
+                  gap(4),
+                  note(summary),
+                  if (account != null) ...[
+                    gap(4),
+                    Eyebrow(t.googleSignedInAs(account)),
+                  ] else if (accountReady) ...[
+                    gap(4),
+                    Eyebrow(t.savedProfileNote),
+                  ],
+                ])),
+            const SizedBox(width: 10),
+            OutlinedButton.icon(
+                key: Key('${keyPrefix}_edit_details'),
+                onPressed: () => editBirth(preConsented: consentRecorded),
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: Text(t.editDetailsLabel)),
+          ]),
+          if (firebaseAvailable && !isGoogleSignedIn) ...[
+            gap(10),
+            OutlinedButton.icon(
+                key: Key('${keyPrefix}_google_sign_in'),
+                onPressed: authBusy ? null : _handleGoogleSignIn,
+                icon: const Icon(Icons.account_circle_outlined, size: 18),
+                label: Text(t.googleSignIn)),
+          ],
+        ]));
+  }
   double? get natalMoon {
     for (final p in jsonRows(data['chart']?['planets'])) {
       if (p['planet'] == 'Moon') return number(p['longitude']);
@@ -355,7 +572,8 @@ class _CelestialHomeState extends State<CelestialHome> {
   Widget today() {
     final p = data['sky'];
     final d = data['dasha'];
-    final areas = jsonMap(data['areas']?['life_areas']);
+    final areas = jsonMap(
+        data['areas']?['daily_areas'] ?? data['areas']?['life_areas']);
     const dayAreas = [
       ('relationships', 'inner'),
       ('career', 'work'),
@@ -380,9 +598,11 @@ class _CelestialHomeState extends State<CelestialHome> {
       if (profile == null)
         onboarding()
       else ...[
+        savedProfileCard(keyPrefix: 'today'),
+        gap(),
         status('chart'),
         if (errors['chart'] != null)
-          TextButton(onPressed: editBirth, child: Text(t.birthDetails)),
+          TextButton(onPressed: editBirth, child: Text(t.editDetailsLabel)),
         note(t.dayBasis),
         gap(),
         status('daily'),
@@ -578,6 +798,8 @@ class _CelestialHomeState extends State<CelestialHome> {
       if (profile == null)
         onboarding()
       else ...[
+        savedProfileCard(keyPrefix: 'chart'),
+        gap(),
         status('chart'),
         if (c != null) ...[
           SegmentedButton<bool>(
@@ -935,16 +1157,23 @@ class _CelestialHomeState extends State<CelestialHome> {
           gap(10),
           if (partner == null)
             note(t.matchEmpty)
-          else
+          else ...[
             Text(shown(partner?['name']), style: serif(24)),
+            gap(4),
+            note(
+                '${shown(partner?['birth_date'])} · ${shown(partner?['birth_time'])} · ${shown(partner?['place_name'])}, ${shown(partner?['country'])}'),
+          ],
           gap(16),
           FilledButton.icon(
               key: const Key('add_partner'),
               onPressed: pending.contains('match')
                   ? null
-                  : () => editBirth(forPartner: true),
-              icon: const Icon(Icons.person_add_alt_1, size: 18),
-              label: Text(t.addPartner)),
+                  : () => editBirth(
+                      forPartner: true, preConsented: partner != null),
+              icon: Icon(
+                  partner == null ? Icons.person_add_alt_1 : Icons.edit_outlined,
+                  size: 18),
+              label: Text(partner == null ? t.addPartner : t.editPartnerLabel)),
         ])),
         status('match'),
         if (match != null) ...[
@@ -1183,6 +1412,29 @@ class _CelestialHomeState extends State<CelestialHome> {
                             if (sheetContext.mounted) update(() {});
                           }),
                 const Divider(),
+                if (firebaseAvailable) ...[
+                  if (isGoogleSignedIn && currentAccountLabel != null) ...[
+                    note(t.googleSignedInAs(currentAccountLabel!)),
+                    ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.logout, color: gold),
+                        title: Text(t.signOutLabel),
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _handleSignOut();
+                        }),
+                  ] else
+                    ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.login, color: gold),
+                        title: Text(t.googleSignIn),
+                        subtitle: Text(t.googleSignInHint),
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _handleGoogleSignIn();
+                        }),
+                  const Divider(),
+                ],
                 if (!api.authenticated) note(t.authError),
                 ListTile(
                     contentPadding: EdgeInsets.zero,

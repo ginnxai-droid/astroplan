@@ -63,7 +63,11 @@ from app.interpretation.forecast_pdf import render_annual_pdf
 from app.interpretation.language import Catalog
 from app.interpretation.llm import SafeRephraser
 from app.interpretation.match_reading import describe_partnership
-from app.interpretation.readings import generate_daily_insight, generate_life_area_readings
+from app.interpretation.readings import (
+    generate_daily_area_readings,
+    generate_daily_insight,
+    generate_life_area_readings,
+)
 from app.interpretation.rules import load_rules
 from app.ledger.service import (
     OutcomeMark,
@@ -280,9 +284,11 @@ def build_router(settings: Settings) -> APIRouter:
             lat, lon, tz = await _resolve(details, settings)
             eff_date = target_date or _today_in_tz(tz)
             c = calculate_chart(details, lat, lon, tz)
+            moon = next(p for p in c.planets if p.planet == "Moon")
+            d = calculate_vimshottari_dasha(details.birth_date, moon.longitude, eff_date)
             p = calculate_daily_panchang(eff_date, lat, lon, tz)
             t = evaluate_current_transits(c, eff_date)
-            return generate_daily_insight(c, p, t, catalog, details.language)
+            return generate_daily_insight(c, p, t, catalog, details.language, dasha=d)
         except Exception as exc:
             raise _map(exc, catalog, details.language) from exc
 
@@ -306,12 +312,15 @@ def build_router(settings: Settings) -> APIRouter:
             moon = next(p for p in c.planets if p.planet == "Moon")
             d = calculate_vimshottari_dasha(details.birth_date, moon.longitude, eff_date)
             t = evaluate_current_transits(c, eff_date)
+            p = calculate_daily_panchang(eff_date, lat, lon, tz)
             areas = generate_life_area_readings(c, d, t, rules, catalog, details.language)
+            daily_areas = generate_daily_area_readings(c, d, t, p, rules, details.language)
             yogas = detect_yogas_and_doshas(c, catalog, details.language, rules=rules)
             return {
                 "dasha_summary": d,
                 "transit_summary": t,
                 "life_areas": areas,
+                "daily_areas": daily_areas,
                 "yogas_and_doshas": yogas,
                 "professional_advice_disclaimer": catalog.get(
                     "trust.professional_advice_disclaimer", details.language
@@ -467,14 +476,10 @@ def build_router(settings: Settings) -> APIRouter:
             raise _map(exc, catalog, details.language) from exc
 
     @router.post("/reports/annual-forecast/pdf")
-    async def annual_pdf(
-        details: BirthDetailsInput, forecast_year: int | None = None
-    ) -> Response:
+    async def annual_pdf(details: BirthDetailsInput, forecast_year: int | None = None) -> Response:
         try:
             report = await _annual_report(details, forecast_year)
-            disclaimer = catalog.get(
-                "trust.professional_advice_disclaimer", details.language
-            )
+            disclaimer = catalog.get("trust.professional_advice_disclaimer", details.language)
             payload = render_annual_pdf(report, name=details.name, disclaimer=disclaimer)
         except Exception as exc:
             raise _map(exc, catalog, details.language) from exc
@@ -519,12 +524,8 @@ def build_router(settings: Settings) -> APIRouter:
             return describe_partnership(
                 ca,
                 cb,
-                calculate_vimshottari_dasha(
-                    payload.profile_a.birth_date, moon_a.longitude, today
-                ),
-                calculate_vimshottari_dasha(
-                    payload.profile_b.birth_date, moon_b.longitude, today
-                ),
+                calculate_vimshottari_dasha(payload.profile_a.birth_date, moon_a.longitude, today),
+                calculate_vimshottari_dasha(payload.profile_b.birth_date, moon_b.longitude, today),
                 report,
                 name_a=payload.profile_a.name,
                 name_b=payload.profile_b.name,
@@ -609,17 +610,25 @@ def build_router(settings: Settings) -> APIRouter:
         except Exception as exc:
             raise _map(exc, catalog, req.preferred_language) from exc
 
+    @router.get("/user/profile")
+    async def get_user_profile(
+        auth_user: str = Depends(current_user_dep),
+    ) -> dict[str, object]:
+        return repo.get_user_profile(auth_user)
+
     @router.post("/user/chart")
     async def save_user_chart(
         req: UserChartSaveRequest,
         auth_user: str = Depends(current_user_dep),
     ) -> dict[str, str]:
         target = _enforce_ownership(req.user_id, auth_user)
+        suffix = "partner" if req.is_third_party_chart else "self"
+        chart_id = req.chart_id or f"{target[:54]}:{suffix}"
         try:
             lat, lon, tz = await _resolve(req.details, settings)
             repo.create_user_and_chart(
                 user_id=target,
-                chart_id=req.chart_id,
+                chart_id=chart_id,
                 name=req.details.name,
                 birth_date=req.details.birth_date,
                 birth_time=req.details.birth_time,
@@ -633,8 +642,12 @@ def build_router(settings: Settings) -> APIRouter:
                 parental_consent_verified=req.parental_consent_verified,
                 is_third_party_chart=req.is_third_party_chart,
                 third_party_permission_confirmed=req.third_party_permission_confirmed,
+                uncertainty_minutes=req.details.uncertainty_minutes,
+                node_type=req.details.node_type,
+                preferred_language=req.details.language,
+                already_married=req.already_married,
             )
-            return {"status": "saved", "chart_id": req.chart_id}
+            return {"status": "saved", "chart_id": chart_id}
         except Exception as exc:
             raise _map(exc, catalog, req.details.language) from exc
 

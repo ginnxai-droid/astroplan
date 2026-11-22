@@ -197,5 +197,20 @@
   "trustNote": "Traditional perspectives for cultural reflection, not scientific predictions or professional advice.",
   "zodiacNames": "Aries|Taurus|Gemini|Cancer|Leo|Virgo|Libra|Scorpio|Sagittarius|Capricorn|Aquarius|Pisces",
   "nakshatraNames": "Ashwini|Bharani|Krittika|Rohini|Mrigashira|Ardra|Punarvasu|Pushya|Ashlesha|Magha|Purva Phalguni|Uttara Phalguni|Hasta|Chitra|Swati|Vishakha|Anuradha|Jyeshtha|Mula|Purva Ashadha|Uttara Ashadha|Shravana|Dhanishta|Shatabhisha|Purva Bhadrapada|Uttara Bhadrapada|Revati",
-  "planetNames": "Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu"
+  "planetNames": "Sun|Moon|Mars|Mercury|Jupiter|Venus|Saturn|Rahu|Ketu",
+  "googleSignIn": "Sign in with Google",
+  "googleSignedInAs": "Signed in: {account}",
+  "@googleSignedInAs": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "signOutLabel": "Sign out",
+  "editDetailsLabel": "Edit details",
+  "editPartnerLabel": "Edit partner",
+  "savedProfileNote": "Saved securely to your account",
+  "googleSignInHint": "Sign in with Google so your birth details and kundali stay saved automatically.",
+  "googleSignInFailed": "Google sign-in could not be completed. Please try again."
 }
