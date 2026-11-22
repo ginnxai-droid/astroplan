@@ -63,6 +63,49 @@ Future<ResolvedPlace?> resolvePlaceOnDevice(String place, String country,
   }
 }
 
+Future<List<Map<String, dynamic>>> searchPlacesOnDevice(String query,
+    {http.Client? client}) async {
+  final trimmed = query.trim();
+  if (trimmed.length < 2) return const [];
+  final uri = Uri.https('geocoding-api.open-meteo.com', '/v1/search', {
+    'name': trimmed,
+    'count': '6',
+    'language': 'en',
+    'format': 'json',
+  });
+  final http.Client httpClient = client ?? http.Client();
+  final close = client == null;
+  try {
+    final response =
+        await httpClient.get(uri).timeout(const Duration(seconds: 8));
+    if (response.statusCode != 200) return const [];
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map) return const [];
+    final results = decoded['results'];
+    if (results is! List) return const [];
+    return [
+      for (final row in results)
+        if (row is Map && row['latitude'] is num && row['longitude'] is num)
+          {
+            'name': row['name']?.toString() ?? trimmed,
+            'country': row['country']?.toString() ?? '',
+            'display_name': [
+              row['name'],
+              row['admin1'],
+              row['country'],
+            ].whereType<String>().where((part) => part.trim().isNotEmpty).join(', '),
+            'latitude': row['latitude'],
+            'longitude': row['longitude'],
+            if (row['timezone'] is String) 'timezone_iana': row['timezone'],
+          }
+    ];
+  } catch (_) {
+    return const [];
+  } finally {
+    if (close) httpClient.close();
+  }
+}
+
 /// Fills latitude, longitude, and timezone when a birth record only has a place name.
 Future<Map<String, dynamic>> attachCoordinates(
     Map<String, dynamic> details) async {

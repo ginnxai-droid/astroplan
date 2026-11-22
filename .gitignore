@@ -5,6 +5,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .pytest_cache/
+data/places.sqlite
 *.db
 ephe/
 mobile/build/

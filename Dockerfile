@@ -19,6 +19,8 @@ RUN mkdir -p /ephe && cd /ephe \
       'a2cd8fc33807c78ca9a700c91c2e042258b12fc4796519e00781440b5ad8b2e2  seas_18.se1' \
       > /tmp/ephe.sha256 \
  && sha256sum -c /tmp/ephe.sha256
+ENV ASTRO_PLACES_DB=/srv/data/places.sqlite
+RUN python scripts/extract_places.py --dataset cities500 --output /srv/data/places.sqlite
 RUN chmod +x /srv/docker-entrypoint.sh
 EXPOSE 8000
 ENTRYPOINT ["/srv/docker-entrypoint.sh"]

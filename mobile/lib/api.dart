@@ -185,6 +185,34 @@ class AstroplanApiClient {
     }
   }
 
+  Future<List<Json>> searchPlaces(String query) async {
+    try {
+      final response = await _exchange(
+        'GET',
+        '/geocode/search',
+        null,
+        {'q': query, 'limit': '6'},
+        false,
+      );
+      dynamic decoded;
+      try {
+        decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      } on FormatException {
+        return const [];
+      }
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        return const [];
+      }
+      if (decoded is! List) return const [];
+      return [
+        for (final item in decoded)
+          if (item is Map) Map<String, dynamic>.from(item)
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<Json> get(String path,
           {Map<String, String> query = const {}, bool protected = false}) =>
       _send('GET', path, null, query, protected);

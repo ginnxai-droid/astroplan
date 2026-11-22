@@ -13,8 +13,8 @@ import 'birth_sheet.dart';
 import 'celestial_widgets.dart';
 import 'firebase_session.dart';
 import 'l10n/app_localizations.dart';
-import 'place_lookup.dart';
 import 'licensing.dart';
+import 'place_lookup.dart';
 import 'terms.dart';
 
 class CelestialHome extends StatefulWidget {
@@ -308,6 +308,13 @@ class _CelestialHomeState extends State<CelestialHome> {
     });
   }
 
+  Future<List<Json>> _searchPlaces(String query) async {
+    final hits = await api.searchPlaces(query);
+    if (hits.isNotEmpty || api.localDevelopment) return hits;
+    final remote = await searchPlacesOnDevice(query);
+    return remote;
+  }
+
   Future<void> editBirth(
       {bool forPartner = false, bool preConsented = false}) async {
     final initialData = forPartner ? partner : profile;
@@ -318,7 +325,8 @@ class _CelestialHomeState extends State<CelestialHome> {
             partner: forPartner,
             preConsented: preConsented && initialData != null,
             initialAdult: _savedAdult,
-            initialParental: _savedParental));
+            initialParental: _savedParental,
+            placeSearch: _searchPlaces));
     if (result == null || !mounted) return;
     if (forPartner) {
       if (!result.partnerPermission || profile == null) return;

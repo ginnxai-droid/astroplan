@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'api.dart';
 import 'celestial_widgets.dart';
@@ -25,12 +27,14 @@ class BirthForm extends StatefulWidget {
       this.partner = false,
       this.preConsented = false,
       this.initialAdult = true,
-      this.initialParental = false});
+      this.initialParental = false,
+      this.placeSearch});
   final Json? initial;
   final bool partner;
   final bool preConsented;
   final bool initialAdult;
   final bool initialParental;
+  final Future<List<Json>> Function(String query)? placeSearch;
   @override
   State<BirthForm> createState() => _BirthFormState();
 }
@@ -44,6 +48,10 @@ class _BirthFormState extends State<BirthForm> {
   String? gender;
   String? maritalStatus;
   String? occupation;
+  Timer? _placeTimer;
+  var _placeEpoch = 0;
+  var _applyingPlace = false;
+  List<Json> _placeSuggestions = [];
   @override
   void initState() {
     super.initState();
@@ -66,6 +74,7 @@ class _BirthFormState extends State<BirthForm> {
       }
       _fields[name] = TextEditingController(text: initialText);
     }
+    _fields['place_name']!.addListener(_onPlaceEdited);
     node = widget.initial?['node_type']?.toString() ?? 'MEAN';
     married = widget.initial?['already_married'] == true;
     gender = widget.initial?['gender']?.toString();
@@ -83,10 +92,56 @@ class _BirthFormState extends State<BirthForm> {
 
   @override
   void dispose() {
+    _placeTimer?.cancel();
     for (final controller in _fields.values) {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  void _onPlaceEdited() {
+    if (_applyingPlace || widget.placeSearch == null) return;
+    _fields['latitude']!.text = '';
+    _fields['longitude']!.text = '';
+    _fields['timezone_override']!.text = '';
+    _placeTimer?.cancel();
+    final text = _fields['place_name']!.text.trim();
+    if (text.length < 2) {
+      if (_placeSuggestions.isNotEmpty) setState(() => _placeSuggestions = []);
+      return;
+    }
+    _placeTimer = Timer(const Duration(milliseconds: 250), () {
+      _searchPlaces(text);
+    });
+  }
+
+  Future<void> _searchPlaces(String text) async {
+    final search = widget.placeSearch;
+    if (search == null) return;
+    final epoch = ++_placeEpoch;
+    final hits = await search(text);
+    if (!mounted || epoch != _placeEpoch) return;
+    if (_fields['place_name']!.text.trim() != text) return;
+    setState(() => _placeSuggestions = hits.take(6).toList());
+  }
+
+  void _applyPlace(Json hit) {
+    final name = hit['name']?.toString().trim() ?? '';
+    final display = hit['display_name']?.toString().trim() ?? '';
+    final country = hit['country']?.toString().trim() ?? '';
+    _applyingPlace = true;
+    _fields['place_name']!.text =
+        name.isNotEmpty ? name : display.split(',').first.trim();
+    if (country.isNotEmpty) _fields['country']!.text = country;
+    final lat = hit['latitude'];
+    final lon = hit['longitude'];
+    if (lat is num) _fields['latitude']!.text = lat.toString();
+    if (lon is num) _fields['longitude']!.text = lon.toString();
+    final zone = hit['timezone_iana']?.toString().trim() ?? '';
+    if (zone.isNotEmpty) _fields['timezone_override']!.text = zone;
+    _applyingPlace = false;
+    _placeTimer?.cancel();
+    setState(() => _placeSuggestions = []);
   }
 
   String value(String name) => _fields[name]!.text.trim();
@@ -229,6 +284,26 @@ class _BirthFormState extends State<BirthForm> {
           field('place_name', t.placeLabel,
               validator: (v) =>
                   (v?.trim().length ?? 0) >= 2 ? null : t.requiredField),
+          if (_placeSuggestions.isNotEmpty)
+            Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                    color: panel,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: hairline)),
+                child: Column(
+                    children: [
+                      for (final hit in _placeSuggestions)
+                        ListTile(
+                            dense: true,
+                            title: Text(hit['display_name']?.toString() ??
+                                hit['name']?.toString() ?? ''),
+                            subtitle: Text(
+                                '${hit['latitude']}, ${hit['longitude']}',
+                                style: const TextStyle(
+                                    color: muted, fontSize: 12)),
+                            onTap: () => _applyPlace(hit))
+                    ])),
           field('country', t.countryLabel,
               validator: (v) =>
                   (v?.trim().length ?? 0) >= 2 ? null : t.requiredField),

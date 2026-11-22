@@ -37,6 +37,7 @@ from app.core.errors import (
     UnknownTimezoneError,
 )
 from app.core.festivals import compute_panchang_vrats_for_range, load_festivals
+from app.core.gazetteer import PlaceHit, prefer_country, search_places
 from app.core.geocode import make_provider
 from app.core.matching import calculate_ashtakoota_match
 from app.core.notifications import collect_due_notification_users
@@ -145,6 +146,17 @@ def _map(exc: Exception, catalog: Catalog, lang: LanguageCode = "en") -> HTTPExc
     return HTTPException(400, {"error": "bad_request", "detail": str(exc)})
 
 
+def _place_payload(hit: PlaceHit) -> dict[str, object]:
+    return {
+        "name": hit.name,
+        "country": hit.country,
+        "display_name": hit.display_name,
+        "latitude": hit.latitude,
+        "longitude": hit.longitude,
+        "timezone_iana": hit.timezone,
+    }
+
+
 async def _resolve_place(
     place_name: str,
     country: str | None,
@@ -155,11 +167,26 @@ async def _resolve_place(
     settings: Settings,
 ) -> tuple[float, float, str]:
     provider = make_provider(settings)
+    if manual_lat is not None and manual_lon is not None:
+        resolved = await provider.resolve(
+            place_name,
+            country=country,
+            manual_lat=manual_lat,
+            manual_lon=manual_lon,
+            tz_override=tz_override,
+        )
+        return resolved.latitude, resolved.longitude, resolved.timezone_iana
+    query = f"{place_name}, {country}" if country else place_name
+    hits = prefer_country(search_places(settings.places_db, query, limit=5), country)
+    if hits:
+        timezone = tz_override or hits[0].timezone
+        load_zone(timezone)
+        return hits[0].latitude, hits[0].longitude, timezone
     resolved = await provider.resolve(
         place_name,
         country=country,
-        manual_lat=manual_lat,
-        manual_lon=manual_lon,
+        manual_lat=None,
+        manual_lon=None,
         tz_override=tz_override,
     )
     return resolved.latitude, resolved.longitude, resolved.timezone_iana
@@ -198,10 +225,15 @@ def build_router(settings: Settings) -> APIRouter:
 
     @router.get("/geocode/search")
     async def geocode_search(q: str, limit: int = 5) -> list[dict[str, object]]:
+        local = search_places(settings.places_db, q, limit=limit)
+        if local:
+            return [_place_payload(hit) for hit in local]
         provider = make_provider(settings)
         results = await provider.search_candidates(q, limit=limit)
         return [
             {
+                "name": r.display_name.split(",")[0].strip(),
+                "country": "",
                 "display_name": r.display_name,
                 "latitude": r.latitude,
                 "longitude": r.longitude,

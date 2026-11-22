@@ -49,6 +49,7 @@ class Settings(BaseSettings):
     geocode_provider: Literal["nominatim", "manual_only"] = "nominatim"
     nominatim_url: str = "https://nominatim.openstreetmap.org"
     geocode_user_agent: str = "astroplan-beta/3.6 (contact: set-in-env)"
+    places_db: str = ""
 
     # G5, M2 & M3: Auth + Fernet field encryption + Signed Share Tokens + Operator Key
     # + DPDP Grievance Officer
