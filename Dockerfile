@@ -11,7 +11,7 @@ COPY . .
 ENV ASTRO_EPHE_PATH=/ephe
 RUN mkdir -p /ephe && cd /ephe \
  && for f in sepl_18.se1 semo_18.se1 seas_18.se1; do \
-      curl -fsSL --retry 3 -o "$f" "https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/$f"; \
+      curl -fsSL --retry 3 -o "$f" "https://raw.githubusercontent.com/aloistr/swisseph/cae9ecd4b201544d85e411aced17660932514d43/ephe/$f"; \
     done \
  && printf '%s\n' \
       'ca1393ceab3a44fbc895887cf789c68819ae6a1cbc9b22225872dbe4ccd99a66  sepl_18.se1' \

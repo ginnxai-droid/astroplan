@@ -17,6 +17,9 @@ def test_image_bakes_checksum_pinned_ephemeris_files() -> None:
     text = DOCKERFILE.read_text(encoding="utf-8")
     assert "ASTRO_EPHE_PATH=/ephe" in text
     assert "sha256sum -c" in text, "ephemeris downloads must be checksum verified"
+    assert "/swisseph/master/" not in text, (
+        "ephemeris URL must be pinned to an immutable commit, not master"
+    )
     for name, digest in EPHEMERIS.items():
         assert name in text, f"{name} must be baked into the image (ephemeral disks wipe it)"
         assert digest in text, f"{name} must be pinned to its known digest"
