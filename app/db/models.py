@@ -34,6 +34,9 @@ class UserRow(Base):
     )
     notification_time: Mapped[time | None] = mapped_column(Time, nullable=True)
     notifications_muted: Mapped[bool] = mapped_column(Boolean, default=False)
+    gender: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    marital_status: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    occupation: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
 
 class BirthChartRow(Base):

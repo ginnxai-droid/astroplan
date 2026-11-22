@@ -49,7 +49,10 @@ class _CelestialHomeState extends State<CelestialHome> {
   final pending = <String>{};
   final versions = <String, int>{};
   final answers = <Json>[];
+  final chatThread = <Json>[];
   final question = TextEditingController();
+  final phoneController = TextEditingController();
+  final otpController = TextEditingController();
   String? selectedArea;
   bool askUnmatched = false;
   AppLocalizations get t => AppLocalizations.of(context)!;
@@ -88,7 +91,13 @@ class _CelestialHomeState extends State<CelestialHome> {
       if (!mounted || epoch != generation) return;
       if (saved['saved'] != true || saved['self_chart'] is! Map) return;
       if (!overwrite && profile != null) return;
-      final selfMap = jsonMap(saved['self_chart']);
+      final selfMap = {
+        ...jsonMap(saved['self_chart']),
+        if (saved['gender'] != null) 'gender': saved['gender'],
+        if (saved['marital_status'] != null)
+          'marital_status': saved['marital_status'],
+        if (saved['occupation'] != null) 'occupation': saved['occupation'],
+      };
       final partnerMap =
           saved['partner_chart'] is Map ? jsonMap(saved['partner_chart']) : null;
       setState(() {
@@ -109,7 +118,10 @@ class _CelestialHomeState extends State<CelestialHome> {
       {required bool adult,
       required bool parental,
       bool isPartner = false,
-      bool partnerPermission = false}) async {
+      bool partnerPermission = false,
+      String? gender,
+      String? maritalStatus,
+      String? occupation}) async {
     if (!api.authenticated) return;
     try {
       await api.post(
@@ -126,6 +138,15 @@ class _CelestialHomeState extends State<CelestialHome> {
             'is_third_party_chart': isPartner,
             'third_party_permission_confirmed': isPartner && partnerPermission,
             'already_married': chartDetails['already_married'] == true,
+            if (!isPartner && (gender ?? chartDetails['gender']) != null)
+              'gender': gender ?? chartDetails['gender'],
+            if (!isPartner &&
+                (maritalStatus ?? chartDetails['marital_status']) != null)
+              'marital_status':
+                  maritalStatus ?? chartDetails['marital_status'],
+            if (!isPartner &&
+                (occupation ?? chartDetails['occupation']) != null)
+              'occupation': occupation ?? chartDetails['occupation'],
           },
           protected: true);
     } catch (_) {
@@ -221,6 +242,8 @@ class _CelestialHomeState extends State<CelestialHome> {
   void dispose() {
     epoch++;
     question.dispose();
+    phoneController.dispose();
+    otpController.dispose();
     super.dispose();
   }
 
@@ -267,6 +290,7 @@ class _CelestialHomeState extends State<CelestialHome> {
       pending.clear();
       versions.clear();
       answers.clear();
+      chatThread.clear();
       question.clear();
       selectedArea = null;
       askUnmatched = false;
@@ -330,7 +354,11 @@ class _CelestialHomeState extends State<CelestialHome> {
         setState(() => consentRecorded = ok);
         if (ok) {
           await _persistChart(result.details,
-              adult: result.adult, parental: result.parental);
+              adult: result.adult,
+              parental: result.parental,
+              gender: result.gender,
+              maritalStatus: result.maritalStatus,
+              occupation: result.occupation);
         }
       }
     }
@@ -396,8 +424,24 @@ class _CelestialHomeState extends State<CelestialHome> {
     setState(() {
       selectedArea = area;
       askUnmatched = !accountReady && area == null;
+      chatThread.add({
+        'role': 'user',
+        'text': text,
+        'at': DateTime.now().toIso8601String(),
+      });
     });
-    if (!accountReady) return;
+    if (!accountReady) {
+      if (area == null) {
+        setState(() {
+          chatThread.add({
+            'role': 'assistant',
+            'text': t.chatUncovered,
+            'at': DateTime.now().toIso8601String(),
+          });
+        });
+      }
+      return;
+    }
     final result = await load(
         'ask',
         () => api.post(
@@ -415,7 +459,92 @@ class _CelestialHomeState extends State<CelestialHome> {
         (result['ledger_entry_id'] as String).isNotEmpty) {
       setState(() => answers.insert(0, {...result, 'question': text}));
       _loadCalibration();
+      return;
     }
+    if (jsonMap(result['coverage'])['status'] == 'uncovered') {
+      setState(() {
+        chatThread.add({
+          'role': 'assistant',
+          'text': t.chatUncovered,
+          'at': DateTime.now().toIso8601String(),
+        });
+      });
+    }
+  }
+
+  Future<void> phoneLoginSheet() async {
+    phoneController.clear();
+    otpController.clear();
+    var verificationId = '';
+    var busy = false;
+    await goldSheet<void>(context,
+        title: t.phoneSignIn,
+        child: StatefulBuilder(builder: (sheetContext, update) {
+          Future<void> sendCode() async {
+            final raw = phoneController.text.replaceAll(RegExp(r'\D'), '');
+            final e164 =
+                raw.length == 10 ? '+91$raw' : phoneController.text.trim();
+            update(() => busy = true);
+            final id = await startPhoneOtp(e164);
+            if (!sheetContext.mounted) return;
+            update(() {
+              busy = false;
+              verificationId = id ?? '';
+            });
+            if (id == null && mounted) toast(t.phoneSignInFailed);
+          }
+
+          Future<void> verifyCode() async {
+            if (verificationId.isEmpty) return;
+            update(() => busy = true);
+            final ok = await confirmPhoneOtp(
+                verificationId: verificationId, smsCode: otpController.text);
+            if (!sheetContext.mounted) return;
+            update(() => busy = false);
+            if (!ok) {
+              if (mounted) toast(t.phoneSignInFailed);
+              return;
+            }
+            Navigator.pop(sheetContext);
+            await _restoreSavedProfile(overwrite: true);
+            if (mounted && profile == null) {
+              await editBirth();
+            }
+            if (mounted) setState(() {});
+          }
+
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                note(t.phoneSignInHint),
+                gap(14),
+                TextField(
+                    key: const Key('phone_number'),
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                        labelText: t.phoneNumberLabel,
+                        hintText: t.phoneNumberHint)),
+                gap(12),
+                if (verificationId.isNotEmpty)
+                  TextField(
+                      key: const Key('otp_code'),
+                      controller: otpController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                          labelText: t.otpLabel, hintText: t.otpHint)),
+                gap(16),
+                SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                        onPressed: busy
+                            ? null
+                            : (verificationId.isEmpty ? sendCode : verifyCode),
+                        child: Text(verificationId.isEmpty
+                            ? t.sendOtpAction
+                            : t.verifyOtpAction))),
+              ]);
+        }));
   }
 
   Future<void> mark(Json answer, String outcome) async {
@@ -474,17 +603,27 @@ class _CelestialHomeState extends State<CelestialHome> {
                 onPressed: editBirth,
                 icon: const Icon(Icons.add, size: 18),
                 label: Text(t.birthDetails))),
-        if (firebaseAvailable && !isGoogleSignedIn) ...[
+        if (firebaseAvailable) ...[
           gap(10),
           SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                  key: const Key('google_sign_in_onboarding'),
-                  onPressed: authBusy ? null : _handleGoogleSignIn,
-                  icon: const Icon(Icons.login, size: 18),
-                  label: Text(t.googleSignIn))),
+                  key: const Key('phone_sign_in_onboarding'),
+                  onPressed: authBusy ? null : phoneLoginSheet,
+                  icon: const Icon(Icons.sms_outlined, size: 18),
+                  label: Text(t.phoneSignIn))),
+          if (!isGoogleSignedIn) ...[
+            gap(10),
+            SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                    key: const Key('google_sign_in_onboarding'),
+                    onPressed: authBusy ? null : _handleGoogleSignIn,
+                    icon: const Icon(Icons.login, size: 18),
+                    label: Text(t.googleSignIn))),
+          ],
           gap(8),
-          note(t.googleSignInHint),
+          note(t.phoneSignInHint),
         ],
         gap(12),
         note(t.sessionPrivacy),
@@ -1051,7 +1190,7 @@ class _CelestialHomeState extends State<CelestialHome> {
       'home': t.homeLabel,
     };
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      PageHeading(t.tabAsk, t.askTitle, t.askDescription),
+      PageHeading(t.tabAsk, t.chatTitle, t.chatDescription),
       if (profile == null) ...[onboarding(), gap()],
       if (!api.authenticated) ...[
         GoldPanel(child: note(t.authError)),
@@ -1060,6 +1199,32 @@ class _CelestialHomeState extends State<CelestialHome> {
         note(t.consentError),
         gap()
       ],
+      if (chatThread.isEmpty)
+        GoldPanel(child: note(t.chatEmpty))
+      else
+        for (final message in chatThread) ...[
+          gap(8),
+          Align(
+              alignment: message['role'] == 'user'
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: GoldPanel(
+                      accent: message['role'] == 'assistant',
+                      padding: 12,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Eyebrow(message['role'] == 'user'
+                                ? t.chatYou
+                                : t.chatAstroplan),
+                            gap(6),
+                            Text(shown(message['text']),
+                                style: const TextStyle(height: 1.55)),
+                          ])))),
+        ],
+      gap(),
       GoldPanel(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -1083,7 +1248,8 @@ class _CelestialHomeState extends State<CelestialHome> {
                     key: Key('ask_area_${choice.key}'),
                     label: Text(choice.value),
                     selected: selectedArea == choice.key,
-                    onSelected: chartReady ? (_) => chooseArea(choice.key) : null,
+                    onSelected:
+                        chartReady ? (_) => chooseArea(choice.key) : null,
                     labelStyle: TextStyle(
                         color: !chartReady
                             ? muted
@@ -1109,8 +1275,8 @@ class _CelestialHomeState extends State<CelestialHome> {
                         questionReady
                     ? ask
                     : null,
-                icon: const Icon(Icons.arrow_forward, size: 18),
-                label: Text(t.askAction))),
+                icon: const Icon(Icons.send, size: 18),
+                label: Text(t.chatSend))),
       ])),
       status('ask'),
       gap(),
@@ -1413,7 +1579,8 @@ class _CelestialHomeState extends State<CelestialHome> {
                           }),
                 const Divider(),
                 if (firebaseAvailable) ...[
-                  if (isGoogleSignedIn && currentAccountLabel != null) ...[
+                  if ((isGoogleSignedIn || isPhoneSignedIn) &&
+                      currentAccountLabel != null) ...[
                     note(t.googleSignedInAs(currentAccountLabel!)),
                     ListTile(
                         contentPadding: EdgeInsets.zero,
@@ -1423,7 +1590,16 @@ class _CelestialHomeState extends State<CelestialHome> {
                           Navigator.pop(sheetContext);
                           _handleSignOut();
                         }),
-                  ] else
+                  ] else ...[
+                    ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.sms_outlined, color: gold),
+                        title: Text(t.phoneSignIn),
+                        subtitle: Text(t.phoneSignInHint),
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          phoneLoginSheet();
+                        }),
                     ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(Icons.login, color: gold),
@@ -1433,6 +1609,7 @@ class _CelestialHomeState extends State<CelestialHome> {
                           Navigator.pop(sheetContext);
                           _handleGoogleSignIn();
                         }),
+                  ],
                   const Divider(),
                 ],
                 if (!api.authenticated) note(t.authError),

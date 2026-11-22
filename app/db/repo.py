@@ -98,6 +98,9 @@ class PrivacyRepo:
         node_type: str = "MEAN",
         preferred_language: str = "en",
         already_married: bool = False,
+        gender: str | None = None,
+        marital_status: str | None = None,
+        occupation: str | None = None,
     ) -> None:
         if not dpdp_consent_granted:
             raise ValueError("dpdp_consent_required")
@@ -116,6 +119,9 @@ class PrivacyRepo:
                         age_verified_18_plus=age_verified_18_plus,
                         parental_consent_verified=parental_consent_verified,
                         notification_time=notification_time,
+                        gender=gender,
+                        marital_status=marital_status,
+                        occupation=occupation,
                     )
                 )
             else:
@@ -123,6 +129,12 @@ class PrivacyRepo:
                 existing.dpdp_consent_granted = dpdp_consent_granted
                 existing.age_verified_18_plus = age_verified_18_plus
                 existing.parental_consent_verified = parental_consent_verified
+                if gender is not None:
+                    existing.gender = gender
+                if marital_status is not None:
+                    existing.marital_status = marital_status
+                if occupation is not None:
+                    existing.occupation = occupation
             s.merge(
                 BirthChartRow(
                     chart_id=chart_id,
@@ -174,6 +186,9 @@ class PrivacyRepo:
                     "dpdp_consent_granted": user.dpdp_consent_granted,
                     "age_verified_18_plus": user.age_verified_18_plus,
                     "parental_consent_verified": user.parental_consent_verified,
+                    "gender": user.gender,
+                    "marital_status": user.marital_status,
+                    "occupation": user.occupation,
                 }
             self_row: BirthChartRow | None = None
             partner_row: BirthChartRow | None = None
@@ -190,6 +205,9 @@ class PrivacyRepo:
                 "dpdp_consent_granted": user.dpdp_consent_granted,
                 "age_verified_18_plus": user.age_verified_18_plus,
                 "parental_consent_verified": user.parental_consent_verified,
+                "gender": user.gender,
+                "marital_status": user.marital_status,
+                "occupation": user.occupation,
                 "self_chart": self._decrypt_chart_row(self_row, lang) if self_row else None,
                 "partner_chart": (
                     self._decrypt_chart_row(partner_row, lang) if partner_row else None

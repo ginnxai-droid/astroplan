@@ -877,10 +877,63 @@
             "title": "Dpdp Consent Granted",
             "type": "boolean"
           },
+          "gender": {
+            "anyOf": [
+              {
+                "enum": [
+                  "male",
+                  "female",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gender"
+          },
           "is_third_party_chart": {
             "default": false,
             "title": "Is Third Party Chart",
             "type": "boolean"
+          },
+          "marital_status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "single",
+                  "married",
+                  "divorced",
+                  "widowed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marital Status"
+          },
+          "occupation": {
+            "anyOf": [
+              {
+                "enum": [
+                  "employee",
+                  "private",
+                  "government",
+                  "business",
+                  "housewife",
+                  "student",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occupation"
           },
           "parental_consent_verified": {
             "default": false,

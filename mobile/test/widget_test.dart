@@ -210,6 +210,31 @@ Future<void> fillBirth(WidgetTester tester,
     await tester.enterText(find.byKey(Key(entry.key)), entry.value);
   }
   tester.testTextInput.hide();
+  final genderFinder = find.byKey(const Key('gender'));
+  if (!partner && genderFinder.evaluate().isNotEmpty) {
+    final genderField =
+        tester.widget<DropdownButtonFormField<String>>(genderFinder);
+    if (genderField.initialValue == null) {
+      final scrollable = find.byType(Scrollable).last;
+      Future<void> pick(Key key, String label) async {
+        await tester.scrollUntilVisible(find.byKey(key), 120,
+            scrollable: scrollable);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(key));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(label).last);
+        await tester.pumpAndSettle();
+      }
+
+      await pick(const Key('gender'), 'Male');
+      await pick(const Key('marital_status'), 'Single');
+      await pick(const Key('occupation'), 'Employee');
+    }
+  }
+  final scrollable = find.byType(Scrollable).last;
+  await tester.scrollUntilVisible(find.byKey(const Key('dpdp_consent')), 120,
+      scrollable: scrollable);
+  await tester.pumpAndSettle();
   await tapVisible(tester, find.byKey(const Key('dpdp_consent')));
   await tapVisible(tester, find.byKey(const Key('adult_consent')));
   if (partner) {

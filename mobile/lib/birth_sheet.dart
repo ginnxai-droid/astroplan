@@ -7,9 +7,15 @@ class BirthSubmission {
   const BirthSubmission(this.details,
       {required this.adult,
       required this.parental,
-      required this.partnerPermission});
+      required this.partnerPermission,
+      this.gender,
+      this.maritalStatus,
+      this.occupation});
   final Json details;
   final bool adult, parental, partnerPermission;
+  final String? gender;
+  final String? maritalStatus;
+  final String? occupation;
 }
 
 class BirthForm extends StatefulWidget {
@@ -35,6 +41,9 @@ class _BirthFormState extends State<BirthForm> {
   bool dpdp = false, adult = false, parental = false, permission = false;
   bool married = false;
   String node = 'MEAN';
+  String? gender;
+  String? maritalStatus;
+  String? occupation;
   @override
   void initState() {
     super.initState();
@@ -59,6 +68,9 @@ class _BirthFormState extends State<BirthForm> {
     }
     node = widget.initial?['node_type']?.toString() ?? 'MEAN';
     married = widget.initial?['already_married'] == true;
+    gender = widget.initial?['gender']?.toString();
+    maritalStatus = widget.initial?['marital_status']?.toString();
+    occupation = widget.initial?['occupation']?.toString();
     if (widget.preConsented && widget.initial != null) {
       dpdp = true;
       adult = widget.initialAdult;
@@ -110,6 +122,12 @@ class _BirthFormState extends State<BirthForm> {
         (widget.partner && !permission)) {
       return;
     }
+    if (!widget.partner &&
+        !widget.preConsented &&
+        widget.initial == null &&
+        (gender == null || maritalStatus == null || occupation == null)) {
+      return;
+    }
     final details = <String, dynamic>{
       'name': value('name'),
       'birth_date': value('birth_date'),
@@ -126,11 +144,20 @@ class _BirthFormState extends State<BirthForm> {
       if (value('timezone_override').isNotEmpty)
         'timezone_override': value('timezone_override'),
       if (widget.partner) 'already_married': married,
+      if (!widget.partner && gender != null) 'gender': gender,
+      if (!widget.partner && maritalStatus != null)
+        'marital_status': maritalStatus,
+      if (!widget.partner && occupation != null) 'occupation': occupation,
     };
     Navigator.pop(
         context,
         BirthSubmission(details,
-            adult: adult, parental: parental, partnerPermission: permission));
+            adult: adult,
+            parental: parental,
+            partnerPermission: permission,
+            gender: gender,
+            maritalStatus: maritalStatus,
+            occupation: occupation));
   }
 
   @override
@@ -237,6 +264,74 @@ class _BirthFormState extends State<BirthForm> {
                 DropdownMenuItem(value: 'TRUE', child: Text(t.trueNode))
               ],
               onChanged: (v) => setState(() => node = v!)),
+          if (!widget.partner) ...[
+            const SizedBox(height: 14),
+            DropdownButtonFormField<String>(
+                key: const Key('gender'),
+                initialValue: gender,
+                decoration: InputDecoration(labelText: t.genderLabel),
+                items: [
+                  DropdownMenuItem(value: 'male', child: Text(t.genderMale)),
+                  DropdownMenuItem(
+                      value: 'female', child: Text(t.genderFemale)),
+                  DropdownMenuItem(value: 'other', child: Text(t.genderOther)),
+                ],
+                onChanged: (v) => setState(() => gender = v),
+                validator: (v) => !widget.preConsented &&
+                        widget.initial == null &&
+                        v == null
+                    ? t.requiredField
+                    : null),
+            const SizedBox(height: 14),
+            DropdownButtonFormField<String>(
+                key: const Key('marital_status'),
+                initialValue: maritalStatus,
+                decoration: InputDecoration(labelText: t.maritalStatusLabel),
+                items: [
+                  DropdownMenuItem(
+                      value: 'single', child: Text(t.maritalSingle)),
+                  DropdownMenuItem(
+                      value: 'married', child: Text(t.maritalMarried)),
+                  DropdownMenuItem(
+                      value: 'divorced', child: Text(t.maritalDivorced)),
+                  DropdownMenuItem(
+                      value: 'widowed', child: Text(t.maritalWidowed)),
+                ],
+                onChanged: (v) => setState(() => maritalStatus = v),
+                validator: (v) => !widget.preConsented &&
+                        widget.initial == null &&
+                        v == null
+                    ? t.requiredField
+                    : null),
+            const SizedBox(height: 14),
+            DropdownButtonFormField<String>(
+                key: const Key('occupation'),
+                initialValue: occupation,
+                decoration: InputDecoration(labelText: t.occupationLabel),
+                items: [
+                  DropdownMenuItem(
+                      value: 'employee', child: Text(t.occupationEmployee)),
+                  DropdownMenuItem(
+                      value: 'private', child: Text(t.occupationPrivate)),
+                  DropdownMenuItem(
+                      value: 'government',
+                      child: Text(t.occupationGovernment)),
+                  DropdownMenuItem(
+                      value: 'business', child: Text(t.occupationBusiness)),
+                  DropdownMenuItem(
+                      value: 'housewife', child: Text(t.occupationHousewife)),
+                  DropdownMenuItem(
+                      value: 'student', child: Text(t.occupationStudent)),
+                  DropdownMenuItem(
+                      value: 'other', child: Text(t.occupationOther)),
+                ],
+                onChanged: (v) => setState(() => occupation = v),
+                validator: (v) => !widget.preConsented &&
+                        widget.initial == null &&
+                        v == null
+                    ? t.requiredField
+                    : null),
+          ],
           const SizedBox(height: 16),
           CheckboxListTile(
               key: const Key('dpdp_consent'),
@@ -294,7 +389,13 @@ class _BirthFormState extends State<BirthForm> {
                   key: const Key('calculate_chart'),
                   onPressed: dpdp &&
                           (adult || parental) &&
-                          (!widget.partner || permission)
+                          (!widget.partner || permission) &&
+                          (widget.partner ||
+                              widget.preConsented ||
+                              widget.initial != null ||
+                              (gender != null &&
+                                  maritalStatus != null &&
+                                  occupation != null))
                       ? submit
                       : null,
                   child: Text(

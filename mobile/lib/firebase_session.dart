@@ -24,10 +24,20 @@ bool get isGoogleSignedIn {
       (user.email?.isNotEmpty ?? false);
 }
 
+bool get isPhoneSignedIn {
+  if (!firebaseAvailable) return false;
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null || user.isAnonymous) return false;
+  return user.providerData.any((p) => p.providerId == 'phone') ||
+      (user.phoneNumber?.isNotEmpty ?? false);
+}
+
 String? get currentAccountLabel {
   if (!firebaseAvailable) return null;
   final user = FirebaseAuth.instance.currentUser;
   if (user == null || user.isAnonymous) return null;
+  final phone = user.phoneNumber?.trim();
+  if (phone != null && phone.isNotEmpty) return phone;
   final email = user.email?.trim();
   if (email != null && email.isNotEmpty) return email;
   final name = user.displayName?.trim();
@@ -47,7 +57,7 @@ Future<String?> anonymousFirebaseUid() async {
   }
 }
 
-/// Returns a fresh Firebase ID token for the active user (Google or anonymous).
+/// Returns a fresh Firebase ID token for the active user (Google, phone, or anonymous).
 Future<String?> anonymousFirebaseToken() async {
   try {
     final user = await _ensureSessionUser();
@@ -88,7 +98,81 @@ Future<bool> signInWithGoogleAccount() async {
   }
 }
 
-/// Signs out of Google and creates a fresh anonymous session.
+/// Starts phone OTP. Returns the verificationId, or null on failure/cancel.
+Future<String?> startPhoneOtp(String e164Phone) async {
+  if (!firebaseAvailable) return null;
+  final phone = e164Phone.trim();
+  if (!RegExp(r'^\+[1-9]\d{7,14}$').hasMatch(phone)) return null;
+  final auth = FirebaseAuth.instance;
+  String? verificationId;
+  Object? failure;
+  await auth.verifyPhoneNumber(
+    phoneNumber: phone,
+    timeout: const Duration(seconds: 60),
+    verificationCompleted: (credential) async {
+      try {
+        final current = auth.currentUser;
+        if (current != null && current.isAnonymous) {
+          try {
+            await current.linkWithCredential(credential);
+            return;
+          } on FirebaseAuthException {
+            // Fall through to sign-in below.
+          }
+        }
+        await auth.signInWithCredential(credential);
+      } catch (e) {
+        failure = e;
+      }
+    },
+    verificationFailed: (e) {
+      failure = e;
+    },
+    codeSent: (id, _) {
+      verificationId = id;
+    },
+    codeAutoRetrievalTimeout: (id) {
+      verificationId ??= id;
+    },
+  );
+  if (failure != null) return null;
+  return verificationId;
+}
+
+/// Confirms the SMS/WhatsApp OTP against [verificationId].
+Future<bool> confirmPhoneOtp(
+    {required String verificationId, required String smsCode}) async {
+  if (!firebaseAvailable) return false;
+  final code = smsCode.trim();
+  if (code.length < 4 || code.length > 8) return false;
+  final auth = FirebaseAuth.instance;
+  final credential = PhoneAuthProvider.credential(
+      verificationId: verificationId, smsCode: code);
+  try {
+    final current = auth.currentUser;
+    if (current != null && current.isAnonymous) {
+      try {
+        await current.linkWithCredential(credential);
+        return true;
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'credential-already-in-use' ||
+            e.code == 'provider-already-linked') {
+          final signedIn = await auth.signInWithCredential(credential);
+          return signedIn.user != null;
+        }
+        rethrow;
+      }
+    }
+    final signedIn = await auth.signInWithCredential(credential);
+    return signedIn.user != null;
+  } on FirebaseAuthException {
+    return false;
+  } catch (_) {
+    return false;
+  }
+}
+
+/// Signs out of Google/phone and creates a fresh anonymous session.
 Future<void> signOutToAnonymous() async {
   if (!firebaseAvailable) return;
   final auth = FirebaseAuth.instance;

@@ -12,10 +12,21 @@ const lifeAreaTerms = <String, List<String>>{
     'interview',
     'business',
     'startup',
+    'office',
+    'transfer',
+    'boss',
+    'employer',
+    'profession',
+    'employment',
     'नौकरी',
     'करियर',
+    'प्रोमोशन',
+    'ऑफिस',
+    'व्यवसाय',
     'नोकरी',
     'करिअर',
+    'कामा',
+    'नोकरीचा',
   ],
   'relationships': [
     'marriage',
@@ -25,10 +36,23 @@ const lifeAreaTerms = <String, List<String>>{
     'spouse',
     'relationship',
     'commit',
+    'love',
+    'boyfriend',
+    'girlfriend',
+    'husband',
+    'wife',
+    'divorce',
+    'wedding',
+    'engagement',
     'विवाह',
     'शादी',
     'रिश्ते',
+    'पति',
+    'पत्नी',
+    'प्रेम',
     'नाते',
+    'लग्न',
+    'जोडीदार',
   ],
   'finances': [
     'money',
@@ -39,9 +63,19 @@ const lifeAreaTerms = <String, List<String>>{
     'invest',
     'salary',
     'income',
+    'wealth',
+    'expense',
+    'spending',
+    'profit',
+    'loss',
     'पैसा',
     'कर्ज',
     'पैसे',
+    'आय',
+    'बचत',
+    'धन',
+    'उत्पन्न',
+    'खर्च',
   ],
   'home': [
     'home',
@@ -51,12 +85,40 @@ const lifeAreaTerms = <String, List<String>>{
     'move',
     'renovate',
     'family',
+    'mother',
+    'father',
+    'parents',
+    'domestic',
+    'flat',
     'घर',
     'मकान',
     'जमीन',
+    'परिवार',
+    'माता',
+    'पिता',
     'घरबदल',
+    'कुटुंब',
+    'आई',
+    'वडील',
   ],
 };
+
+const presentTimeCues = [
+  'today',
+  'now',
+  'this week',
+  'currently',
+  'tonight',
+  'this month',
+  'आज',
+  'अभी',
+  'इस हफ्ते',
+  'इस महीने',
+  'आता',
+  'या आठवड्यात',
+  'सध्या',
+  'या महिन्यात',
+];
 
 bool _matches(String lowered, String term) {
   final ascii = term.runes.every((unit) => unit < 128);
@@ -84,4 +146,9 @@ String? classifyLifeArea(String question) {
   ];
   if (winners.length != 1) return null;
   return winners.single;
+}
+
+bool isPresentTimeQuestion(String question) {
+  final lowered = question.toLowerCase();
+  return presentTimeCues.any((cue) => _matches(lowered, cue));
 }

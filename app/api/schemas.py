@@ -9,6 +9,17 @@ LanguageCode = Literal["en", "hi", "mr"]
 StrengthGrade = Literal["likely", "supported", "weak", "contested"]
 LifeAreaCategory = Literal["career", "relationships", "finances", "home"]
 NodeType = Literal["MEAN", "TRUE"]
+GenderCode = Literal["male", "female", "other"]
+MaritalStatusCode = Literal["single", "married", "divorced", "widowed"]
+OccupationCode = Literal[
+    "employee",
+    "private",
+    "government",
+    "business",
+    "housewife",
+    "student",
+    "other",
+]
 TelemetryEventType = Literal[
     "why_this_opened",
     "annual_forecast_opened",
@@ -84,6 +95,9 @@ class UserChartSaveRequest(BaseModel):
     is_third_party_chart: bool = False
     third_party_permission_confirmed: bool = False
     already_married: bool = False
+    gender: GenderCode | None = None
+    marital_status: MaritalStatusCode | None = None
+    occupation: OccupationCode | None = None
 
     @model_validator(mode="after")
     def _verify_dpdp_and_age_gate(self) -> UserChartSaveRequest:

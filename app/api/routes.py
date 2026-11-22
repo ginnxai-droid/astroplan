@@ -392,7 +392,7 @@ def build_router(settings: Settings) -> APIRouter:
             daily = None
             if is_present_time_question(question, ask_lexicon):
                 p = calculate_daily_panchang(eff_date, lat, lon, tz)
-                daily = generate_daily_insight(c, p, t, catalog, lang)
+                daily = generate_daily_insight(c, p, t, catalog, lang, dasha=d)
         except Exception as exc:
             # G5: never echo exception text (it can contain birth details) to the caller.
             logger.exception("ask chart computation failed")
@@ -646,6 +646,9 @@ def build_router(settings: Settings) -> APIRouter:
                 node_type=req.details.node_type,
                 preferred_language=req.details.language,
                 already_married=req.already_married,
+                gender=req.gender,
+                marital_status=req.marital_status,
+                occupation=req.occupation,
             )
             return {"status": "saved", "chart_id": chart_id}
         except Exception as exc:

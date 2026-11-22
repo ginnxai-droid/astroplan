@@ -8,10 +8,21 @@ career:
   - interview
   - business
   - startup
+  - office
+  - transfer
+  - boss
+  - employer
+  - profession
+  - employment
   - नौकरी
   - करियर
+  - प्रोमोशन
+  - ऑफिस
+  - व्यवसाय
   - नोकरी
   - करिअर
+  - कामा
+  - नोकरीचा
 relationships:
   - marriage
   - marry
@@ -20,10 +31,23 @@ relationships:
   - spouse
   - relationship
   - commit
+  - love
+  - boyfriend
+  - girlfriend
+  - husband
+  - wife
+  - divorce
+  - wedding
+  - engagement
   - विवाह
   - शादी
   - रिश्ते
+  - पति
+  - पत्नी
+  - प्रेम
   - नाते
+  - लग्न
+  - जोडीदार
 finances:
   - money
   - finance
@@ -33,9 +57,19 @@ finances:
   - invest
   - salary
   - income
+  - wealth
+  - expense
+  - spending
+  - profit
+  - loss
   - पैसा
   - कर्ज
   - पैसे
+  - आय
+  - बचत
+  - धन
+  - उत्पन्न
+  - खर्च
 home:
   - home
   - house
@@ -44,16 +78,33 @@ home:
   - move
   - renovate
   - family
+  - mother
+  - father
+  - parents
+  - domestic
+  - flat
   - घर
   - मकान
   - जमीन
+  - परिवार
+  - माता
+  - पिता
   - घरबदल
+  - कुटुंब
+  - आई
+  - वडील
 present_cues:
   - today
   - now
   - this week
   - currently
+  - tonight
+  - this month
   - आज
   - अभी
+  - इस हफ्ते
+  - इस महीने
   - आता
   - या आठवड्यात
+  - सध्या
+  - या महिन्यात
