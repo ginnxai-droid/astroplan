@@ -58,8 +58,7 @@
             "$ref": "#/components/schemas/ExplainedStatement"
           },
           "pdf_export_available": {
-            "const": false,
-            "default": false,
+            "default": true,
             "title": "Pdf Export Available",
             "type": "boolean"
           },
@@ -474,14 +473,18 @@
             "type": "string"
           },
           "user_id": {
-            "minLength": 2,
-            "title": "User Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "minLength": 2,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
           }
         },
-        "required": [
-          "user_id"
-        ],
         "title": "ConsentGrantRequest",
         "type": "object"
       },
@@ -643,6 +646,11 @@
       },
       "MatchingInput": {
         "properties": {
+          "already_married": {
+            "default": false,
+            "title": "Already Married",
+            "type": "boolean"
+          },
           "partner_consent_confirmed": {
             "default": false,
             "title": "Partner Consent Confirmed",
@@ -2435,8 +2443,36 @@
       }
     },
     "/v1/reports/annual-forecast/pdf": {
-      "get": {
-        "operationId": "blocked_pdf_v1_reports_annual_forecast_pdf_get",
+      "post": {
+        "operationId": "annual_pdf_v1_reports_annual_forecast_pdf_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "forecast_year",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Forecast Year"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BirthDetailsInput"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {
@@ -2445,9 +2481,19 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
-        "summary": "Blocked Pdf"
+        "summary": "Annual Pdf"
       }
     },
     "/v1/share/{token}": {

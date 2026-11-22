@@ -176,7 +176,7 @@ void main() {
       return <String, dynamic>{};
     }));
     await tester.pump();
-    await tester.pump(const Duration(seconds: 61));
+    await tester.pump(const Duration(seconds: 91));
     expect(error,
         isA<ApiFailure>().having((e) => e.code, 'code', 'network_unavailable'));
     expect(calls, 1);
@@ -274,7 +274,7 @@ void main() {
   });
 
   test('default request timeout outlasts a free-tier cold start', () {
-    expect(AstroplanApiClient.requestTimeout, const Duration(seconds: 60));
+    expect(AstroplanApiClient.requestTimeout, const Duration(seconds: 90));
   });
 
   test('a server slower than the configured timeout is a network failure',

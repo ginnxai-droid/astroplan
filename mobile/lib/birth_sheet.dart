@@ -24,6 +24,7 @@ class _BirthFormState extends State<BirthForm> {
   final _form = GlobalKey<FormState>();
   final _fields = <String, TextEditingController>{};
   bool dpdp = false, adult = false, parental = false, permission = false;
+  bool married = false;
   String node = 'MEAN';
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _BirthFormState extends State<BirthForm> {
               (name == 'uncertainty_minutes' ? '0' : ''));
     }
     node = widget.initial?['node_type']?.toString() ?? 'MEAN';
+    married = widget.initial?['already_married'] == true;
   }
 
   @override
@@ -102,6 +104,7 @@ class _BirthFormState extends State<BirthForm> {
         'longitude': double.parse(value('longitude')),
       if (value('timezone_override').isNotEmpty)
         'timezone_override': value('timezone_override'),
+      if (widget.partner) 'already_married': married,
     };
     Navigator.pop(
         context,
@@ -242,7 +245,7 @@ class _BirthFormState extends State<BirthForm> {
                     parental = v!;
                     if (parental) adult = false;
                   })),
-          if (widget.partner)
+          if (widget.partner) ...[
             CheckboxListTile(
                 key: const Key('partner_consent'),
                 contentPadding: EdgeInsets.zero,
@@ -251,6 +254,15 @@ class _BirthFormState extends State<BirthForm> {
                 title: Text(t.partnerConsent,
                     style: const TextStyle(fontSize: 13)),
                 onChanged: (v) => setState(() => permission = v!)),
+            CheckboxListTile(
+                key: const Key('already_married'),
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                value: married,
+                title: Text(t.alreadyMarried,
+                    style: const TextStyle(fontSize: 13)),
+                onChanged: (v) => setState(() => married = v!)),
+          ],
           const SizedBox(height: 10),
           Text(t.sessionPrivacy,
               style: const TextStyle(color: muted, fontSize: 12, height: 1.5)),

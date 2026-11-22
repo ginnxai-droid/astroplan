@@ -1,0 +1,310 @@
+"""Vernacular labels for canonical astrology terms.
+
+Hindi and Marathi show the local name first and keep the English name in
+brackets. English stays the canonical engine value. API fields remain English;
+this layer is for text a person reads.
+"""
+
+from __future__ import annotations
+
+_SIGNS = (
+    "Aries",
+    "Taurus",
+    "Gemini",
+    "Cancer",
+    "Leo",
+    "Virgo",
+    "Libra",
+    "Scorpio",
+    "Sagittarius",
+    "Capricorn",
+    "Aquarius",
+    "Pisces",
+)
+_NAKSHATRAS = (
+    "Ashwini",
+    "Bharani",
+    "Krittika",
+    "Rohini",
+    "Mrigashira",
+    "Ardra",
+    "Punarvasu",
+    "Pushya",
+    "Ashlesha",
+    "Magha",
+    "Purva Phalguni",
+    "Uttara Phalguni",
+    "Hasta",
+    "Chitra",
+    "Swati",
+    "Vishakha",
+    "Anuradha",
+    "Jyeshtha",
+    "Mula",
+    "Purva Ashadha",
+    "Uttara Ashadha",
+    "Shravana",
+    "Dhanishta",
+    "Shatabhisha",
+    "Purva Bhadrapada",
+    "Uttara Bhadrapada",
+    "Revati",
+)
+_TITHIS = (
+    "Shukla Pratipada",
+    "Shukla Dwitiya",
+    "Shukla Tritiya",
+    "Shukla Chaturthi",
+    "Shukla Panchami",
+    "Shukla Shashthi",
+    "Shukla Saptami",
+    "Shukla Ashtami",
+    "Shukla Navami",
+    "Shukla Dashami",
+    "Shukla Ekadashi",
+    "Shukla Dwadashi",
+    "Shukla Trayodashi",
+    "Shukla Chaturdashi",
+    "Purnima",
+    "Krishna Pratipada",
+    "Krishna Dwitiya",
+    "Krishna Tritiya",
+    "Krishna Chaturthi",
+    "Krishna Panchami",
+    "Krishna Shashthi",
+    "Krishna Saptami",
+    "Krishna Ashtami",
+    "Krishna Navami",
+    "Krishna Dashami",
+    "Krishna Ekadashi",
+    "Krishna Dwadashi",
+    "Krishna Trayodashi",
+    "Krishna Chaturdashi",
+    "Amavasya",
+)
+_TITHI_LOCAL = (
+    "शुक्ल प्रतिपदा",
+    "शुक्ल द्वितीया",
+    "शुक्ल तृतीया",
+    "शुक्ल चतुर्थी",
+    "शुक्ल पंचमी",
+    "शुक्ल षष्ठी",
+    "शुक्ल सप्तमी",
+    "शुक्ल अष्टमी",
+    "शुक्ल नवमी",
+    "शुक्ल दशमी",
+    "शुक्ल एकादशी",
+    "शुक्ल द्वादशी",
+    "शुक्ल त्रयोदशी",
+    "शुक्ल चतुर्दशी",
+    "पौर्णिमा",
+    "कृष्ण प्रतिपदा",
+    "कृष्ण द्वितीया",
+    "कृष्ण तृतीया",
+    "कृष्ण चतुर्थी",
+    "कृष्ण पंचमी",
+    "कृष्ण षष्ठी",
+    "कृष्ण सप्तमी",
+    "कृष्ण अष्टमी",
+    "कृष्ण नवमी",
+    "कृष्ण दशमी",
+    "कृष्ण एकादशी",
+    "कृष्ण द्वादशी",
+    "कृष्ण त्रयोदशी",
+    "कृष्ण चतुर्दशी",
+    "अमावस्या",
+)
+_YOGAS = (
+    "Vishkumbha",
+    "Priti",
+    "Ayushman",
+    "Saubhagya",
+    "Shobhana",
+    "Atiganda",
+    "Sukarma",
+    "Dhriti",
+    "Shula",
+    "Ganda",
+    "Vriddhi",
+    "Dhruva",
+    "Vyaghata",
+    "Harshana",
+    "Vajra",
+    "Siddhi",
+    "Vyatipata",
+    "Variyan",
+    "Parigha",
+    "Shiva",
+    "Siddha",
+    "Sadhya",
+    "Shubha",
+    "Shukla",
+    "Brahma",
+    "Indra",
+    "Vaidhriti",
+)
+_YOGA_LOCAL = (
+    "विषकुम्भ",
+    "प्रीति",
+    "आयुष्मान्",
+    "सौभाग्य",
+    "शोभन",
+    "अतिगण्ड",
+    "सुकर्म",
+    "धृति",
+    "शूल",
+    "गण्ड",
+    "वृद्धि",
+    "ध्रुव",
+    "व्याघात",
+    "हर्षण",
+    "वज्र",
+    "सिद्धि",
+    "व्यतिपात",
+    "वरीयान्",
+    "परिघ",
+    "शिव",
+    "सिद्ध",
+    "साध्य",
+    "शुभ",
+    "शुक्ल",
+    "ब्रह्म",
+    "इन्द्र",
+    "वैधृति",
+)
+_KARANAS = {
+    "Kimstughna": "किंस्तुघ्न",
+    "Bava": "बव",
+    "Balava": "बालव",
+    "Kaulava": "कौलव",
+    "Taitila": "तैतिल",
+    "Gara": "गर",
+    "Vanija": "वणिज",
+    "Vishti": "विष्टि",
+    "Shakuni": "शकुनि",
+    "Chatushpada": "चतुष्पाद",
+    "Naga": "नाग",
+}
+_PLANETS = ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu")
+_WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+_HI_SIGNS = (
+    "मेष",
+    "वृषभ",
+    "मिथुन",
+    "कर्क",
+    "सिंह",
+    "कन्या",
+    "तुला",
+    "वृश्चिक",
+    "धनु",
+    "मकर",
+    "कुंभ",
+    "मीन",
+)
+_MR_SIGNS = (
+    "मेष",
+    "वृषभ",
+    "मिथुन",
+    "कर्क",
+    "सिंह",
+    "कन्या",
+    "तूळ",
+    "वृश्चिक",
+    "धनु",
+    "मकर",
+    "कुंभ",
+    "मीन",
+)
+_HI_NAKSHATRAS = (
+    "अश्विनी",
+    "भरणी",
+    "कृत्तिका",
+    "रोहिणी",
+    "मृगशिरा",
+    "आर्द्रा",
+    "पुनर्वसु",
+    "पुष्य",
+    "आश्लेषा",
+    "मघा",
+    "पूर्व फाल्गुनी",
+    "उत्तर फाल्गुनी",
+    "हस्त",
+    "चित्रा",
+    "स्वाति",
+    "विशाखा",
+    "अनुराधा",
+    "ज्येष्ठा",
+    "मूल",
+    "पूर्वाषाढ़ा",
+    "उत्तराषाढ़ा",
+    "श्रवण",
+    "धनिष्ठा",
+    "शतभिषा",
+    "पूर्व भाद्रपद",
+    "उत्तर भाद्रपद",
+    "रेवती",
+)
+_MR_NAKSHATRAS = (
+    "अश्विनी",
+    "भरणी",
+    "कृत्तिका",
+    "रोहिणी",
+    "मृगशीर्ष",
+    "आर्द्रा",
+    "पुनर्वसू",
+    "पुष्य",
+    "आश्लेषा",
+    "मघा",
+    "पूर्वा फाल्गुनी",
+    "उत्तरा फाल्गुनी",
+    "हस्त",
+    "चित्रा",
+    "स्वाती",
+    "विशाखा",
+    "अनुराधा",
+    "ज्येष्ठा",
+    "मूळ",
+    "पूर्वाषाढा",
+    "उत्तराषाढा",
+    "श्रवण",
+    "धनिष्ठा",
+    "शततारका",
+    "पूर्वा भाद्रपदा",
+    "उत्तरा भाद्रपदा",
+    "रेवती",
+)
+_HI_PLANETS = ("सूर्य", "चंद्रमा", "मंगल", "बुध", "बृहस्पति", "शुक्र", "शनि", "राहु", "केतु")
+_MR_PLANETS = ("सूर्य", "चंद्र", "मंगळ", "बुध", "गुरू", "शुक्र", "शनी", "राहू", "केतू")
+_HI_WEEKDAYS = ("सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार", "रविवार")
+_MR_WEEKDAYS = ("सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार", "रविवार")
+
+
+def _pairs(english: tuple[str, ...], local: tuple[str, ...]) -> dict[str, str]:
+    return dict(zip(english, local, strict=True))
+
+
+def _lexicon(lang: str) -> dict[str, str]:
+    signs = _HI_SIGNS if lang == "hi" else _MR_SIGNS
+    nakshatras = _HI_NAKSHATRAS if lang == "hi" else _MR_NAKSHATRAS
+    planets = _HI_PLANETS if lang == "hi" else _MR_PLANETS
+    weekdays = _HI_WEEKDAYS if lang == "hi" else _MR_WEEKDAYS
+    return {
+        **_pairs(_SIGNS, signs),
+        **_pairs(_NAKSHATRAS, nakshatras),
+        **_pairs(_TITHIS, _TITHI_LOCAL),
+        **_pairs(_YOGAS, _YOGA_LOCAL),
+        **_KARANAS,
+        **_pairs(_PLANETS, planets),
+        **_pairs(_WEEKDAYS, weekdays),
+    }
+
+
+def gloss(value: object, lang: str) -> object:
+    """Return a vernacular label with the English term in brackets."""
+    if lang not in ("hi", "mr") or not isinstance(value, str):
+        return value
+    local = _lexicon(lang).get(value)
+    if local is None:
+        return value
+    return f"{local} ({value})"

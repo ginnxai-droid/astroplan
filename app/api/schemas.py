@@ -59,7 +59,7 @@ class BirthDetailsInput(BaseModel):
 
 
 class ConsentGrantRequest(BaseModel):
-    user_id: str = Field(..., min_length=2)
+    user_id: str | None = Field(default=None, min_length=2)
     dpdp_consent_granted: bool = False
     age_verified_18_plus: bool = False
     parental_consent_verified: bool = False
@@ -172,7 +172,7 @@ class AnnualForecastQuarter(BaseModel):
 class AnnualForecastResponse(BaseModel):
     year: int
     delivery_format: Literal["IN_APP_INTERACTIVE"] = "IN_APP_INTERACTIVE"
-    pdf_export_available: Literal[False] = False
+    pdf_export_available: bool = True
     overview: ExplainedStatement
     quarters: list[AnnualForecastQuarter]
     life_area_highlights: dict[LifeAreaCategory, list[ExplainedStatement]]
@@ -182,6 +182,7 @@ class MatchingInput(BaseModel):
     profile_a: BirthDetailsInput
     profile_b: BirthDetailsInput
     partner_consent_confirmed: bool = False
+    already_married: bool = False
 
     @model_validator(mode="after")
     def _require_partner_consent(self) -> MatchingInput:

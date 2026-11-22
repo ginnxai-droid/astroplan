@@ -295,6 +295,7 @@ void main() {
     expect(skyQuery['lon'], '73.8567');
     expect(skyQuery['place_name'], 'Pune');
     expect(find.text('A verified daily reflection.'), findsOneWidget);
+    await tapVisible(tester, find.text('Chart details'));
     final dial = tester.widget<SkyDial>(find.byType(SkyDial));
     expect(dial.panchang!['moon_longitude'], 123.5);
     expect(dial.natalMoon, 42.0);
@@ -366,6 +367,50 @@ void main() {
             .widget<FilledButton>(find.byKey(const Key('ask_submit')))
             .onPressed,
         isNull);
+  });
+
+  testWidgets('Ask keeps the kundali reading closed until an area is chosen',
+      (tester) async {
+    final h = ApiHarness();
+    await startProfile(tester, h);
+    await tapVisible(tester, find.byKey(const Key('tab_2')));
+    expect(find.byKey(const Key('ask_hold')), findsOneWidget);
+    expect(find.text('A verified career reflection.'), findsNothing);
+    final field =
+        tester.widget<TextField>(find.byKey(const Key('ask_question')));
+    await tapVisible(tester, find.byKey(const Key('ask_area_career')));
+    expect(find.text('A verified career reflection.'), findsOneWidget);
+    expect(find.text('Birth Moon nakshatra: Rohini'), findsOneWidget);
+    expect(find.text("Today's nakshatra: Magha"), findsOneWidget);
+    expect(field.controller!.text, isEmpty);
+    expect(h.at('/readings/ask'), isEmpty);
+  });
+
+  testWidgets('Ask still reads the kundali when consent was not recorded',
+      (tester) async {
+    final h = ApiHarness();
+    h.override = (request) => request.url.path.endsWith('/privacy/consent')
+        ? reply({'detail': {'error': 'request_failed'}}, 422)
+        : null;
+    await startProfile(tester, h);
+    await tapVisible(tester, find.byKey(const Key('tab_2')));
+    await tester.enterText(
+        find.byKey(const Key('ask_question')), 'How is my career?');
+    await tester.pump();
+    expect(
+        tester
+            .widget<FilledButton>(find.byKey(const Key('ask_submit')))
+            .onPressed,
+        isNotNull);
+    await tapVisible(tester, find.byKey(const Key('ask_submit')));
+    expect(find.text('A verified career reflection.'), findsOneWidget);
+    expect(
+        tester
+            .widget<TextField>(find.byKey(const Key('ask_question')))
+            .controller!
+            .text,
+        'How is my career?');
+    expect(h.at('/readings/ask'), isEmpty);
   });
 
   for (final status in [503, 429]) {
@@ -564,6 +609,7 @@ void main() {
     expect(
         find.textContaining('No result has been substituted'), findsOneWidget);
     expect(find.text('A verified daily reflection.'), findsNothing);
+    await tapVisible(tester, find.text('Chart details'));
     expect(tester.widget<SkyDial>(find.byType(SkyDial)).panchang, isNotNull);
     await tapVisible(tester, find.byKey(const Key('tab_1')));
     expect(find.text('A verified career reflection.'), findsOneWidget);

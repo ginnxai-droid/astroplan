@@ -5,6 +5,7 @@ from pathlib import Path
 
 from app.api.schemas import LanguageCode
 from app.interpretation.errors import MissingI18nKeyError
+from app.interpretation.terms import gloss
 
 
 class Catalog:
@@ -24,7 +25,8 @@ class Catalog:
         return cat[key]
 
     def format(self, key: str, lang: LanguageCode, **kwargs: object) -> str:
-        return self.get(key, lang).format(**kwargs)
+        values = {name: gloss(value, lang) for name, value in kwargs.items()}
+        return self.get(key, lang).format(**values)
 
     def glossary(self, lang: LanguageCode) -> dict[str, str]:
         cat = self._load(lang)

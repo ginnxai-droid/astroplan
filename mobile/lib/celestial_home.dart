@@ -1,12 +1,18 @@
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'api.dart';
+import 'ask_area.dart';
 import 'birth_sheet.dart';
 import 'celestial_widgets.dart';
 import 'l10n/app_localizations.dart';
 import 'licensing.dart';
+import 'terms.dart';
 
 class CelestialHome extends StatefulWidget {
   const CelestialHome(
@@ -27,6 +33,8 @@ class CelestialHome extends StatefulWidget {
 
 class _CelestialHomeState extends State<CelestialHome> {
   int tab = 0, epoch = 0;
+  final annualAnchor = GlobalKey();
+  bool showChartDetails = false;
   int year = DateTime.now().year;
   bool d9 = false, consentRecorded = false, notificationBusy = false;
   Json? profile, partner;
@@ -36,6 +44,8 @@ class _CelestialHomeState extends State<CelestialHome> {
   final versions = <String, int>{};
   final answers = <Json>[];
   final question = TextEditingController();
+  String? selectedArea;
+  bool askUnmatched = false;
   AppLocalizations get t => AppLocalizations.of(context)!;
   AstroplanApiClient get api => widget.api;
   Json get details => {...?profile, 'language': widget.locale.languageCode};
@@ -78,14 +88,15 @@ class _CelestialHomeState extends State<CelestialHome> {
     super.dispose();
   }
 
-  Future<Json?> load(String key, Future<Json> Function() request) async {
+  Future<Json?> load(String key, Future<Json> Function() request,
+      {bool keepPrevious = false}) async {
     final generation = epoch;
     final version = (versions[key] ?? 0) + 1;
     versions[key] = version;
     setState(() {
       pending.add(key);
       errors.remove(key);
-      data.remove(key);
+      if (!keepPrevious) data.remove(key);
     });
     try {
       final result = await request();
@@ -121,6 +132,8 @@ class _CelestialHomeState extends State<CelestialHome> {
       versions.clear();
       answers.clear();
       question.clear();
+      selectedArea = null;
+      askUnmatched = false;
       d9 = false;
     });
   }
@@ -152,7 +165,7 @@ class _CelestialHomeState extends State<CelestialHome> {
           () => api.post(
               '/privacy/consent',
               {
-                'user_id': api.userId,
+                if (api.userId != null) 'user_id': api.userId,
                 'dpdp_consent_granted': true,
                 'age_verified_18_plus': result.adult,
                 'parental_consent_verified': result.parental,
@@ -170,7 +183,12 @@ class _CelestialHomeState extends State<CelestialHome> {
     final body = details;
     final query = targetQuery;
     load('chart', () => api.post('/chart', body)).then((chart) {
-      if (chart == null || !mounted) return;
+      if (!mounted) return;
+      load('dasha', () => api.post('/dasha', body, query: query));
+      load('daily',
+          () => api.post('/readings/daily-insight', body, query: query));
+      load('areas', () => api.post('/readings/life-areas', body, query: query));
+      if (chart == null) return;
       load(
           'sky',
           () => api.fetchAndCacheDailyPanchang(targetDate,
@@ -178,10 +196,6 @@ class _CelestialHomeState extends State<CelestialHome> {
               latitude: number(chart['resolved_latitude']),
               longitude: number(chart['resolved_longitude'])));
     });
-    load('dasha', () => api.post('/dasha', body, query: query));
-    load(
-        'daily', () => api.post('/readings/daily-insight', body, query: query));
-    load('areas', () => api.post('/readings/life-areas', body, query: query));
   }
 
   void _loadMatch() {
@@ -195,6 +209,7 @@ class _CelestialHomeState extends State<CelestialHome> {
                 'language': widget.locale.languageCode
               },
               'partner_consent_confirmed': true,
+              'already_married': partner?['already_married'] == true,
             }));
   }
 
@@ -211,15 +226,20 @@ class _CelestialHomeState extends State<CelestialHome> {
   }
 
   Future<void> ask() async {
+    final text = question.text.trim();
     if (pending.contains('ask') ||
-        !accountReady ||
         data['chart'] == null ||
-        question.text.trim().runes.length < 3 ||
-        question.text.trim().runes.length > 280) {
+        text.runes.length < 3 ||
+        text.runes.length > 280) {
       return;
     }
     FocusScope.of(context).unfocus();
-    final text = question.text.trim();
+    final area = classifyLifeArea(text);
+    setState(() {
+      selectedArea = area;
+      askUnmatched = !accountReady && area == null;
+    });
+    if (!accountReady) return;
     final result = await load(
         'ask',
         () => api.post(
@@ -315,7 +335,7 @@ class _CelestialHomeState extends State<CelestialHome> {
         if (data['sky'] case final p?) ...[
           FactRow(
               p['reference_kind'] == 'sunrise' ? t.sunriseMoon : t.fallbackMoon,
-              '${shown(p['moon_sign_name'])} · ${degrees(p['moon_degree_in_sign'])} · ${shown(p['nakshatra'])} · ${t.padaLabel} ${shown(p['moon_nakshatra_pada'])}'),
+              '${astroTerm(t.localeName, p['moon_sign_name'])} · ${degrees(p['moon_degree_in_sign'])} · ${astroTerm(t.localeName, p['nakshatra'])} · ${t.padaLabel} ${shown(p['moon_nakshatra_pada'])}'),
           FactRow(t.moonLongitude, degrees(p['moon_longitude'])),
           FactRow(t.sunLongitude, degrees(p['sun_longitude'])),
           if (number(p['phase_illumination']) case final fraction?)
@@ -335,110 +355,131 @@ class _CelestialHomeState extends State<CelestialHome> {
   Widget today() {
     final p = data['sky'];
     final d = data['dasha'];
+    final areas = jsonMap(data['areas']?['life_areas']);
+    const dayAreas = [
+      ('relationships', 'inner'),
+      ('career', 'work'),
+      ('finances', 'money'),
+      ('home', 'home'),
+    ];
+    String areaTitle(String key) => switch (key) {
+          'inner' => t.innerLifeTitle,
+          'work' => t.workTitle,
+          'money' => t.moneyTitle,
+          _ => t.homeDayTitle,
+        };
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Center(
-          child: SizedBox(
-              width: 230,
-              child: InkWell(
-                  onTap: showSky,
-                  borderRadius: BorderRadius.circular(140),
-                  child: SkyDial(panchang: p, natalMoon: natalMoon)))),
-      Center(
-          child: Column(children: [
-        Eyebrow(p == null
-            ? DateFormat.yMMMMd(widget.locale.languageCode)
-                .format(DateTime.now())
-            : '${shown(p['date'])} · ${shown(p['vara'])}'),
-        gap(10),
-        Text(t.heroTitle, style: serif(35)),
-        Text(t.heroAccent,
-            style:
-                serif(35, color: gold).copyWith(fontStyle: FontStyle.italic)),
-        gap(22),
-      ])),
+      Eyebrow(p == null
+          ? DateFormat.yMMMMd(widget.locale.languageCode).format(DateTime.now())
+          : '${shown(p['date'])} · ${astroTerm(t.localeName, p['vara'])}'),
+      gap(10),
+      Text(t.dayTitle, style: serif(34)),
+      gap(10),
+      note(t.dayIntro),
+      gap(18),
       if (profile == null)
         onboarding()
       else ...[
         status('chart'),
         if (errors['chart'] != null)
           TextButton(onPressed: editBirth, child: Text(t.birthDetails)),
-        status('sky'),
+        note(t.dayBasis),
+        gap(),
+        status('daily'),
+        if (data['daily'] case final statement?)
+          StatementPanel(statement: statement, title: t.dayFeelTitle),
+        gap(),
+        status('areas'),
+        for (final area in dayAreas) ...[
+          for (final statement in jsonRows(areas[area.$1])) ...[
+            StatementPanel(statement: statement, title: areaTitle(area.$2)),
+            gap(),
+          ],
+        ],
         if (p != null) ...[
           GoldPanel(
-              padding: 15,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                              child: _fact(t.tithiLabel, shown(p['tithi']))),
-                          const SizedBox(width: 10),
-                          Expanded(
-                              child: InkWell(
-                                  onTap: showSky,
-                                  child: _fact(t.nakshatraLabel,
-                                      '${shown(p['nakshatra'])} · ${t.padaLabel} ${shown(p['moon_nakshatra_pada'])}'))),
-                        ]),
-                    const Divider(height: 24),
-                    Wrap(spacing: 22, runSpacing: 12, children: [
-                      _fact(t.sunriseLabel, shown(p['sunrise_local'])),
-                      _fact(t.rahuLabel, shown(p['rahu_kaal'])),
-                    ]),
+                    Eyebrow(t.timingTitle),
                     gap(12),
-                    note('${t.sourceTime}: ${shown(p['reference_datetime'])}'),
-                    if (p['reference_kind'] != 'sunrise' ||
-                        p['slot_math_fallback'] == true)
-                      note(t.fallbackNote),
-                    if (p['_offline'] == true) ...[
-                      gap(8),
-                      Eyebrow(t.offlineCachedBadge),
-                      note('${t.cachedAt}: ${shown(p['_cached_at'])}')
-                    ],
+                    _fact(t.beginWindowLabel, shown(p['abhijit_muhurat'])),
+                    gap(6),
+                    note(t.beginWindowNote),
+                    gap(14),
+                    _fact(t.waitWindowLabel, shown(p['rahu_kaal'])),
+                    gap(6),
+                    note(t.waitWindowNote),
                   ])),
           gap(),
         ],
-        status('daily'),
-        if (data['daily'] case final statement?)
-          StatementPanel(statement: statement, title: t.dailyHeading),
-        gap(),
-        status('dasha'),
-        if (d != null)
-          GoldPanel(
-              child: InkWell(
-                  onTap: showDasha,
-                  child: Row(children: [
-                    const Icon(Icons.timelapse, color: gold, size: 28),
-                    const SizedBox(width: 14),
-                    Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          Eyebrow(t.dashaLabel),
-                          gap(6),
-                          Text(
-                              '${planetName(t, d['active_mahadasha'])} · ${planetName(t, d['active_antardasha'])}',
-                              style: serif(20)),
-                          gap(4),
-                          note(
-                              '${t.endsLabel}: ${shown(d['antardasha_end_date'])}')
-                        ])),
-                    const Icon(Icons.arrow_forward, color: gold, size: 18),
-                  ]))),
-        if (p != null) ...[
+        status('sky'),
+        TextButton.icon(
+            onPressed: () =>
+                setState(() => showChartDetails = !showChartDetails),
+            icon: Icon(
+                showChartDetails ? Icons.expand_less : Icons.expand_more,
+                size: 18),
+            label: Text(t.chartDetailsLabel)),
+        if (showChartDetails) ...[
+          note(t.chartDetailsNote),
+          gap(12),
+          Center(
+              child: SizedBox(
+                  width: 180,
+                  child: InkWell(
+                      onTap: showSky,
+                      borderRadius: BorderRadius.circular(140),
+                      child: SkyDial(panchang: p, natalMoon: natalMoon)))),
           gap(),
-          GoldPanel(
-              child: Row(children: [
-            const Icon(Icons.schedule, color: gold),
-            const SizedBox(width: 14),
-            Expanded(child: _fact(t.abhijitLabel, shown(p['abhijit_muhurat']))),
-            Text(shown(p['sunset_local']),
-                style: const TextStyle(color: muted)),
-            const SizedBox(width: 8),
-            Text(t.sunsetLabel,
-                style: const TextStyle(color: muted, fontSize: 10)),
-          ]))
+          if (p != null)
+            GoldPanel(
+                padding: 15,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _fact(t.tithiLabel, astroTerm(t.localeName, p['tithi'])),
+                      gap(12),
+                      _fact(t.nakshatraLabel,
+                          '${astroTerm(t.localeName, p['nakshatra'])} · ${t.padaLabel} ${shown(p['moon_nakshatra_pada'])}'),
+                      gap(12),
+                      _fact(t.sunriseLabel, shown(p['sunrise_local'])),
+                      gap(8),
+                      note(
+                          '${t.sourceTime}: ${shown(p['reference_datetime'])}'),
+                      if (p['reference_kind'] != 'sunrise' ||
+                          p['slot_math_fallback'] == true)
+                        note(t.fallbackNote),
+                      if (p['_offline'] == true) ...[
+                        gap(8),
+                        Eyebrow(t.offlineCachedBadge),
+                        note('${t.cachedAt}: ${shown(p['_cached_at'])}')
+                      ],
+                    ])),
+          gap(),
+          status('dasha'),
+          if (d != null)
+            GoldPanel(
+                child: InkWell(
+                    onTap: showDasha,
+                    child: Row(children: [
+                      const Icon(Icons.timelapse, color: gold, size: 28),
+                      const SizedBox(width: 14),
+                      Expanded(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                            Eyebrow(t.dashaLabel),
+                            gap(6),
+                            Text(
+                                '${planetName(t, d['active_mahadasha'])} · ${planetName(t, d['active_antardasha'])}',
+                                style: serif(20)),
+                            gap(4),
+                            note(
+                                '${t.endsLabel}: ${shown(d['antardasha_end_date'])}')
+                          ])),
+                      const Icon(Icons.arrow_forward, color: gold, size: 18),
+                    ]))),
         ],
         if (errors['consent'] != null) ...[gap(), note(t.consentError)],
         gap(),
@@ -458,6 +499,52 @@ class _CelestialHomeState extends State<CelestialHome> {
         gap(6),
         Text(value, style: serif(16)),
       ]);
+  void revealAnnual() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final target = annualAnchor.currentContext;
+      if (target == null || !mounted) return;
+      Scrollable.ensureVisible(target,
+          alignment: 0.04,
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOut);
+    });
+  }
+
+  Future<void> openAnnual(int forecastYear) async {
+    final future = load(
+        'annual',
+        () => api.post('/reports/annual-forecast', details,
+            query: {'forecast_year': '$forecastYear'}),
+        keepPrevious: true);
+    revealAnnual();
+    await future;
+    revealAnnual();
+  }
+
+  Future<void> saveAnnualPdf() async {
+    if (pending.contains('annual-pdf') || profile == null) return;
+    setState(() {
+      pending.add('annual-pdf');
+      errors.remove('annual-pdf');
+    });
+    try {
+      final bytes = await api.postBytes(
+          '/reports/annual-forecast/pdf', details,
+          query: {'forecast_year': '$year'});
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/astroplan-$year.pdf');
+      await file.writeAsBytes(bytes, flush: true);
+      if (!mounted) return;
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'application/pdf', name: 'astroplan-$year.pdf')],
+      );
+    } catch (error) {
+      if (mounted) setState(() => errors['annual-pdf'] = error);
+    } finally {
+      if (mounted) setState(() => pending.remove('annual-pdf'));
+    }
+  }
+
   void showDasha() {
     final d = data['dasha'];
     if (d == null) return;
@@ -551,7 +638,7 @@ class _CelestialHomeState extends State<CelestialHome> {
                     NorthIndianChart(chart: c, navamsa: d9),
                     const Divider(),
                     _fact(t.birthMoon,
-                        '${signName(t, c['moon_sign_index'], c['moon_sign_name'])} · ${shown(c['moon_nakshatra'])}'),
+                        '${signName(t, c['moon_sign_index'], c['moon_sign_name'])} · ${astroTerm(t.localeName, c['moon_nakshatra'])}'),
                     gap(12),
                     TextButton.icon(
                         onPressed: () => showPlacements(c),
@@ -565,6 +652,13 @@ class _CelestialHomeState extends State<CelestialHome> {
           gap(),
         ],
         status('areas'),
+        if (errors['chart'] != null || errors['areas'] != null) ...[
+          FilledButton.icon(
+              onPressed: pending.contains('chart') ? null : _loadProfile,
+              icon: const Icon(Icons.refresh),
+              label: Text(t.refreshLabel)),
+          gap(),
+        ],
         Eyebrow(t.lifeAreasLabel),
         gap(12),
         for (final area in labels.entries) ...[
@@ -597,40 +691,45 @@ class _CelestialHomeState extends State<CelestialHome> {
               items: List.generate(6, (i) => DateTime.now().year - 1 + i)
                   .map((y) => DropdownMenuItem(value: y, child: Text('$y')))
                   .toList(),
-              onChanged: (y) => setState(() {
-                    year = y!;
-                    versions['annual'] = (versions['annual'] ?? 0) + 1;
-                    pending.remove('annual');
-                    data.remove('annual');
-                    errors.remove('annual');
-                  })),
+              onChanged: (y) {
+                if (y == null || y == year || pending.contains('annual')) return;
+                setState(() => year = y);
+                openAnnual(y);
+              }),
           gap(12),
           FilledButton(
-              onPressed: pending.contains('annual')
-                  ? null
-                  : () => load(
-                      'annual',
-                      () => api.post('/reports/annual-forecast', details,
-                          query: {'forecast_year': '$year'})),
+              onPressed: pending.contains('annual') ? null : () => openAnnual(year),
               child: Text(t.annualAction)),
+          gap(8),
+          OutlinedButton.icon(
+              onPressed: pending.contains('annual-pdf') ? null : saveAnnualPdf,
+              icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
+              label: Text(t.annualPdfAction)),
+          status('annual-pdf'),
         ])),
-        status('annual'),
-        if (data['annual'] case final annual?) ...[
-          gap(),
-          StatementPanel(
-              statement: jsonMap(annual['overview']),
-              title: shown(annual['year'])),
-          for (final q in jsonRows(annual['quarters'])) ...[
+        Column(key: annualAnchor, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          status('annual'),
+          if (data['annual'] case final annual?) ...[
             gap(),
             StatementPanel(
-                statement: jsonMap(q['theme_statement']),
-                title: shown(q['quarter'])),
-            if (q['active_dasha'] != null)
-              Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: note('${t.dashaLabel}: ${shown(q['active_dasha'])}'))
+                statement: jsonMap(annual['overview']),
+                title: shown(annual['year'])),
+            for (final q in jsonRows(annual['quarters'])) ...[
+              gap(),
+              StatementPanel(
+                  statement: jsonMap(q['theme_statement']),
+                  title: shown(q['quarter'])),
+              if (q['active_dasha'] != null)
+                Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: note('${t.dashaLabel}: ${shown(q['active_dasha'])}')),
+              if (q['key_transit_note'] != null)
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+                    child: note(shown(q['key_transit_note']))),
+            ],
           ],
-        ],
+        ]),
         gap(),
         OutlinedButton.icon(
             onPressed: editBirth,
@@ -652,7 +751,7 @@ class _CelestialHomeState extends State<CelestialHome> {
             Text(
                 '${degrees(p['degree_in_sign'])} · ${t.houseLabel} ${shown(p['house'])}'),
             note(
-                '${shown(p['nakshatra_name'])} · ${t.padaLabel} ${shown(p['pada'])}')
+                '${astroTerm(t.localeName, p['nakshatra_name'])} · ${t.padaLabel} ${shown(p['pada'])}')
           ],
           if (p['is_retrograde'] == true) note(t.retrogradeLabel),
         ],
@@ -660,8 +759,75 @@ class _CelestialHomeState extends State<CelestialHome> {
         FactRow(t.sourceTime, shown(c['utc_datetime'])),
         FactRow(t.methodLabel, shown(c['resolved_timezone'])),
       ]));
+  String? namedNakshatra(dynamic value) {
+    final text = value?.toString().trim() ?? '';
+    if (text.isEmpty) return null;
+    return astroTerm(t.localeName, text);
+  }
+
+  void chooseArea(String area) => setState(() {
+        selectedArea = area;
+        askUnmatched = false;
+      });
+
+  Widget askKundali() {
+    final response = data['ask'];
+    final closed = selectedArea == null &&
+        !askUnmatched &&
+        response == null &&
+        !pending.contains('ask') &&
+        errors['ask'] == null;
+    final labels = {
+      'career': t.careerLabel,
+      'relationships': t.relationshipsLabel,
+      'finances': t.financesLabel,
+      'home': t.homeLabel,
+    };
+    final statements =
+        jsonRows(jsonMap(data['areas']?['life_areas'])[selectedArea]);
+    final birth = namedNakshatra(data['chart']?['moon_nakshatra']);
+    final today = namedNakshatra(data['sky']?['nakshatra']);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      if (closed)
+        Opacity(
+            opacity: .55,
+            child: GoldPanel(
+                key: const Key('ask_hold'), child: note(t.askHold))),
+      if (askUnmatched && response == null)
+        GoldPanel(child: note(t.uncoveredLabel)),
+      if (selectedArea != null) ...[
+        Eyebrow(t.askFromKundali),
+        gap(8),
+        if (birth != null) note(t.askBirthNakshatra(birth)),
+        if (today != null) note(t.askTodayNakshatra(today)),
+        gap(8),
+        status('areas'),
+        if (statements.isEmpty &&
+            !pending.contains('areas') &&
+            errors['areas'] == null)
+          GoldPanel(child: note(t.uncoveredLabel))
+        else
+          for (final statement in statements) ...[
+            StatementPanel(
+                statement: statement,
+                title: labels[selectedArea] ?? t.askFromKundali),
+            gap(),
+          ],
+      ],
+    ]);
+  }
+
   Widget askPage() {
     final response = data['ask'];
+    final chartReady = data['chart'] != null;
+    final questionReady = question.text.trim().runes.length >= 3 &&
+        question.text.trim().runes.length <= 280;
+    final choices = {
+      'career': t.careerLabel,
+      'relationships': t.relationshipsLabel,
+      'finances': t.financesLabel,
+      'home': t.homeLabel,
+    };
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       PageHeading(t.tabAsk, t.askTitle, t.askDescription),
       if (profile == null) ...[onboarding(), gap()],
@@ -681,28 +847,44 @@ class _CelestialHomeState extends State<CelestialHome> {
             maxLength: 280,
             minLines: 2,
             maxLines: 5,
+            textInputAction: TextInputAction.send,
             decoration: InputDecoration(labelText: t.questionLabel),
-            onChanged: (_) => setState(() {})),
+            onChanged: (_) => setState(() {}),
+            onSubmitted: (_) => ask()),
         gap(10),
         Wrap(
             spacing: 6,
             runSpacing: 4,
             children: [
-              t.careerLabel,
-              t.relationshipsLabel,
-              t.financesLabel,
-              t.homeLabel
-            ].map((label) => Chip(label: Text(label))).toList()),
+              for (final choice in choices.entries)
+                ChoiceChip(
+                    key: Key('ask_area_${choice.key}'),
+                    label: Text(choice.value),
+                    selected: selectedArea == choice.key,
+                    onSelected: chartReady ? (_) => chooseArea(choice.key) : null,
+                    labelStyle: TextStyle(
+                        color: !chartReady
+                            ? muted
+                            : selectedArea == choice.key
+                                ? night
+                                : ink,
+                        fontSize: 12),
+                    selectedColor: gold,
+                    backgroundColor: const Color(0xFF0A1020),
+                    disabledColor: const Color(0xFF0A1020),
+                    side: BorderSide(
+                        color: chartReady && selectedArea != choice.key
+                            ? hairline
+                            : const Color(0x14FFFFFF))),
+            ]),
         gap(12),
         SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
                 key: const Key('ask_submit'),
-                onPressed: accountReady &&
-                        data['chart'] != null &&
+                onPressed: chartReady &&
                         !pending.contains('ask') &&
-                        question.text.trim().runes.length >= 3 &&
-                        question.text.trim().runes.length <= 280
+                        questionReady
                     ? ask
                     : null,
                 icon: const Icon(Icons.arrow_forward, size: 18),
@@ -710,8 +892,7 @@ class _CelestialHomeState extends State<CelestialHome> {
       ])),
       status('ask'),
       gap(),
-      if (response == null && !pending.contains('ask') && errors['ask'] == null)
-        note(t.askEmpty),
+      askKundali(),
       if (response != null) ...[
         if (jsonMap(response['coverage'])['status'] == 'uncovered')
           GoldPanel(child: note(t.uncoveredLabel))
@@ -766,6 +947,33 @@ class _CelestialHomeState extends State<CelestialHome> {
               label: Text(t.addPartner)),
         ])),
         status('match'),
+        if (match != null) ...[
+          for (final person in jsonRows(match['people'])) ...[
+            gap(),
+            GoldPanel(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Eyebrow(shown(person['role'])),
+                  gap(8),
+                  Text(shown(person['name']), style: serif(24)),
+                  gap(8),
+                  note(shown(person['birth'])),
+                ])),
+          ],
+          for (final section in jsonRows(match['sections'])) ...[
+            gap(),
+            GoldPanel(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Eyebrow(shown(section['title'])),
+                  gap(8),
+                  Text(shown(section['text']),
+                      style: const TextStyle(color: ink, height: 1.65)),
+                ])),
+          ],
+        ],
         if (match != null && score != null && max != null && max > 0) ...[
           gap(),
           GoldPanel(

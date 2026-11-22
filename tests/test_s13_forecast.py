@@ -41,7 +41,7 @@ def _snapshots(chart, inp: BirthDetailsInput, year: int):
     return out
 
 
-def test_annual_forecast_is_interactive_and_pdf_disabled() -> None:
+def test_annual_forecast_offers_a_pdf() -> None:
     inp = _person()
     chart = calculate_chart(inp, 18.5204, 73.8567, "Asia/Kolkata")
     annual = generate_annual_forecast_report(
@@ -53,8 +53,38 @@ def test_annual_forecast_is_interactive_and_pdf_disabled() -> None:
         "en",
     )
     assert annual.delivery_format == "IN_APP_INTERACTIVE"
-    assert annual.pdf_export_available is False
+    assert annual.pdf_export_available is True
     assert len(annual.quarters) == 4
+    quarter = annual.quarters[0].theme_statement.simple_text
+    assert "Career." in quarter
+    assert "Relationships, marriage, and children." in quarter
+    assert "Money." in quarter
+    assert "Observance." in quarter
+    assert "January." in quarter
+    assert len(quarter) > 1500
+    assert chart.lagna_sign_name in annual.overview.simple_text
+
+
+def test_annual_pdf_is_a_real_document(client) -> None:
+    response = client.post(
+        "/v1/reports/annual-forecast/pdf",
+        json={
+            "name": "Test Person",
+            "birth_date": "1992-05-10",
+            "birth_time": "14:30:00",
+            "place_name": "Pune",
+            "country": "India",
+            "latitude": 18.5204,
+            "longitude": 73.8567,
+            "language": "mr",
+        },
+        params={"forecast_year": 2026},
+    )
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/pdf")
+    assert response.content.startswith(b"%PDF")
+    assert "astroplan-2026.pdf" in response.headers["content-disposition"]
+    assert len(response.content) > 2000
 
 
 def test_quarters_use_their_own_dasha_and_transit_snapshots() -> None:

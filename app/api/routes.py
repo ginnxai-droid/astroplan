@@ -59,8 +59,10 @@ from app.interpretation.ask import (
 )
 from app.interpretation.audit import LLMAuditLog
 from app.interpretation.forecast import generate_annual_forecast_report
+from app.interpretation.forecast_pdf import render_annual_pdf
 from app.interpretation.language import Catalog
 from app.interpretation.llm import SafeRephraser
+from app.interpretation.match_reading import describe_partnership
 from app.interpretation.readings import generate_daily_insight, generate_life_area_readings
 from app.interpretation.rules import load_rules
 from app.ledger.service import (
@@ -460,31 +462,47 @@ def build_router(settings: Settings) -> APIRouter:
         details: BirthDetailsInput, forecast_year: int | None = None
     ) -> AnnualForecastResponse:
         try:
-            lat, lon, tz = await _resolve(details, settings)
-            eff_year = forecast_year or _today_in_tz(tz).year
-            c = calculate_chart(details, lat, lon, tz)
-            moon = next(p for p in c.planets if p.planet == "Moon")
-            snapshots = [
-                (
-                    calculate_vimshottari_dasha(
-                        details.birth_date, moon.longitude, date(eff_year, month, 15)
-                    ),
-                    evaluate_current_transits(c, date(eff_year, month, 15)),
-                )
-                for month in (1, 4, 7, 10)
-            ]
-            return generate_annual_forecast_report(
-                c, snapshots, rules, catalog, eff_year, details.language
-            )
+            return await _annual_report(details, forecast_year)
         except Exception as exc:
             raise _map(exc, catalog, details.language) from exc
 
-    @router.get("/reports/annual-forecast/pdf")
-    async def blocked_pdf() -> None:
-        raise HTTPException(
-            403,
-            "SCOPE GUARDRAIL: Annual Forecast is interactive in-app for MVP. "
-            "PDF export is a Premium V1 feature.",
+    @router.post("/reports/annual-forecast/pdf")
+    async def annual_pdf(
+        details: BirthDetailsInput, forecast_year: int | None = None
+    ) -> Response:
+        try:
+            report = await _annual_report(details, forecast_year)
+            disclaimer = catalog.get(
+                "trust.professional_advice_disclaimer", details.language
+            )
+            payload = render_annual_pdf(report, name=details.name, disclaimer=disclaimer)
+        except Exception as exc:
+            raise _map(exc, catalog, details.language) from exc
+        filename = f"astroplan-{report.year}.pdf"
+        return Response(
+            content=payload,
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+
+    async def _annual_report(
+        details: BirthDetailsInput, forecast_year: int | None
+    ) -> AnnualForecastResponse:
+        lat, lon, tz = await _resolve(details, settings)
+        eff_year = forecast_year or _today_in_tz(tz).year
+        c = calculate_chart(details, lat, lon, tz)
+        moon = next(p for p in c.planets if p.planet == "Moon")
+        snapshots = [
+            (
+                calculate_vimshottari_dasha(
+                    details.birth_date, moon.longitude, date(eff_year, month, 15)
+                ),
+                evaluate_current_transits(c, date(eff_year, month, 15)),
+            )
+            for month in (1, 4, 7, 10)
+        ]
+        return generate_annual_forecast_report(
+            c, snapshots, rules, catalog, eff_year, details.language
         )
 
     @router.post("/matching/ashtakoota")
@@ -494,7 +512,36 @@ def build_router(settings: Settings) -> APIRouter:
             bl, bo, bt = await _resolve(payload.profile_b, settings)
             ca = calculate_chart(payload.profile_a, al, ao, at)
             cb = calculate_chart(payload.profile_b, bl, bo, bt)
-            return calculate_ashtakoota_match(ca, cb, settings.tables_path)
+            today = _today_in_tz(at)
+            moon_a = next(p for p in ca.planets if p.planet == "Moon")
+            moon_b = next(p for p in cb.planets if p.planet == "Moon")
+            report = calculate_ashtakoota_match(ca, cb, settings.tables_path)
+            return describe_partnership(
+                ca,
+                cb,
+                calculate_vimshottari_dasha(
+                    payload.profile_a.birth_date, moon_a.longitude, today
+                ),
+                calculate_vimshottari_dasha(
+                    payload.profile_b.birth_date, moon_b.longitude, today
+                ),
+                report,
+                name_a=payload.profile_a.name,
+                name_b=payload.profile_b.name,
+                place_a=payload.profile_a.place_name,
+                place_b=payload.profile_b.place_name,
+                when_a=(
+                    f"{payload.profile_a.birth_date.isoformat()} "
+                    f"{payload.profile_a.birth_time.isoformat(timespec='minutes')}"
+                ),
+                when_b=(
+                    f"{payload.profile_b.birth_date.isoformat()} "
+                    f"{payload.profile_b.birth_time.isoformat(timespec='minutes')}"
+                ),
+                lang=payload.profile_a.language,
+                already_married=payload.already_married,
+                on_date=today,
+            )
         except Exception as exc:
             raise _map(exc, catalog, payload.profile_a.language) from exc
 

@@ -11,6 +11,7 @@ from app.api.schemas import (
 from app.interpretation.guardrails import verify_text
 from app.interpretation.language import Catalog
 from app.interpretation.rules import Rule
+from app.interpretation.terms import gloss
 
 
 def detect_yogas_and_doshas(
@@ -47,8 +48,8 @@ def detect_yogas_and_doshas(
                 why_this=WhyThisExplanation(
                     rule_id="RULE_PARASHARI_YOGA_GAJAKESARI",
                     placement_evidence=(
-                        f"Jupiter in {jupiter.sign_name} "
-                        f"({jup_from_moon}th from Moon in {moon.sign_name})"
+                        f"Jupiter in {gloss(jupiter.sign_name, lang)} "
+                        f"({jup_from_moon}th from Moon in {gloss(moon.sign_name, lang)})"
                     ),
                     classical_source=source,
                     strength_grade="likely"
@@ -77,7 +78,7 @@ def detect_yogas_and_doshas(
                 why_this=WhyThisExplanation(
                     rule_id="RULE_PARASHARI_YOGA_BUDHADITYA",
                     placement_evidence=(
-                        f"Sun and Mercury conjoined in {sun.sign_name} (House {sun.house})"
+                        f"Sun and Mercury conjoined in {gloss(sun.sign_name, lang)} (House {sun.house})"
                     ),
                     classical_source=source,
                     strength_grade="supported",
@@ -108,7 +109,7 @@ def detect_yogas_and_doshas(
                 why_this=WhyThisExplanation(
                     rule_id="RULE_PARASHARI_YOGA_HAMSA",
                     placement_evidence=(
-                        f"Jupiter in {jupiter.sign_name} "
+                        f"Jupiter in {gloss(jupiter.sign_name, lang)} "
                         f"(House {jupiter.house} Kendra in own/exalted sign)"
                     ),
                     classical_source=source,
@@ -143,7 +144,7 @@ def detect_yogas_and_doshas(
                 why_this=WhyThisExplanation(
                     rule_id="RULE_PARASHARI_MANGAL_CONTEXT",
                     placement_evidence=(
-                        f"Mars in {mars.sign_name} (House {mars.house} from Lagna, "
+                        f"Mars in {gloss(mars.sign_name, lang)} (House {mars.house} from Lagna, "
                         f"House {mars_from_moon} from Moon)"
                     ),
                     classical_source=source,

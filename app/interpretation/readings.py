@@ -12,7 +12,9 @@ from app.api.schemas import (
 )
 from app.interpretation.guardrails import verify_text
 from app.interpretation.language import Catalog
+from app.interpretation.phala import area_reading, daily_reading
 from app.interpretation.rules import Rule
+from app.interpretation.terms import gloss
 
 
 @dataclass(frozen=True)
@@ -79,11 +81,12 @@ def generate_life_area_readings(
     for rule in rules:
         if rule.category not in out:
             continue
-        simple = catalog.get(f"{rule.text_key}.simple", lang)
+        simple = area_reading(chart, dasha, transits, lang, rule.category)
         pro = catalog.get(f"{rule.text_key}.pro", lang)
-        verify_text(simple, languages=(lang,))
         verify_text(pro, languages=(lang,))
-        evidence = rule.evidence_template.format(**vars(ctx))
+        evidence = rule.evidence_template.format(
+            **{name: gloss(value, lang) for name, value in vars(ctx).items()}
+        )
         out[rule.category].append(
             ExplainedStatement(
                 statement_id=f"{rule.id}_{chart.lagna_sign_index}_{chart.moon_sign_index}",
@@ -113,20 +116,10 @@ def generate_daily_insight(
     moon_house = int(str(transits["moon_house_from_natal_moon"]))
     transit_moon_sign = str(transits["moon_transit_sign"])
     tithi = str(panchang["tithi"])
-    vara = str(panchang["vara"])
-    panchang_nak = str(panchang["nakshatra"])
     yoga = str(panchang["yoga"])
     date_str = str(panchang["date"])
 
-    simple = catalog.format(
-        "daily_insight.simple",
-        lang,
-        vara=vara,
-        tithi=tithi,
-        panchang_nak=panchang_nak,
-        moon_house=moon_house,
-        natal_moon=chart.moon_sign_name,
-    )
+    simple = daily_reading(chart, panchang, transits, lang)
     pro = catalog.format(
         "daily_insight.pro",
         lang,
@@ -149,8 +142,9 @@ def generate_daily_insight(
         why_this=WhyThisExplanation(
             rule_id="RULE_GOCHARA_CHANDRA_DAILY",
             placement_evidence=(
-                f"Transit Moon in {transit_moon_sign} (House {moon_house} from Natal Moon "
-                f"in {chart.moon_sign_name}); Tithi: {tithi}"
+                f"Transit Moon in {gloss(transit_moon_sign, lang)} "
+                f"(House {moon_house} from Natal Moon in {gloss(chart.moon_sign_name, lang)}); "
+                f"Tithi: {gloss(tithi, lang)}"
             ),
             classical_source="Phaladeepika, Ch. 26 (Chandra Gochara)",
             strength_grade=grade,

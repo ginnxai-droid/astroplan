@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -29,13 +30,14 @@ class AstroplanApiClient {
         _tokenProvider = tokenProvider,
         _timeout = timeout ?? requestTimeout;
 
-  static const requestTimeout = Duration(seconds: 60);
+  static const requestTimeout = Duration(seconds: 90);
 
   static const _configuredBase = String.fromEnvironment('ASTRO_API_BASE_URL');
   static const _configuredUser = String.fromEnvironment('ASTRO_DEV_USER');
+  static const productionBaseUrl = 'https://astroplan-do2e.onrender.com/v1';
   static String get _defaultBaseUrl {
     if (_configuredBase.isNotEmpty) return _configuredBase;
-    if (!kDebugMode) return '';
+    if (!kDebugMode) return productionBaseUrl;
     return defaultTargetPlatform == TargetPlatform.android && !kIsWeb
         ? 'http://10.0.2.2:8000/v1'
         : 'http://localhost:8000/v1';
@@ -105,20 +107,70 @@ class AstroplanApiClient {
     return decoded;
   }
 
-  Future<Json> _send(String method, String path, Json? body,
+  bool _retryConnection(String path, bool protected) =>
+      !protected &&
+      path != '/readings/ask' &&
+      !path.startsWith('/privacy/') &&
+      !path.startsWith('/ledger/');
+
+  Future<http.Response> _exchange(String method, String path, Json? body,
       Map<String, String> query, bool protected) async {
     final uri = _uri(path, query);
     final headers = await _headers(protected);
+    final request = http.Request(method, uri)
+      ..followRedirects = false
+      ..headers.addAll(headers);
+    if (body != null) request.body = jsonEncode(body);
+    return _client
+        .send(request)
+        .then(http.Response.fromStream)
+        .timeout(_timeout);
+  }
+
+  Future<Json> _send(String method, String path, Json? body,
+      Map<String, String> query, bool protected) async {
     try {
-      final request = http.Request(method, uri)
+      return _decode(await _exchange(method, path, body, query, protected));
+    } on http.ClientException {
+      if (!_retryConnection(path, protected)) {
+        throw const ApiFailure('network_unavailable');
+      }
+    } on TimeoutException {
+      throw const ApiFailure('network_unavailable');
+    }
+    await Future<void>.delayed(const Duration(seconds: 4));
+    try {
+      return _decode(await _exchange(method, path, body, query, protected));
+    } on http.ClientException {
+      throw const ApiFailure('network_unavailable');
+    } on TimeoutException {
+      throw const ApiFailure('network_unavailable');
+    }
+  }
+
+  Future<List<int>> postBytes(String path, Json body,
+      {Map<String, String> query = const {}}) async {
+    final uri = _uri(path, query);
+    final headers = await _headers(false);
+    try {
+      final request = http.Request('POST', uri)
         ..followRedirects = false
-        ..headers.addAll(headers);
-      if (body != null) request.body = jsonEncode(body);
+        ..headers.addAll(headers)
+        ..body = jsonEncode(body);
       final response = await _client
           .send(request)
           .then(http.Response.fromStream)
           .timeout(_timeout);
-      return _decode(response);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiFailure('request_failed', response.statusCode);
+      }
+      final type = response.headers['content-type'] ?? '';
+      if (!type.contains('application/pdf') || response.bodyBytes.isEmpty) {
+        throw ApiFailure('invalid_response', response.statusCode);
+      }
+      return response.bodyBytes;
+    } on ApiFailure {
+      rethrow;
     } on http.ClientException {
       throw const ApiFailure('network_unavailable');
     } on TimeoutException {

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'api.dart';
 import 'l10n/app_localizations.dart';
+import 'terms.dart';
 
 const ink = Color(0xFFFBF7ED);
 const gold = Color(0xFFEBCB86);
@@ -86,27 +87,27 @@ String shown(dynamic value) =>
     value == null || value.toString().isEmpty ? '—' : value.toString();
 String degrees(dynamic value) =>
     number(value) == null ? '—' : '${number(value)!.toStringAsFixed(2)}°';
-String planetName(AppLocalizations t, dynamic name) {
-  const names = [
-    'Sun',
-    'Moon',
-    'Mars',
-    'Mercury',
-    'Jupiter',
-    'Venus',
-    'Saturn',
-    'Rahu',
-    'Ketu'
-  ];
-  final index = names.indexOf(name.toString());
-  return index < 0 ? shown(name) : t.planetNames.split('|')[index];
-}
+String planetName(AppLocalizations t, dynamic name) =>
+    astroTerm(t.localeName, name);
 
 String signName(AppLocalizations t, dynamic index, dynamic fallback) {
   final i = number(index)?.toInt();
-  return i != null && i >= 1 && i <= 12
-      ? t.zodiacNames.split('|')[i - 1]
-      : shown(fallback);
+  const names = [
+    'Aries',
+    'Taurus',
+    'Gemini',
+    'Cancer',
+    'Leo',
+    'Virgo',
+    'Libra',
+    'Scorpio',
+    'Sagittarius',
+    'Capricorn',
+    'Aquarius',
+    'Pisces',
+  ];
+  if (i != null && i >= 1 && i <= 12) return astroTerm(t.localeName, names[i - 1]);
+  return astroTerm(t.localeName, fallback);
 }
 
 String gradeName(AppLocalizations t, dynamic grade) => switch (grade) {
@@ -408,7 +409,7 @@ class SkyDial extends StatelessWidget {
     final t = AppLocalizations.of(context)!;
     final p = panchang ?? {};
     final moon = number(p['moon_longitude']);
-    final nak = shown(p['nakshatra']);
+    final nak = astroTerm(t.localeName, p['nakshatra']);
     final label = moon == null
         ? t.skyEmpty
         : '${p['reference_kind'] == 'sunrise' ? t.sunriseMoon : t.fallbackMoon}: $nak · ${degrees(moon)}';
@@ -440,7 +441,7 @@ class SkyDial extends StatelessWidget {
                     if (moon != null) ...[
                       const SizedBox(height: 6),
                       Text(
-                          '${t.padaLabel} ${shown(p['moon_nakshatra_pada'])} · ${shown(p['moon_sign_name'])}',
+                          '${t.padaLabel} ${shown(p['moon_nakshatra_pada'])} · ${astroTerm(t.localeName, p['moon_sign_name'])}',
                           textAlign: TextAlign.center,
                           style: const TextStyle(color: bodyInk, fontSize: 10)),
                       const SizedBox(height: 5),

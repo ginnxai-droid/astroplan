@@ -80,6 +80,26 @@ def test_trust_about_predictions_exposes_agpl_source_offer() -> None:
     assert body["license"] == "AGPL-3.0"
 
 
+def test_consent_uses_authenticated_user_when_body_omits_user_id(client) -> None:
+    headers = {"X-User-Id": "U999"}
+    omitted = client.post(
+        "/v1/privacy/consent",
+        json={"dpdp_consent_granted": True, "age_verified_18_plus": True},
+        headers=headers,
+    )
+    assert omitted.status_code == 200
+    explicit_null = client.post(
+        "/v1/privacy/consent",
+        json={
+            "user_id": None,
+            "dpdp_consent_granted": True,
+            "age_verified_18_plus": True,
+        },
+        headers=headers,
+    )
+    assert explicit_null.status_code == 200
+
+
 def test_m1_cross_user_idor_blocked_m2_operator_gate_and_share_revocation(client) -> None:
     headers_u999 = {"X-User-Id": "U999"}
     headers_attacker = {"X-User-Id": "U_ATTACKER"}

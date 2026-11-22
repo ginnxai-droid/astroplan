@@ -21,6 +21,7 @@ def lexicon():
     ("question", "area", "term"),
     [
         ("Will I change jobs before mid-2027?", "career", "job"),
+        ("Shall I startup a new business?", "career", "startup"),
         ("Should I ask for a promotion this year?", "career", "promotion"),
         ("Will I marry in the next two years?", "relationships", "marry"),
         ("Should I take a loan this year?", "finances", "loan"),
