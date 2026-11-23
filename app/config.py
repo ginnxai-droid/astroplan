@@ -9,6 +9,16 @@ from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_DEV_SHARE_SECRET = "dev-share-secret-change-in-production"
+# OpenRouter chat models, free variants first. :free only where that catalog entry exists.
+# Replace a retired id with ASTRO_OPENROUTER_MODELS; no code change is required.
+DEFAULT_OPENROUTER_MODELS = ",".join(
+    (
+        "nvidia/nemotron-3-ultra-550b-a55b:free",
+        "google/gemma-4-31b-it:free",
+        "openai/gpt-oss-120b:free",
+        "anthropic/claude-haiku-5.5",
+    )
+)
 
 
 class Settings(BaseSettings):
@@ -36,8 +46,26 @@ class Settings(BaseSettings):
 
     # Optional LLM rephrasing (off by default; hard-capped for cost control)
     llm_rephrase_enabled: bool = False
+    # Plain-language reading of structured facts. ASTRO_LLM_ENABLED=true.
+    # ASTRO_LLM_PROVIDERS locks the order when set. Otherwise an OpenRouter key
+    # tries ASTRO_OPENROUTER_MODELS first, then Gemini, Gemma, and Anthropic.
+    llm_enabled: bool = False
+    llm_providers: str = "gemini,gemma,anthropic"
+    gemini_api_key: SecretStr | None = None
+    gemini_model: str = "gemini-3.8-flash"
+    gemma_model: str = "gemma-4-31b-it"
     anthropic_api_key: SecretStr | None = None
     anthropic_model: str = "claude-3-5-haiku-latest"
+    anthropic_base_url: str = "https://api.anthropic.com"
+    openai_api_key: SecretStr | None = None
+    openai_model: str = "gpt-4o-mini"
+    openai_base_url: str = "https://api.openai.com/v1"
+    groq_api_key: SecretStr | None = None
+    groq_model: str = "llama-3.3-70b-versatile"
+    openrouter_api_key: SecretStr | None = None
+    # Used only when ASTRO_OPENROUTER_MODELS is empty.
+    openrouter_model: str = "google/gemma-3-27b-it:free"
+    openrouter_models: str = DEFAULT_OPENROUTER_MODELS
     llm_monthly_call_cap: int = 1000
 
     # Ask endpoint (routing over approved statements; off until the owner enables it)

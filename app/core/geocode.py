@@ -13,6 +13,7 @@ from timezonefinder import TimezoneFinder
 
 from app.config import Settings
 from app.core.errors import AmbiguousLocationError, GeocoderUnavailableError
+from app.core.gazetteer import country_matches, fold_name
 from app.core.timeutil import load_zone
 
 
@@ -23,6 +24,7 @@ class ResolvedPlace:
     timezone_iana: str
     source: str
     display_name: str = ""
+    country: str = ""
 
 
 class GeocodeProvider(Protocol):
@@ -103,13 +105,15 @@ class NominatimProvider:
             lat, lon = float(row["lat"]), float(row["lon"])
             tz = self._tf.timezone_at(lat=lat, lng=lon)
             if tz:
+                display = str(row.get("display_name", query))
                 out.append(
                     ResolvedPlace(
                         lat,
                         lon,
                         tz,
                         "nominatim",
-                        display_name=str(row.get("display_name", query)),
+                        display_name=display,
+                        country=display.split(",")[-1].strip(),
                     )
                 )
         return out
@@ -134,13 +138,18 @@ class NominatimProvider:
             lat, lon = float(row["latitude"]), float(row["longitude"])
             tz = row.get("timezone") or self._tf.timezone_at(lat=lat, lng=lon)
             if tz:
+                name = str(row.get("name") or query)
+                admin = str(row.get("admin1") or "").strip()
+                country_name = str(row.get("country") or "").strip()
+                display = ", ".join(part for part in (name, admin, country_name) if part)
                 out.append(
                     ResolvedPlace(
                         lat,
                         lon,
                         str(tz),
                         "open-meteo",
-                        display_name=str(row.get("name", query)),
+                        display_name=display,
+                        country=country_name,
                     )
                 )
         return out
@@ -173,27 +182,73 @@ class NominatimProvider:
     ) -> ResolvedPlace:
         if manual_lat is not None and manual_lon is not None:
             return _resolve_manual(self._tf, place_name, manual_lat, manual_lon, tz_override)
-        query = f"{place_name}, {country}" if country else place_name
-        key = query.strip().lower()
+        place = place_name.strip()
+        key = f"{place.casefold()}|{(country or '').casefold()}"
         if key in self._cache:
             self._cache.move_to_end(key)
             c = self._cache[key]
             return ResolvedPlace(
-                c.latitude, c.longitude, tz_override or c.timezone_iana, "cache", c.display_name
+                c.latitude,
+                c.longitude,
+                tz_override or c.timezone_iana,
+                "cache",
+                c.display_name,
+                c.country,
             )
-        candidates = await self.search_candidates(query, limit=5)
-        if not candidates:
-            raise AmbiguousLocationError(query)
-        first = candidates[0]
-        tz = tz_override or first.timezone_iana
+        meteo_down = False
+        try:
+            meteo = await self._search_open_meteo(place, 8)
+        except GeocoderUnavailableError:
+            meteo = []
+            meteo_down = True
+        chosen = select_candidate(meteo, place, country)
+        if chosen is None:
+            query = f"{place}, {country}" if country else place
+            try:
+                nominatim = await self._search_nominatim(query, 5)
+            except GeocoderUnavailableError:
+                if meteo_down:
+                    raise
+                nominatim = []
+            chosen = select_candidate(nominatim, place, country)
+        if chosen is None:
+            raise AmbiguousLocationError(place if not country else f"{place}, {country}")
+        tz = tz_override or chosen.timezone_iana
         load_zone(tz)
         resolved = ResolvedPlace(
-            first.latitude, first.longitude, tz, first.source, first.display_name
+            chosen.latitude,
+            chosen.longitude,
+            tz,
+            chosen.source,
+            chosen.display_name,
+            chosen.country,
         )
         self._cache[key] = resolved
         if len(self._cache) > self._max_cache_size:
             self._cache.popitem(last=False)
         return resolved
+
+
+def select_candidate(
+    candidates: list[ResolvedPlace], place: str, country: str | None
+) -> ResolvedPlace | None:
+    """Match one named city inside its given country."""
+    pool = list(candidates)
+    if country:
+        pool = [
+            item
+            for item in pool
+            if country_matches(item.country or item.display_name.split(",")[-1], country)
+        ]
+    if not pool:
+        return None
+    wanted = fold_name(place)
+    exact = [item for item in pool if fold_name(item.display_name.split(",")[0]) == wanted]
+    if exact:
+        return exact[0]
+    if len(pool) == 1:
+        return pool[0]
+    return None
 
 
 def make_provider(settings: Settings) -> GeocodeProvider:

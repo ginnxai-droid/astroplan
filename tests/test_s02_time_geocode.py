@@ -122,6 +122,88 @@ async def test_nominatim_failure_falls_back_to_open_meteo(monkeypatch) -> None:
     assert resolved.source == "open-meteo"
 
 
+async def test_named_country_selects_that_city_not_a_namesake(monkeypatch) -> None:
+    import httpx
+
+    import app.core.geocode as g
+
+    directory = {
+        "London": [
+            {
+                "name": "London",
+                "latitude": 42.9834,
+                "longitude": -81.233,
+                "timezone": "America/Toronto",
+                "country": "Canada",
+                "admin1": "Ontario",
+            },
+            {
+                "name": "London",
+                "latitude": 51.5085,
+                "longitude": -0.1257,
+                "timezone": "Europe/London",
+                "country": "United Kingdom",
+                "admin1": "England",
+            },
+        ],
+        "Tokyo": [
+            {
+                "name": "Tokyo",
+                "latitude": 35.6895,
+                "longitude": 139.6917,
+                "timezone": "Asia/Tokyo",
+                "country": "Japan",
+            }
+        ],
+        "Cairo": [
+            {
+                "name": "Cairo",
+                "latitude": 30.0626,
+                "longitude": 31.2497,
+                "timezone": "Africa/Cairo",
+                "country": "Egypt",
+            }
+        ],
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if "open-meteo.com" in request.url.host:
+            name = request.url.params.get("name", "")
+            return httpx.Response(200, json={"results": directory.get(name, [])})
+        return httpx.Response(503)
+
+    transport = httpx.MockTransport(handler)
+    original = httpx.AsyncClient
+
+    class Patched(original):  # type: ignore[misc]
+        def __init__(self, *args, **kwargs):
+            kwargs["transport"] = transport
+            super().__init__(*args, **kwargs)
+
+    monkeypatch.setattr(g.httpx, "AsyncClient", Patched)
+    provider = NominatimProvider(Settings(env="test"))
+    london = await provider.resolve(
+        "London", country="United Kingdom", manual_lat=None, manual_lon=None, tz_override=None
+    )
+    canada = await provider.resolve(
+        "London", country="Canada", manual_lat=None, manual_lon=None, tz_override=None
+    )
+    tokyo = await provider.resolve(
+        "Tokyo", country="Japan", manual_lat=None, manual_lon=None, tz_override=None
+    )
+    cairo = await provider.resolve(
+        "Cairo", country="Egypt", manual_lat=None, manual_lon=None, tz_override=None
+    )
+    assert london.latitude == 51.5085 and london.timezone_iana == "Europe/London"
+    assert canada.timezone_iana == "America/Toronto"
+    assert tokyo.timezone_iana == "Asia/Tokyo"
+    assert cairo.timezone_iana == "Africa/Cairo"
+    with pytest.raises(AmbiguousLocationError):
+        await provider.resolve(
+            "Tokyo", country="Egypt", manual_lat=None, manual_lon=None, tz_override=None
+        )
+
+
 async def test_nominatim_failure_maps_to_typed_error(monkeypatch) -> None:
     import httpx
 

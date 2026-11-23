@@ -1,0 +1,46 @@
+{
+  "months": {
+    "January": ["January", "जनवरी", "जानेवारी"],
+    "February": ["February", "फरवरी", "फेब्रुवारी"],
+    "March": ["March", "मार्च", "मार्च"],
+    "April": ["April", "अप्रैल", "एप्रिल"],
+    "May": ["May", "मई", "मे"],
+    "June": ["June", "जून", "जून"],
+    "July": ["July", "जुलाई", "जुलै"],
+    "August": ["August", "अगस्त", "ऑगस्ट"],
+    "September": ["September", "सितंबर", "सप्टेंबर"],
+    "October": ["October", "अक्टूबर", "ऑक्टोबर"],
+    "November": ["November", "नवंबर", "नोव्हेंबर"],
+    "December": ["December", "दिसंबर", "डिसेंबर"]
+  },
+  "focus": [
+    ["career and reputation", "करियर और प्रतिष्ठा", "करिअर आणि प्रतिष्ठा"],
+    ["money and partnership", "धन और साझेदारी", "धन आणि भागीदारी"],
+    ["home, children, and steady follow-through", "घर, संतान और स्थिर अनुसरण", "घर, अपत्य आणि सातत्यपूर्ण काम"]
+  ],
+  "month_specific": [
+    "{month}. On the 15th the Sun is in {sun}, Mercury in {mercury}, Venus in {venus}, and Mars in {mars}. Jupiter is in {jup}, house {jup_h} from the birth Moon, and Saturn is in {sat}, house {sat_h}. The running period on that date is {md} Mahadasha with {ad} Antardasha through {ad_end}. {shifts} Give extra attention this month to {focus}.",
+    "{month}. 15 तारीख को सूर्य {sun} में, बुध {mercury} में, शुक्र {venus} में और मंगल {mars} में है। बृहस्पति {jup} में है, जन्म चंद्र से भाव {jup_h}, और शनि {sat} में है, भाव {sat_h}। उस दिन चल रहा काल {md} महादशा और {ad} अंतर्दशा है, {ad_end} तक। {shifts} इस माह अतिरिक्त ध्यान {focus} पर रखें।",
+    "{month}. 15 तारखेला सूर्य {sun} मध्ये, बुध {mercury} मध्ये, शुक्र {venus} मध्ये आणि मंगळ {mars} मध्ये आहे. गुरु {jup} मध्ये आहे, जन्म चंद्रापासून भाव {jup_h}, आणि शनी {sat} मध्ये आहे, भाव {sat_h}. त्या दिवशी चालू काळ {md} महादशा आणि {ad} अंतरदशा आहे, {ad_end} पर्यंत. {shifts} या महिन्यात अतिरिक्त लक्ष {focus} वर ठेवा."
+  ],
+  "shift_sign": [
+    "{planet} changes sign from {old} to {new} on {when}.",
+    "{planet} {when} को {old} से {new} में राशि बदलता है।",
+    "{planet} {when} रोजी {old} मधून {new} मध्ये राशी बदलतो."
+  ],
+  "shift_dasha": [
+    "The period shifts on {when} from {old_md}-{old_ad} to {new_md}-{new_ad}.",
+    "काल {when} को {old_md}-{old_ad} से {new_md}-{new_ad} में बदलता है।",
+    "काळ {when} रोजी {old_md}-{old_ad} पासून {new_md}-{new_ad} कडे बदलतो."
+  ],
+  "shift_pd": [
+    "The finer period shifts on {when} from {old_pd} to {new_pd} while {md}-{ad} continues.",
+    "सूक्ष्म काल {when} को {old_pd} से {new_pd} होता है, जबकि {md}-{ad} जारी रहता है।",
+    "सूक्ष्म काळ {when} रोजी {old_pd} पासून {new_pd} होतो, तर {md}-{ad} सुरू राहतो."
+  ],
+  "shift_none": [
+    "No mahadasha or antardasha change falls inside this month.",
+    "इस माह में महादशा या अंतर्दशा का परिवर्तन नहीं है।",
+    "या महिन्यात महादशा किंवा अंतरदशा बदलत नाही."
+  ]
+}

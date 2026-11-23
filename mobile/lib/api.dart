@@ -59,8 +59,10 @@ class AstroplanApiClient {
       _tokenProvider != null || (localDevelopment && _userId.isNotEmpty);
   String? get userId {
     if (!authenticated) return null;
-    final dynamicUid = _userIdProvider?.call();
-    if (dynamicUid != null && dynamicUid.isNotEmpty) return dynamicUid;
+    if (_userIdProvider != null) {
+      final dynamicUid = _userIdProvider();
+      return dynamicUid != null && dynamicUid.isNotEmpty ? dynamicUid : null;
+    }
     return _userId.isNotEmpty ? _userId : null;
   }
 
@@ -224,7 +226,10 @@ class AstroplanApiClient {
     if (path != '/privacy/delete') return;
     final prefs = await SharedPreferences.getInstance();
     for (final key in prefs.getKeys().toList()) {
-      if (key.startsWith('panchang_v2_')) await prefs.remove(key);
+      if (key.startsWith('panchang_v2_') ||
+          key.startsWith('astroplan_profile_v1_')) {
+        await prefs.remove(key);
+      }
     }
   }
 

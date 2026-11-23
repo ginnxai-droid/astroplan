@@ -108,12 +108,24 @@ class AstroplanApp extends StatefulWidget {
       this.api,
       this.tokenProvider,
       this.userIdProvider,
-      this.userId});
+      this.userId,
+      this.authStateProvider,
+      this.startOtp,
+      this.confirmOtp,
+      this.signInWithGoogle,
+      this.signOut});
   final DailyInsightNotifier? notifier;
   final AstroplanApiClient? api;
   final Future<String?> Function()? tokenProvider;
   final String? Function()? userIdProvider;
   final String? userId;
+  final AuthUiState Function()? authStateProvider;
+  final Future<PhoneAuthResult> Function(String rawPhone,
+      {int? forceResendingToken})? startOtp;
+  final Future<PhoneAuthResult> Function(
+      {required String verificationId, required String smsCode})? confirmOtp;
+  final Future<bool> Function()? signInWithGoogle;
+  final Future<void> Function()? signOut;
   @override
   State<AstroplanApp> createState() => _AstroplanAppState();
 }
@@ -186,6 +198,11 @@ class _AstroplanAppState extends State<AstroplanApp> {
             locale: _locale,
             muted: _muted,
             onLanguageChanged: _changeLanguage,
-            onMutedChanged: _setMuted),
+            onMutedChanged: _setMuted,
+            authStateProvider: widget.authStateProvider,
+            startOtp: widget.startOtp,
+            confirmOtp: widget.confirmOtp,
+            signInWithGoogle: widget.signInWithGoogle,
+            signOut: widget.signOut),
       );
 }

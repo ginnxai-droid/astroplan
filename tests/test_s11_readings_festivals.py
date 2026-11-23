@@ -110,3 +110,23 @@ def test_personalized_today_and_chart_differ_by_kundali() -> None:
     d_areas1 = generate_daily_area_readings(c1, d1, t1, pan1, rules, "en")
     assert d_areas1["career"][0].simple_text != areas1["career"][0].simple_text
     assert "2026-11-22" in d_areas1["relationships"][0].simple_text
+
+    impact = areas1["career"][0].simple_text
+    for planet in ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"):
+        assert planet in impact
+    assert "What helps:" in impact
+    assert "What needs care:" in impact
+    assert "Takeaway:" in impact
+    assert "Guru (Jupiter)" in impact
+    assert "Shani (Saturn)" in impact
+    for banned in (
+        "guaranteed",
+        "destined",
+        "assured",
+        "certainly will",
+        "will definitely",
+        "100%",
+    ):
+        assert banned not in impact.lower()
+    sun = next(p for p in c1.planets if p.planet == "Sun")
+    assert f"house {sun.house}" in impact

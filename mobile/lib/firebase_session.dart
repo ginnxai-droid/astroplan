@@ -5,10 +5,55 @@ import 'package:firebase_core/firebase_core.dart';
 
 bool get firebaseAvailable => Firebase.apps.isNotEmpty;
 
+/// A real login, phone or Google. Anonymous sessions still see the login screen.
+bool get isAccountSignedIn {
+  if (!firebaseAvailable) return false;
+  final user = FirebaseAuth.instance.currentUser;
+  return user != null && !user.isAnonymous;
+}
+
+bool get firebaseUserPresent {
+  if (!firebaseAvailable) return false;
+  return FirebaseAuth.instance.currentUser != null;
+}
+
+Future<User?> _restoredCurrentUser(FirebaseAuth auth) async {
+  final existing = auth.currentUser;
+  if (existing != null) return existing;
+  // Persistence can arrive after the first read. Wait so a saved login is not
+  // replaced by a new anonymous session.
+  final pending = Completer<User?>();
+  var sawSignedOut = false;
+  final sub = auth.authStateChanges().listen((user) {
+    if (pending.isCompleted) return;
+    if (user != null) {
+      pending.complete(user);
+      return;
+    }
+    if (sawSignedOut) return;
+    sawSignedOut = true;
+    Future<void>.delayed(const Duration(milliseconds: 400), () {
+      if (!pending.isCompleted) pending.complete(auth.currentUser);
+    });
+  }, onError: (Object _) {
+    if (!pending.isCompleted) pending.complete(auth.currentUser);
+  });
+  try {
+    return await pending.future.timeout(
+      const Duration(seconds: 2),
+      onTimeout: () => auth.currentUser,
+    );
+  } finally {
+    await sub.cancel();
+  }
+}
+
 Future<User?> _ensureSessionUser() async {
   if (!firebaseAvailable) return null;
   final auth = FirebaseAuth.instance;
-  return auth.currentUser ?? (await auth.signInAnonymously()).user;
+  final restored = await _restoredCurrentUser(auth);
+  if (restored != null) return restored;
+  return (await auth.signInAnonymously()).user;
 }
 
 String? currentFirebaseUidSync() {
@@ -32,6 +77,15 @@ bool get isPhoneSignedIn {
   if (user == null || user.isAnonymous) return false;
   return user.providerData.any((p) => p.providerId == 'phone') ||
       (user.phoneNumber?.isNotEmpty ?? false);
+}
+
+String? get currentPhoneNumber {
+  if (!firebaseAvailable) return null;
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null || user.isAnonymous) return null;
+  final phone = user.phoneNumber?.trim();
+  if (phone != null && phone.isNotEmpty) return phone;
+  return null;
 }
 
 String? get currentAccountLabel {
@@ -100,35 +154,48 @@ Future<bool> signInWithGoogleAccount() async {
   }
 }
 
-/// Account changes, including the moment a phone credential is linked.
+/// Account changes, including the moment a phone or Google credential is linked.
 Stream<void>? watchAccount() {
   if (!firebaseAvailable) return null;
-  return FirebaseAuth.instance.authStateChanges().map((_) {});
+  return FirebaseAuth.instance.userChanges().map((_) {});
 }
 
-/// Accepts a 10-digit Indian mobile, 91…, or a full E.164 number.
+/// Accepts a 10-digit Indian mobile, 0/91-prefixed Indian mobile, or an international E.164 number.
 String? normalizeE164Phone(String raw) {
   final trimmed = raw.trim();
   final digits = trimmed.replaceAll(RegExp(r'\D'), '');
-  if (digits.length == 10) return '+91$digits';
+  if (trimmed.startsWith('+')) {
+    if (RegExp(r'^[1-9]\d{7,14}$').hasMatch(digits)) return '+$digits';
+    return null;
+  }
+  if (digits.length == 10 && RegExp(r'^[1-9]\d{9}$').hasMatch(digits)) {
+    return '+91$digits';
+  }
+  if (digits.length == 11 &&
+      digits.startsWith('0') &&
+      RegExp(r'^[1-9]\d{9}$').hasMatch(digits.substring(1))) {
+    return '+91${digits.substring(1)}';
+  }
   if (digits.length == 12 && digits.startsWith('91')) return '+$digits';
-  if (RegExp(r'^\+[1-9]\d{7,14}$').hasMatch(trimmed)) return trimmed;
   return null;
 }
 
 class PhoneAuthResult {
   const PhoneAuthResult(
-      {this.verificationId, this.errorMessage, this.signedIn = false});
+      {this.verificationId,
+      this.resendToken,
+      this.errorMessage,
+      this.signedIn = false});
   final String? verificationId;
+  final int? resendToken;
   final String? errorMessage;
   final bool signedIn;
 }
 
 String _phoneFailure(Object error) {
   if (error is FirebaseAuthException) {
-    final message = error.message?.trim();
-    if (message != null && message.isNotEmpty) return message;
-    return error.code;
+    final code = error.code.trim();
+    if (code.isNotEmpty) return code;
   }
   return 'phone_auth_failed';
 }
@@ -153,7 +220,8 @@ Future<bool> _signInWithPhoneCredential(PhoneAuthCredential credential) async {
 }
 
 /// Starts phone OTP and waits until Firebase reports a code, a failure, or instant verification.
-Future<PhoneAuthResult> startPhoneOtp(String rawPhone) async {
+Future<PhoneAuthResult> startPhoneOtp(String rawPhone,
+    {int? forceResendingToken}) async {
   if (!firebaseAvailable) {
     return const PhoneAuthResult(errorMessage: 'firebase_unavailable');
   }
@@ -167,6 +235,7 @@ Future<PhoneAuthResult> startPhoneOtp(String rawPhone) async {
     await auth.verifyPhoneNumber(
       phoneNumber: phone,
       timeout: const Duration(seconds: 60),
+      forceResendingToken: forceResendingToken,
       verificationCompleted: (credential) async {
         try {
           final ok = await _signInWithPhoneCredential(credential);
@@ -188,9 +257,10 @@ Future<PhoneAuthResult> startPhoneOtp(String rawPhone) async {
               PhoneAuthResult(errorMessage: _phoneFailure(error)));
         }
       },
-      codeSent: (id, _) {
+      codeSent: (id, resendToken) {
         if (!completer.isCompleted) {
-          completer.complete(PhoneAuthResult(verificationId: id));
+          completer.complete(
+              PhoneAuthResult(verificationId: id, resendToken: resendToken));
         }
       },
       codeAutoRetrievalTimeout: (id) {

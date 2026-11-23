@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'api.dart';
 import 'celestial_widgets.dart';
 import 'l10n/app_localizations.dart';
+import 'place_lookup.dart';
 
 class BirthSubmission {
   const BirthSubmission(this.details,
@@ -51,6 +52,8 @@ class _BirthFormState extends State<BirthForm> {
   Timer? _placeTimer;
   var _placeEpoch = 0;
   var _applyingPlace = false;
+  var _unresolvedPlace = false;
+  var _resolvingPlace = false;
   List<Json> _placeSuggestions = [];
   @override
   void initState() {
@@ -75,6 +78,7 @@ class _BirthFormState extends State<BirthForm> {
       _fields[name] = TextEditingController(text: initialText);
     }
     _fields['place_name']!.addListener(_onPlaceEdited);
+    _fields['country']!.addListener(_onCountryEdited);
     node = widget.initial?['node_type']?.toString() ?? 'MEAN';
     married = widget.initial?['already_married'] == true;
     gender = widget.initial?['gender']?.toString();
@@ -99,11 +103,26 @@ class _BirthFormState extends State<BirthForm> {
     super.dispose();
   }
 
-  void _onPlaceEdited() {
-    if (_applyingPlace || widget.placeSearch == null) return;
+  void _clearResolvedCoordinates() {
     _fields['latitude']!.text = '';
     _fields['longitude']!.text = '';
     _fields['timezone_override']!.text = '';
+  }
+
+  void _onCountryEdited() {
+    if (_applyingPlace || widget.placeSearch == null) return;
+    _clearResolvedCoordinates();
+    final text = _fields['place_name']!.text.trim();
+    if (text.length < 2) return;
+    _placeTimer?.cancel();
+    _placeTimer = Timer(const Duration(milliseconds: 250), () {
+      _searchPlaces(text);
+    });
+  }
+
+  void _onPlaceEdited() {
+    if (_applyingPlace || widget.placeSearch == null) return;
+    _clearResolvedCoordinates();
     _placeTimer?.cancel();
     final text = _fields['place_name']!.text.trim();
     if (text.length < 2) {
@@ -122,17 +141,26 @@ class _BirthFormState extends State<BirthForm> {
     final hits = await search(text);
     if (!mounted || epoch != _placeEpoch) return;
     if (_fields['place_name']!.text.trim() != text) return;
-    setState(() => _placeSuggestions = hits.take(6).toList());
+    setState(() {
+      _placeSuggestions = hits.take(6).toList();
+      _unresolvedPlace = false;
+    });
+    _applyBestSuggestion();
   }
 
-  void _applyPlace(Json hit) {
-    final name = hit['name']?.toString().trim() ?? '';
-    final display = hit['display_name']?.toString().trim() ?? '';
-    final country = hit['country']?.toString().trim() ?? '';
+  void _applyBestSuggestion() {
+    final chosen = choosePlace(_placeSuggestions,
+        place: value('place_name'), country: value('country'));
+    if (chosen == null) return;
+    _applyCoordinates(chosen);
+  }
+
+  void _applyCoordinates(Json hit) {
+    final country = countryOf(hit);
     _applyingPlace = true;
-    _fields['place_name']!.text =
-        name.isNotEmpty ? name : display.split(',').first.trim();
-    if (country.isNotEmpty) _fields['country']!.text = country;
+    if (value('country').isEmpty && country.isNotEmpty) {
+      _fields['country']!.text = country;
+    }
     final lat = hit['latitude'];
     final lon = hit['longitude'];
     if (lat is num) _fields['latitude']!.text = lat.toString();
@@ -140,8 +168,40 @@ class _BirthFormState extends State<BirthForm> {
     final zone = hit['timezone_iana']?.toString().trim() ?? '';
     if (zone.isNotEmpty) _fields['timezone_override']!.text = zone;
     _applyingPlace = false;
+    if (mounted) setState(() => _unresolvedPlace = false);
+  }
+
+  void _applyPlace(Json hit) {
+    final name = placeNameOf(hit);
+    _applyingPlace = true;
+    if (name.isNotEmpty) _fields['place_name']!.text = name;
+    _applyingPlace = false;
+    _applyCoordinates(hit);
+    final country = countryOf(hit);
+    if (country.isNotEmpty) {
+      _applyingPlace = true;
+      _fields['country']!.text = country;
+      _applyingPlace = false;
+    }
     _placeTimer?.cancel();
     setState(() => _placeSuggestions = []);
+  }
+
+  Future<bool> _resolveTypedPlace() async {
+    final search = widget.placeSearch;
+    if (value('latitude').isNotEmpty && value('longitude').isNotEmpty) {
+      return true;
+    }
+    if (search == null) return false;
+    final hits = await search(value('place_name'));
+    if (!mounted) return false;
+    final chosen = choosePlace(hits,
+        place: value('place_name'),
+        country: value('country'),
+        allowOnlyCandidate: true);
+    if (chosen == null) return false;
+    _applyPlace(chosen);
+    return value('latitude').isNotEmpty && value('longitude').isNotEmpty;
   }
 
   String value(String name) => _fields[name]!.text.trim();
@@ -170,7 +230,8 @@ class _BirthFormState extends State<BirthForm> {
         lon <= 180;
   }
 
-  void submit() {
+  Future<void> submit() async {
+    if (_resolvingPlace) return;
     if (!_form.currentState!.validate() ||
         !dpdp ||
         !(adult || parental) ||
@@ -181,6 +242,14 @@ class _BirthFormState extends State<BirthForm> {
         !widget.preConsented &&
         widget.initial == null &&
         (gender == null || maritalStatus == null || occupation == null)) {
+      return;
+    }
+    setState(() => _resolvingPlace = true);
+    final resolved = await _resolveTypedPlace();
+    if (!mounted) return;
+    setState(() => _resolvingPlace = false);
+    if (!resolved) {
+      setState(() => _unresolvedPlace = true);
       return;
     }
     final details = <String, dynamic>{
@@ -284,6 +353,13 @@ class _BirthFormState extends State<BirthForm> {
           field('place_name', t.placeLabel,
               validator: (v) =>
                   (v?.trim().length ?? 0) >= 2 ? null : t.requiredField),
+          if (_unresolvedPlace)
+            Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(t.locationError,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        height: 1.4))),
           if (_placeSuggestions.isNotEmpty)
             Container(
                 margin: const EdgeInsets.only(bottom: 12),
@@ -291,19 +367,18 @@ class _BirthFormState extends State<BirthForm> {
                     color: panel,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: hairline)),
-                child: Column(
-                    children: [
-                      for (final hit in _placeSuggestions)
-                        ListTile(
-                            dense: true,
-                            title: Text(hit['display_name']?.toString() ??
-                                hit['name']?.toString() ?? ''),
-                            subtitle: Text(
-                                '${hit['latitude']}, ${hit['longitude']}',
-                                style: const TextStyle(
-                                    color: muted, fontSize: 12)),
-                            onTap: () => _applyPlace(hit))
-                    ])),
+                child: Column(children: [
+                  for (final hit in _placeSuggestions)
+                    ListTile(
+                        dense: true,
+                        title: Text(hit['display_name']?.toString() ??
+                            hit['name']?.toString() ??
+                            ''),
+                        subtitle: Text(
+                            '${hit['latitude']}, ${hit['longitude']}',
+                            style: const TextStyle(color: muted, fontSize: 12)),
+                        onTap: () => _applyPlace(hit))
+                ])),
           field('country', t.countryLabel,
               validator: (v) =>
                   (v?.trim().length ?? 0) >= 2 ? null : t.requiredField),
@@ -352,11 +427,10 @@ class _BirthFormState extends State<BirthForm> {
                   DropdownMenuItem(value: 'other', child: Text(t.genderOther)),
                 ],
                 onChanged: (v) => setState(() => gender = v),
-                validator: (v) => !widget.preConsented &&
-                        widget.initial == null &&
-                        v == null
-                    ? t.requiredField
-                    : null),
+                validator: (v) =>
+                    !widget.preConsented && widget.initial == null && v == null
+                        ? t.requiredField
+                        : null),
             const SizedBox(height: 14),
             DropdownButtonFormField<String>(
                 key: const Key('marital_status'),
@@ -373,11 +447,10 @@ class _BirthFormState extends State<BirthForm> {
                       value: 'widowed', child: Text(t.maritalWidowed)),
                 ],
                 onChanged: (v) => setState(() => maritalStatus = v),
-                validator: (v) => !widget.preConsented &&
-                        widget.initial == null &&
-                        v == null
-                    ? t.requiredField
-                    : null),
+                validator: (v) =>
+                    !widget.preConsented && widget.initial == null && v == null
+                        ? t.requiredField
+                        : null),
             const SizedBox(height: 14),
             DropdownButtonFormField<String>(
                 key: const Key('occupation'),
@@ -389,8 +462,7 @@ class _BirthFormState extends State<BirthForm> {
                   DropdownMenuItem(
                       value: 'private', child: Text(t.occupationPrivate)),
                   DropdownMenuItem(
-                      value: 'government',
-                      child: Text(t.occupationGovernment)),
+                      value: 'government', child: Text(t.occupationGovernment)),
                   DropdownMenuItem(
                       value: 'business', child: Text(t.occupationBusiness)),
                   DropdownMenuItem(
@@ -401,11 +473,10 @@ class _BirthFormState extends State<BirthForm> {
                       value: 'other', child: Text(t.occupationOther)),
                 ],
                 onChanged: (v) => setState(() => occupation = v),
-                validator: (v) => !widget.preConsented &&
-                        widget.initial == null &&
-                        v == null
-                    ? t.requiredField
-                    : null),
+                validator: (v) =>
+                    !widget.preConsented && widget.initial == null && v == null
+                        ? t.requiredField
+                        : null),
           ],
           const SizedBox(height: 16),
           CheckboxListTile(

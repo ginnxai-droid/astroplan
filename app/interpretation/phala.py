@@ -190,6 +190,10 @@ def _matter(house: int, lang: str) -> str:
     return _tpl("matter", str(house), lang)
 
 
+def house_matter(house: int, lang: str) -> str:
+    return _matter(house, lang)
+
+
 def _where(chart: ChartResponse, planet: PlanetPosition, lang: str) -> str:
     del chart
     base = _line(
@@ -475,6 +479,7 @@ def quarter_reading(
     transits: dict[str, object],
     lang: LanguageCode,
     months: tuple[str, str, str],
+    month_text: str | None = None,
 ) -> str:
     md = str(dasha["active_mahadasha"])
     ad = str(dasha["active_antardasha"])
@@ -485,7 +490,7 @@ def quarter_reading(
         _relationship(chart, lang),
         _money(chart, transits, lang),
         _home(chart, transits, lang),
-        _months(months, dasha, transits, lang),
+        month_text if month_text else _months(months, dasha, transits, lang),
         _say(lang, "Observance.", "उपासना।", "उपासना."),
         _observance(chart, md, lang),
     ]

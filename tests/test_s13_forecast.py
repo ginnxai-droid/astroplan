@@ -105,3 +105,35 @@ def test_quarters_use_their_own_dasha_and_transit_snapshots() -> None:
     assert [q.active_dasha for q in annual.quarters] == expected
     for quarter, (_, transits) in zip(annual.quarters, snapshots, strict=True):
         assert str(transits["jupiter_transit_sign"]) in quarter.key_transit_note
+
+
+def test_quarters_name_distinct_months_and_changes() -> None:
+    inp = _person()
+    chart = calculate_chart(inp, 18.5204, 73.8567, "Asia/Kolkata")
+    annual = generate_annual_forecast_report(
+        chart,
+        _snapshots(chart, inp, 2027),
+        load_rules("rules/mvp_rules.yaml", allow_draft=True),
+        Catalog("i18n"),
+        2027,
+        "en",
+    )
+    named = (
+        ("January", "February", "March"),
+        ("April", "May", "June"),
+        ("July", "August", "September"),
+        ("October", "November", "December"),
+    )
+    texts = [quarter.theme_statement.simple_text for quarter in annual.quarters]
+    assert len(set(texts)) == 4
+    sun_signs: list[str] = []
+    for text, months in zip(texts, named, strict=True):
+        for month in months:
+            assert f"{month}." in text
+        parts = text.split("On the 15th the Sun is in ")
+        assert len(parts) == 4
+        quarter_suns = [part.split(",")[0].strip() for part in parts[1:]]
+        assert len(set(quarter_suns)) >= 2
+        sun_signs.extend(quarter_suns)
+        assert "changes sign" in text or "shifts on" in text
+    assert len(set(sun_signs)) >= 8

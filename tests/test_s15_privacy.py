@@ -71,6 +71,42 @@ def test_fernet_encryption_name_place_consent_sql_revocation_and_window_dispatch
     assert repo.export_user_data("U100") == {}
 
 
+def test_record_consent_preserves_gender_marital_status_and_occupation(fernet_key: str) -> None:
+    crypto.configure(fernet_key, "test")
+    repo = PrivacyRepo("sqlite+pysqlite:///:memory:")
+    repo.create_user_and_chart(
+        user_id="U200",
+        chart_id="C200",
+        name="Meera Joshi",
+        birth_date=date(1994, 3, 2),
+        birth_time=time(9, 15),
+        place_name="Pune",
+        country="India",
+        lat=18.5204,
+        lon=73.8567,
+        tz_iana="Asia/Kolkata",
+        dpdp_consent_granted=True,
+        age_verified_18_plus=True,
+        gender="female",
+        marital_status="married",
+        occupation="salaried",
+        notification_time=time(8, 0),
+    )
+    repo.record_consent(
+        user_id="U200",
+        dpdp_consent_granted=True,
+        age_verified_18_plus=True,
+        parental_consent_verified=False,
+        preferred_language="hi",
+    )
+    profile = repo.get_user_profile("U200")
+    assert profile["gender"] == "female"
+    assert profile["marital_status"] == "married"
+    assert profile["occupation"] == "salaried"
+    assert profile["preferred_language"] == "hi"
+    assert profile["dpdp_consent_granted"] is True
+
+
 def test_telemetry_90_day_retention_purge_enforced() -> None:
     """Gap 26: the documented 90-day retention policy is executable code."""
     crypto.configure(Fernet.generate_key().decode(), "test")

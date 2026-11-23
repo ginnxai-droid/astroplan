@@ -159,8 +159,14 @@ behavior most:
 | `ASTRO_FIELD_ENCRYPTION_KEYS` | empty | Required in production (Fernet keys) |
 | `ASTRO_ASK_ENABLED` | `false` | Dark-launch flag for the Ask endpoint |
 | `ASTRO_ASK_WEEKLY_FREE_QUOTA` | `3` | Free answered questions per user per ISO week (`<=0` = unlimited) |
+| `ASTRO_LLM_ENABLED` | `false` | Plain-language reading of this chart's structured facts |
+| `ASTRO_LLM_PROVIDERS` | `gemini,gemma,anthropic` | Locks attempt order when set. Unset: OpenRouter models first if that key exists, then this list |
+| `ASTRO_OPENROUTER_MODELS` | see `.env.example` | Comma-separated OpenRouter model ids. One `OPENROUTER_API_KEY` |
+| `ASTRO_GEMINI_MODEL` | `gemini-3.8-flash` | Free Gemini model. Gemma uses `ASTRO_GEMMA_MODEL` (`gemma-4-31b-it`) |
 | `ASTRO_LLM_REPHRASE_ENABLED` | `false` | Optional LLM rewording; hard monthly call cap below |
 | `ASTRO_LLM_MONTHLY_CALL_CAP` | `1000` | Cost ceiling for rewording |
+
+Gemini and Gemma read `ASTRO_GEMINI_API_KEY`, or `GEMINI_API_KEY`, `GOOGLE_API_KEY`, `GOOGLE_AI_API_KEY`, or `GEMMA_API_KEY`. Anthropic reads `ASTRO_ANTHROPIC_API_KEY`, `ANTHROPIC_API_KEY`, or `ANTHROPIC_AUTH_TOKEN` (bearer; `ANTHROPIC_BASE_URL` when that value is https). When `ASTRO_LLM_PROVIDERS` is unset, `OPENROUTER_API_KEY` tries `ASTRO_OPENROUTER_MODELS` first. `OPENAI_API_KEY` and `GROQ_API_KEY` are still inserted after Gemma on the default list only when set. Placeholder names are in `.env.example`.
 
 ## Guardrails
 

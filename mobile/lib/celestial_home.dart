@@ -14,8 +14,27 @@ import 'celestial_widgets.dart';
 import 'firebase_session.dart';
 import 'l10n/app_localizations.dart';
 import 'licensing.dart';
+import 'local_profile_store.dart';
 import 'place_lookup.dart';
 import 'terms.dart';
+
+class AuthUiState {
+  const AuthUiState({
+    required this.firebaseAvailable,
+    required this.userPresent,
+    required this.accountSignedIn,
+    required this.phoneSignedIn,
+    required this.googleSignedIn,
+    this.accountLabel,
+  });
+
+  final bool firebaseAvailable;
+  final bool userPresent;
+  final bool accountSignedIn;
+  final bool phoneSignedIn;
+  final bool googleSignedIn;
+  final String? accountLabel;
+}
 
 class CelestialHome extends StatefulWidget {
   const CelestialHome(
@@ -24,12 +43,24 @@ class CelestialHome extends StatefulWidget {
       required this.locale,
       required this.muted,
       required this.onLanguageChanged,
-      required this.onMutedChanged});
+      required this.onMutedChanged,
+      this.authStateProvider,
+      this.startOtp,
+      this.confirmOtp,
+      this.signInWithGoogle,
+      this.signOut});
   final AstroplanApiClient api;
   final Locale locale;
   final bool muted;
   final Future<void> Function(Locale) onLanguageChanged;
   final Future<void> Function(bool, AppLocalizations) onMutedChanged;
+  final AuthUiState Function()? authStateProvider;
+  final Future<PhoneAuthResult> Function(String rawPhone,
+      {int? forceResendingToken})? startOtp;
+  final Future<PhoneAuthResult> Function(
+      {required String verificationId, required String smsCode})? confirmOtp;
+  final Future<bool> Function()? signInWithGoogle;
+  final Future<void> Function()? signOut;
   @override
   State<CelestialHome> createState() => _CelestialHomeState();
 }
@@ -54,10 +85,28 @@ class _CelestialHomeState extends State<CelestialHome> {
   final chatThread = <Json>[];
   final question = TextEditingController();
   StreamSubscription<void>? _authSub;
+  Timer? _authWait;
+  bool _authSettled = false;
   String? selectedArea;
   bool askUnmatched = false;
   AppLocalizations get t => AppLocalizations.of(context)!;
   AstroplanApiClient get api => widget.api;
+  AuthUiState get _authState =>
+      widget.authStateProvider?.call() ??
+      AuthUiState(
+        firebaseAvailable: firebaseAvailable,
+        userPresent: firebaseUserPresent,
+        accountSignedIn: isAccountSignedIn,
+        phoneSignedIn: isPhoneSignedIn,
+        googleSignedIn: isGoogleSignedIn,
+        accountLabel: currentAccountLabel,
+      );
+  bool get _firebaseEnabled => _authState.firebaseAvailable;
+  bool get _userPresent => _authState.userPresent;
+  bool get _accountSignedIn => _authState.accountSignedIn;
+  bool get _phoneSignedIn => _authState.phoneSignedIn;
+  bool get _googleSignedIn => _authState.googleSignedIn;
+  String? get _accountLabel => _authState.accountLabel;
   Json get details => {...?profile, 'language': widget.locale.languageCode};
   bool get accountReady => api.authenticated && consentRecorded;
   String get targetDate {
@@ -79,53 +128,206 @@ class _CelestialHomeState extends State<CelestialHome> {
   @override
   void initState() {
     super.initState();
+    _authSettled = !_firebaseEnabled || _userPresent;
+    if (_firebaseEnabled && !_authSettled) {
+      _authWait = Timer(const Duration(seconds: 3), () {
+        if (!mounted) return;
+        setState(() => _authSettled = true);
+      });
+    }
     _authSub = watchAccount()?.listen((_) {
       if (!mounted) return;
-      final signedIn = isPhoneSignedIn;
-      setState(() {});
-      if (signedIn && profile == null && api.authenticated) {
+      final signedIn = _accountSignedIn;
+      _authWait?.cancel();
+      setState(() => _authSettled = true);
+      if (signedIn && profile == null) {
         _restoreSavedProfile();
       }
     });
-    if (api.authenticated && (!firebaseAvailable || isPhoneSignedIn)) {
+    if (!_firebaseEnabled || _accountSignedIn) {
       _restoreSavedProfile();
     }
   }
 
-  Future<void> _restoreSavedProfile({bool overwrite = false}) async {
-    if (!api.authenticated) return;
-    final generation = epoch;
+  Future<void> _saveLocalSnapshot({required bool syncedToServer}) async {
+    final self = profile;
+    if (self == null) return;
     try {
-      final saved = await api.get('/user/profile', protected: true);
-      if (!mounted || epoch != generation) return;
-      if (saved['saved'] != true || saved['self_chart'] is! Map) return;
-      if (!overwrite && profile != null) return;
-      final selfMap = await attachCoordinates({
-        ...jsonMap(saved['self_chart']),
-        if (saved['gender'] != null) 'gender': saved['gender'],
-        if (saved['marital_status'] != null)
-          'marital_status': saved['marital_status'],
-        if (saved['occupation'] != null) 'occupation': saved['occupation'],
-      });
-      if (!mounted || epoch != generation) return;
-      final partnerMap = saved['partner_chart'] is Map
-          ? await attachCoordinates(jsonMap(saved['partner_chart']))
-          : null;
-      setState(() {
-        profile = selfMap;
-        partner = partnerMap;
-        consentRecorded = saved['dpdp_consent_granted'] == true;
-        _savedAdult = saved['age_verified_18_plus'] != false;
-        _savedParental = saved['parental_consent_verified'] == true;
-      });
-      _loadProfile();
-      if (partnerMap != null) _loadMatch();
+      await LocalProfileStore.save(SavedProfileBundle(
+        self: self,
+        partner: partner,
+        adult: _savedAdult,
+        parental: _savedParental,
+        consentRecorded: consentRecorded,
+        syncedToServer: syncedToServer,
+        accountId: api.userId,
+      ));
     } catch (_) {
-      // Honest empty onboarding remains if no saved profile exists yet.
+      // In-memory state stays usable even if device storage fails.
     }
   }
 
-  Future<void> _persistChart(Json chartDetails,
+  Future<bool> _syncProfileToServer({
+    required Json self,
+    Json? partnerChart,
+    required bool adult,
+    required bool parental,
+  }) async {
+    if (!api.authenticated) return false;
+    try {
+      await api.post(
+          '/privacy/consent',
+          {
+            if (api.userId != null) 'user_id': api.userId,
+            'dpdp_consent_granted': true,
+            'age_verified_18_plus': adult,
+            'parental_consent_verified': !adult && parental,
+            'preferred_language': widget.locale.languageCode,
+          },
+          protected: true);
+      final selfSaved = await _persistChart(
+        self,
+        adult: adult,
+        parental: parental,
+        gender: self['gender']?.toString(),
+        maritalStatus: self['marital_status']?.toString(),
+        occupation: self['occupation']?.toString(),
+      );
+      var partnerSaved = true;
+      if (partnerChart != null) {
+        partnerSaved = await _persistChart(
+          partnerChart,
+          adult: adult,
+          parental: parental,
+          isPartner: true,
+          partnerPermission: true,
+        );
+      }
+      return selfSaved && partnerSaved;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _restoreSavedProfile({bool overwrite = false}) async {
+    final generation = epoch;
+    SavedProfileBundle? local;
+    try {
+      local = await LocalProfileStore.load(accountId: api.userId);
+    } catch (_) {
+      local = null;
+    }
+    if (!mounted || epoch != generation) return;
+
+    if (local != null && (overwrite || profile == null)) {
+      final selfMap = await _resolveSaved(local.self) ?? local.self;
+      if (!mounted || epoch != generation) return;
+      Json? partnerMap;
+      if (local.partner != null) {
+        partnerMap = await _resolveSaved(local.partner!) ?? local.partner;
+        if (!mounted || epoch != generation) return;
+      }
+      setState(() {
+        profile = selfMap;
+        partner = partnerMap;
+        consentRecorded = local!.consentRecorded;
+        _savedAdult = local.adult;
+        _savedParental = local.parental;
+      });
+      _loadProfile();
+      if (partnerMap != null) _loadMatch();
+    }
+
+    if (!api.authenticated) return;
+    try {
+      final saved = await api.get('/user/profile', protected: true);
+      if (!mounted || epoch != generation) return;
+      final serverHasSelf =
+          saved['saved'] == true && saved['self_chart'] is Map;
+      if (serverHasSelf) {
+        final rawSelf = {
+          ...jsonMap(saved['self_chart']),
+          if (saved['gender'] != null)
+            'gender': saved['gender']
+          else if (local?.self['gender'] != null)
+            'gender': local!.self['gender'],
+          if (saved['marital_status'] != null)
+            'marital_status': saved['marital_status']
+          else if (local?.self['marital_status'] != null)
+            'marital_status': local!.self['marital_status'],
+          if (saved['occupation'] != null)
+            'occupation': saved['occupation']
+          else if (local?.self['occupation'] != null)
+            'occupation': local!.self['occupation'],
+        };
+        final selfMap = await _resolveSaved(rawSelf) ?? rawSelf;
+        if (!mounted || epoch != generation) return;
+        Json? partnerMap;
+        if (saved['partner_chart'] is Map) {
+          final rawPartner = jsonMap(saved['partner_chart']);
+          partnerMap = await _resolveSaved(rawPartner) ?? rawPartner;
+          if (!mounted || epoch != generation) return;
+        }
+
+        if (local != null && !local.syncedToServer && !overwrite) {
+          final synced = await _syncProfileToServer(
+            self: profile ?? local.self,
+            partnerChart: partner ?? local.partner,
+            adult: _savedAdult,
+            parental: _savedParental,
+          );
+          if (!mounted || epoch != generation) return;
+          if (synced) {
+            setState(() => consentRecorded = true);
+            await _saveLocalSnapshot(syncedToServer: true);
+          }
+          return;
+        }
+
+        if (local == null || overwrite) {
+          setState(() {
+            profile = selfMap;
+            partner = partnerMap;
+            consentRecorded = saved['dpdp_consent_granted'] == true;
+            _savedAdult = saved['age_verified_18_plus'] != false;
+            _savedParental = saved['parental_consent_verified'] == true;
+          });
+          await _saveLocalSnapshot(syncedToServer: true);
+          _loadProfile();
+          if (partnerMap != null) _loadMatch();
+        } else {
+          final nextPartner = partner ?? partnerMap;
+          final nextConsent =
+              consentRecorded || saved['dpdp_consent_granted'] == true;
+          final hadPartner = partner != null;
+          if (nextPartner != partner || nextConsent != consentRecorded) {
+            setState(() {
+              partner = nextPartner;
+              consentRecorded = nextConsent;
+            });
+            await _saveLocalSnapshot(syncedToServer: true);
+            if (!hadPartner && nextPartner != null) _loadMatch();
+          }
+        }
+      } else if (profile != null) {
+        final synced = await _syncProfileToServer(
+          self: profile!,
+          partnerChart: partner,
+          adult: _savedAdult,
+          parental: _savedParental,
+        );
+        if (!mounted || epoch != generation) return;
+        if (synced) {
+          setState(() => consentRecorded = true);
+          await _saveLocalSnapshot(syncedToServer: true);
+        }
+      }
+    } catch (_) {
+      // Keep locally restored profile intact if the server is waking up or offline.
+    }
+  }
+
+  Future<bool> _persistChart(Json chartDetails,
       {required bool adult,
       required bool parental,
       bool isPartner = false,
@@ -133,7 +335,7 @@ class _CelestialHomeState extends State<CelestialHome> {
       String? gender,
       String? maritalStatus,
       String? occupation}) async {
-    if (!api.authenticated) return;
+    if (!api.authenticated) return false;
     try {
       await api.post(
           '/user/chart',
@@ -153,15 +355,111 @@ class _CelestialHomeState extends State<CelestialHome> {
               'gender': gender ?? chartDetails['gender'],
             if (!isPartner &&
                 (maritalStatus ?? chartDetails['marital_status']) != null)
-              'marital_status':
-                  maritalStatus ?? chartDetails['marital_status'],
+              'marital_status': maritalStatus ?? chartDetails['marital_status'],
             if (!isPartner &&
                 (occupation ?? chartDetails['occupation']) != null)
               'occupation': occupation ?? chartDetails['occupation'],
           },
           protected: true);
+      return true;
     } catch (_) {
-      // In-memory session continues even if background persistence fails.
+      // Local persistence keeps details safe even if background sync fails.
+      return false;
+    }
+  }
+
+  Future<void> _reconcileAfterAccountSignIn({
+    Json? previousProfile,
+    Json? previousPartner,
+  }) async {
+    final generation = epoch;
+    if (api.authenticated) {
+      try {
+        final saved = await api.get('/user/profile', protected: true);
+        if (!mounted || epoch != generation) return;
+        if (saved['saved'] == true && saved['self_chart'] is Map) {
+          final rawSelf = {
+            ...jsonMap(saved['self_chart']),
+            if (saved['gender'] != null) 'gender': saved['gender'],
+            if (saved['marital_status'] != null)
+              'marital_status': saved['marital_status'],
+            if (saved['occupation'] != null) 'occupation': saved['occupation'],
+          };
+          final selfMap = await _resolveSaved(rawSelf) ?? rawSelf;
+          if (!mounted || epoch != generation) return;
+          Json? partnerMap;
+          if (saved['partner_chart'] is Map) {
+            final rawPartner = jsonMap(saved['partner_chart']);
+            partnerMap = await _resolveSaved(rawPartner) ?? rawPartner;
+            if (!mounted || epoch != generation) return;
+          }
+          clearSession();
+          setState(() {
+            profile = selfMap;
+            partner = partnerMap;
+            consentRecorded = saved['dpdp_consent_granted'] == true;
+            _savedAdult = saved['age_verified_18_plus'] != false;
+            _savedParental = saved['parental_consent_verified'] == true;
+          });
+          await _saveLocalSnapshot(syncedToServer: true);
+          _loadProfile();
+          if (partnerMap != null) _loadMatch();
+          return;
+        }
+      } catch (_) {
+        // Fall through to local store or active session migration.
+      }
+    }
+
+    final local = await LocalProfileStore.load(accountId: api.userId);
+    if (!mounted || epoch != generation) return;
+    if (local != null) {
+      final selfMap = await _resolveSaved(local.self) ?? local.self;
+      if (!mounted || epoch != generation) return;
+      Json? partnerMap;
+      if (local.partner != null) {
+        partnerMap = await _resolveSaved(local.partner!) ?? local.partner;
+        if (!mounted || epoch != generation) return;
+      }
+      clearSession();
+      setState(() {
+        profile = selfMap;
+        partner = partnerMap;
+        consentRecorded = local.consentRecorded;
+        _savedAdult = local.adult;
+        _savedParental = local.parental;
+      });
+      _loadProfile();
+      if (partnerMap != null) _loadMatch();
+      final synced = await _syncProfileToServer(
+        self: selfMap,
+        partnerChart: partnerMap,
+        adult: local.adult,
+        parental: local.parental,
+      );
+      if (mounted && synced) {
+        setState(() => consentRecorded = true);
+        await _saveLocalSnapshot(syncedToServer: true);
+      }
+      return;
+    }
+
+    if (previousProfile != null) {
+      setState(() {
+        profile = previousProfile;
+        partner = previousPartner;
+      });
+      await _saveLocalSnapshot(syncedToServer: false);
+      final synced = await _syncProfileToServer(
+        self: previousProfile,
+        partnerChart: previousPartner,
+        adult: _savedAdult,
+        parental: _savedParental,
+      );
+      if (mounted && synced) {
+        setState(() => consentRecorded = true);
+        await _saveLocalSnapshot(syncedToServer: true);
+      }
     }
   }
 
@@ -170,53 +468,21 @@ class _CelestialHomeState extends State<CelestialHome> {
     final previousProfile = profile;
     final previousPartner = partner;
     setState(() => authBusy = true);
+    var signedInOk = false;
     try {
-      final ok = await signInWithGoogleAccount();
+      signedInOk = await (widget.signInWithGoogle ?? signInWithGoogleAccount)();
       if (!mounted) return;
-      if (!ok) {
+      if (!signedInOk) {
         toast(t.googleSignInFailed);
         return;
       }
-      final saved = await api.get('/user/profile', protected: true);
-      if (!mounted) return;
-      if (saved['saved'] == true && saved['self_chart'] is Map) {
-        clearSession();
-        setState(() {
-          profile = jsonMap(saved['self_chart']);
-          partner = saved['partner_chart'] is Map
-              ? jsonMap(saved['partner_chart'])
-              : null;
-          consentRecorded = saved['dpdp_consent_granted'] == true;
-          _savedAdult = saved['age_verified_18_plus'] != false;
-          _savedParental = saved['parental_consent_verified'] == true;
-        });
-        _loadProfile();
-        if (partner != null) _loadMatch();
-      } else if (previousProfile != null) {
-        await api.post(
-            '/privacy/consent',
-            {
-              if (api.userId != null) 'user_id': api.userId,
-              'dpdp_consent_granted': true,
-              'age_verified_18_plus': _savedAdult,
-              'parental_consent_verified': !_savedAdult && _savedParental,
-              'preferred_language': widget.locale.languageCode,
-            },
-            protected: true);
-        await _persistChart(previousProfile,
-            adult: _savedAdult, parental: _savedParental);
-        if (previousPartner != null) {
-          await _persistChart(previousPartner,
-              adult: _savedAdult,
-              parental: _savedParental,
-              isPartner: true,
-              partnerPermission: true);
-        }
-        if (mounted) setState(() => consentRecorded = true);
-      }
+      await _reconcileAfterAccountSignIn(
+        previousProfile: previousProfile,
+        previousPartner: previousPartner,
+      );
       if (mounted) setState(() {});
     } catch (_) {
-      if (mounted) toast(t.googleSignInFailed);
+      if (mounted && !signedInOk) toast(t.googleSignInFailed);
     } finally {
       if (mounted) setState(() => authBusy = false);
     }
@@ -226,7 +492,8 @@ class _CelestialHomeState extends State<CelestialHome> {
     if (authBusy) return;
     setState(() => authBusy = true);
     try {
-      await signOutToAnonymous();
+      await (widget.signOut ?? signOutToAnonymous)();
+      await LocalProfileStore.clearAll();
       if (!mounted) return;
       clearSession();
     } finally {
@@ -252,6 +519,7 @@ class _CelestialHomeState extends State<CelestialHome> {
   @override
   void dispose() {
     epoch++;
+    _authWait?.cancel();
     _authSub?.cancel();
     question.dispose();
     super.dispose();
@@ -308,6 +576,10 @@ class _CelestialHomeState extends State<CelestialHome> {
     });
   }
 
+  Future<Json?> _resolveSaved(Json source) {
+    return resolveUpdatedPlace(source, search: _searchPlaces);
+  }
+
   Future<List<Json>> _searchPlaces(String query) async {
     final hits = await api.searchPlaces(query);
     if (hits.isNotEmpty || api.localDevelopment) return hits;
@@ -330,32 +602,59 @@ class _CelestialHomeState extends State<CelestialHome> {
     if (result == null || !mounted) return;
     if (forPartner) {
       if (!result.partnerPermission || profile == null) return;
-      final enriched = await attachCoordinates(result.details);
+      final enriched = await _resolveSaved(result.details);
       if (!mounted) return;
+      if (enriched == null) {
+        setState(
+            () => errors['match'] = const ApiFailure('ambiguous_location'));
+        return;
+      }
       setState(() {
         partner = enriched;
         data.remove('match');
         errors.remove('match');
       });
+      await _saveLocalSnapshot(syncedToServer: false);
       _loadMatch();
-      if (accountReady) {
-        await _persistChart(enriched,
-            adult: _savedAdult || result.adult,
-            parental: _savedParental || result.parental,
-            isPartner: true,
-            partnerPermission: true);
+      if (api.authenticated) {
+        final adult = _savedAdult || result.adult;
+        final parental = _savedParental || result.parental;
+        var saved = false;
+        if (consentRecorded) {
+          saved = await _persistChart(enriched,
+              adult: adult,
+              parental: parental,
+              isPartner: true,
+              partnerPermission: true);
+        } else if (profile != null) {
+          saved = await _syncProfileToServer(
+            self: profile!,
+            partnerChart: enriched,
+            adult: adult,
+            parental: parental,
+          );
+          if (saved && mounted) setState(() => consentRecorded = true);
+        }
+        if (saved && mounted) {
+          await _saveLocalSnapshot(syncedToServer: true);
+        }
       }
       return;
     }
     // Invalidate all in-flight responses before accepting a different person's details.
-    final enriched = await attachCoordinates(result.details);
+    final enriched = await _resolveSaved(result.details);
     if (!mounted) return;
+    if (enriched == null) {
+      setState(() => errors['chart'] = const ApiFailure('ambiguous_location'));
+      return;
+    }
     clearSession();
     setState(() {
       profile = enriched;
       _savedAdult = result.adult;
       _savedParental = result.parental;
     });
+    await _saveLocalSnapshot(syncedToServer: false);
     _loadProfile();
     if (api.authenticated) {
       final generation = epoch;
@@ -375,12 +674,15 @@ class _CelestialHomeState extends State<CelestialHome> {
         final ok = response != null;
         setState(() => consentRecorded = ok);
         if (ok) {
-          await _persistChart(enriched,
+          final chartSaved = await _persistChart(enriched,
               adult: result.adult,
               parental: result.parental,
               gender: result.gender,
               maritalStatus: result.maritalStatus,
               occupation: result.occupation);
+          if (mounted && epoch == generation) {
+            await _saveLocalSnapshot(syncedToServer: chartSaved);
+          }
         }
       }
     }
@@ -398,20 +700,14 @@ class _CelestialHomeState extends State<CelestialHome> {
               error.code != 'ambiguous_location')) {
         rethrow;
       }
-      final hit = await resolvePlaceOnDevice(
-          shown(profile?['place_name']), shown(profile?['country']));
-      if (hit == null || !mounted) rethrow;
-      setState(() {
-        profile = {
-          ...?profile,
-          'latitude': hit.latitude,
-          'longitude': hit.longitude,
-          if (hit.timezone != null) 'timezone_override': hit.timezone,
-        };
-      });
+      final resolved = await _resolveSaved({...?profile});
+      if (resolved == null || !mounted) rethrow;
+      setState(() => profile = resolved);
+      await _saveLocalSnapshot(syncedToServer: false);
       if (accountReady) {
-        await _persistChart(details,
+        final saved = await _persistChart(details,
             adult: _savedAdult, parental: _savedParental);
+        if (saved && mounted) await _saveLocalSnapshot(syncedToServer: true);
       }
       return api.post(path, details, query: query);
     }
@@ -420,11 +716,17 @@ class _CelestialHomeState extends State<CelestialHome> {
   void _loadProfile() {
     if (profile == null) return;
     () async {
-      final next = await attachCoordinates(profile!);
+      final next = await _resolveSaved(profile!);
       if (!mounted || profile == null) return;
+      if (next == null) {
+        setState(
+            () => errors['chart'] = const ApiFailure('ambiguous_location'));
+        return;
+      }
       if (next['latitude'] != profile?['latitude'] ||
           next['longitude'] != profile?['longitude']) {
         setState(() => profile = next);
+        await _saveLocalSnapshot(syncedToServer: false);
       }
       if (!mounted) return;
       load('chart', () => _postDetails('/chart')).then((chart) {
@@ -447,9 +749,14 @@ class _CelestialHomeState extends State<CelestialHome> {
   void _loadMatch() {
     if (profile == null || partner == null) return;
     () async {
-      final self = await attachCoordinates(profile!);
-      final other = await attachCoordinates(partner!);
+      final self = await _resolveSaved(profile!);
+      final other = await _resolveSaved(partner!);
       if (!mounted || profile == null || partner == null) return;
+      if (self == null || other == null) {
+        setState(
+            () => errors['match'] = const ApiFailure('ambiguous_location'));
+        return;
+      }
       setState(() {
         profile = self;
         partner = other;
@@ -457,14 +764,8 @@ class _CelestialHomeState extends State<CelestialHome> {
       load(
           'match',
           () => api.post('/matching/ashtakoota', {
-                'profile_a': {
-                  ...self,
-                  'language': widget.locale.languageCode
-                },
-                'profile_b': {
-                  ...other,
-                  'language': widget.locale.languageCode
-                },
+                'profile_a': {...self, 'language': widget.locale.languageCode},
+                'profile_b': {...other, 'language': widget.locale.languageCode},
                 'partner_consent_confirmed': true,
                 'already_married': other['already_married'] == true,
               }));
@@ -545,19 +846,83 @@ class _CelestialHomeState extends State<CelestialHome> {
   }
 
   Future<void> _afterPhoneSignedIn() async {
-    await _restoreSavedProfile(overwrite: true);
-    if (mounted && profile == null) {
-      await editBirth();
-    }
+    final previousProfile = profile;
+    final previousPartner = partner;
+    await _reconcileAfterAccountSignIn(
+      previousProfile: previousProfile,
+      previousPartner: previousPartner,
+    );
     if (mounted) setState(() {});
   }
 
-  Future<void> phoneLoginSheet() => goldSheet<void>(context,
-      title: t.phoneSignIn,
-      child: PhoneAuthPanel(onSignedIn: () async {
-        if (mounted) Navigator.of(context).pop();
-        await _afterPhoneSignedIn();
-      }));
+  Future<void> phoneLoginSheet() =>
+      goldSheet<void>(context, title: t.phoneSignIn,
+          child: PhoneAuthPanel(
+            startOtp: widget.startOtp,
+            confirmOtp: widget.confirmOtp,
+            onSignedIn: () async {
+              if (mounted) Navigator.of(context).pop();
+              await _afterPhoneSignedIn();
+            },
+          ));
+
+  Future<void> accountSheet() async {
+    final action = await goldSheet<String>(context,
+        title: t.accountTitle,
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (_accountSignedIn && _accountLabel != null) ...[
+                Text(t.googleSignedInAs(_accountLabel!),
+                    style: const TextStyle(
+                        color: gold, fontSize: 13, fontWeight: FontWeight.w500)),
+                gap(10),
+              ],
+              if (!_phoneSignedIn) ...[
+                note(t.phoneLinkHint),
+                gap(14),
+                SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                        key: const Key('phone_sign_in_account'),
+                        onPressed: authBusy
+                            ? null
+                            : () => Navigator.pop(context, 'phone'),
+                        icon: const Icon(Icons.sms_outlined, size: 18),
+                        label: Text(t.phoneSignIn))),
+                gap(12),
+              ],
+              if (!_googleSignedIn) ...[
+                SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                        key: const Key('google_sign_in_account'),
+                        onPressed: authBusy
+                            ? null
+                            : () => Navigator.pop(context, 'google'),
+                        icon: const Icon(Icons.login, size: 18),
+                        label: Text(t.googleSignIn))),
+                gap(12),
+              ],
+              if (_accountSignedIn) ...[
+                const Divider(),
+                ListTile(
+                    key: const Key('sign_out_account'),
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.logout, color: gold),
+                    title: Text(t.signOutLabel),
+                    onTap: () => Navigator.pop(context, 'sign_out')),
+              ],
+            ]));
+    if (!mounted || action == null) return;
+    if (action == 'phone') {
+      await phoneLoginSheet();
+    } else if (action == 'google') {
+      await _handleGoogleSignIn();
+    } else if (action == 'sign_out') {
+      await _handleSignOut();
+    }
+  }
 
   Future<void> mark(Json answer, String outcome) async {
     final id = answer['ledger_entry_id'] as String;
@@ -619,7 +984,7 @@ class _CelestialHomeState extends State<CelestialHome> {
                 onPressed: editBirth,
                 icon: const Icon(Icons.add, size: 18),
                 label: Text(t.birthDetails))),
-        if (firebaseAvailable) ...[
+        if (_firebaseEnabled && !_phoneSignedIn) ...[
           gap(10),
           SizedBox(
               width: double.infinity,
@@ -628,18 +993,6 @@ class _CelestialHomeState extends State<CelestialHome> {
                   onPressed: authBusy ? null : phoneLoginSheet,
                   icon: const Icon(Icons.sms_outlined, size: 18),
                   label: Text(t.phoneSignIn))),
-          if (!isGoogleSignedIn) ...[
-            gap(10),
-            SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                    key: const Key('google_sign_in_onboarding'),
-                    onPressed: authBusy ? null : _handleGoogleSignIn,
-                    icon: const Icon(Icons.login, size: 18),
-                    label: Text(t.googleSignIn))),
-          ],
-          gap(8),
-          note(t.phoneSignInHint),
         ],
         gap(12),
         note(t.sessionPrivacy),
@@ -654,7 +1007,7 @@ class _CelestialHomeState extends State<CelestialHome> {
         : timeRaw;
     final summary =
         '${shown(p['birth_date'])} · $timeClean · ${shown(p['place_name'])}, ${shown(p['country'])}';
-    final account = currentAccountLabel;
+    final account = _accountLabel;
     return GoldPanel(
         padding: 14,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -681,16 +1034,26 @@ class _CelestialHomeState extends State<CelestialHome> {
                 icon: const Icon(Icons.edit_outlined, size: 16),
                 label: Text(t.editDetailsLabel)),
           ]),
-          if (firebaseAvailable && !isGoogleSignedIn) ...[
+          if (_firebaseEnabled && (!_phoneSignedIn || !_googleSignedIn)) ...[
             gap(10),
-            OutlinedButton.icon(
-                key: Key('${keyPrefix}_google_sign_in'),
-                onPressed: authBusy ? null : _handleGoogleSignIn,
-                icon: const Icon(Icons.account_circle_outlined, size: 18),
-                label: Text(t.googleSignIn)),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              if (!_phoneSignedIn)
+                OutlinedButton.icon(
+                    key: Key('${keyPrefix}_phone_sign_in'),
+                    onPressed: authBusy ? null : phoneLoginSheet,
+                    icon: const Icon(Icons.sms_outlined, size: 18),
+                    label: Text(t.phoneSignIn)),
+              if (!_googleSignedIn)
+                OutlinedButton.icon(
+                    key: Key('${keyPrefix}_google_sign_in'),
+                    onPressed: authBusy ? null : _handleGoogleSignIn,
+                    icon: const Icon(Icons.account_circle_outlined, size: 18),
+                    label: Text(t.googleSignIn)),
+            ]),
           ],
         ]));
   }
+
   double? get natalMoon {
     for (final p in jsonRows(data['chart']?['planets'])) {
       if (p['planet'] == 'Moon') return number(p['longitude']);
@@ -727,8 +1090,8 @@ class _CelestialHomeState extends State<CelestialHome> {
   Widget today() {
     final p = data['sky'];
     final d = data['dasha'];
-    final areas = jsonMap(
-        data['areas']?['daily_areas'] ?? data['areas']?['life_areas']);
+    final areas =
+        jsonMap(data['areas']?['daily_areas'] ?? data['areas']?['life_areas']);
     const dayAreas = [
       ('relationships', 'inner'),
       ('career', 'work'),
@@ -776,24 +1139,23 @@ class _CelestialHomeState extends State<CelestialHome> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Eyebrow(t.timingTitle),
-                    gap(12),
-                    _fact(t.beginWindowLabel, shown(p['abhijit_muhurat'])),
-                    gap(6),
-                    note(t.beginWindowNote),
-                    gap(14),
-                    _fact(t.waitWindowLabel, shown(p['rahu_kaal'])),
-                    gap(6),
-                    note(t.waitWindowNote),
-                  ])),
+                Eyebrow(t.timingTitle),
+                gap(12),
+                _fact(t.beginWindowLabel, shown(p['abhijit_muhurat'])),
+                gap(6),
+                note(t.beginWindowNote),
+                gap(14),
+                _fact(t.waitWindowLabel, shown(p['rahu_kaal'])),
+                gap(6),
+                note(t.waitWindowNote),
+              ])),
           gap(),
         ],
         status('sky'),
         TextButton.icon(
             onPressed: () =>
                 setState(() => showChartDetails = !showChartDetails),
-            icon: Icon(
-                showChartDetails ? Icons.expand_less : Icons.expand_more,
+            icon: Icon(showChartDetails ? Icons.expand_less : Icons.expand_more,
                 size: 18),
             label: Text(t.chartDetailsLabel)),
         if (showChartDetails) ...[
@@ -887,8 +1249,13 @@ class _CelestialHomeState extends State<CelestialHome> {
 
   Future<void> openAnnual(int forecastYear) async {
     if (profile != null) {
-      final next = await attachCoordinates(profile!);
+      final next = await _resolveSaved(profile!);
       if (!mounted) return;
+      if (next == null) {
+        setState(
+            () => errors['annual'] = const ApiFailure('ambiguous_location'));
+        return;
+      }
       if (next['latitude'] != profile?['latitude']) {
         setState(() => profile = next);
       }
@@ -905,8 +1272,13 @@ class _CelestialHomeState extends State<CelestialHome> {
 
   Future<void> saveAnnualPdf() async {
     if (pending.contains('annual-pdf') || profile == null) return;
-    final next = await attachCoordinates(profile!);
+    final next = await _resolveSaved(profile!);
     if (!mounted || profile == null) return;
+    if (next == null) {
+      setState(
+          () => errors['annual-pdf'] = const ApiFailure('ambiguous_location'));
+      return;
+    }
     if (next['latitude'] != profile?['latitude']) {
       setState(() => profile = next);
     }
@@ -915,15 +1287,17 @@ class _CelestialHomeState extends State<CelestialHome> {
       errors.remove('annual-pdf');
     });
     try {
-      final bytes = await api.postBytes(
-          '/reports/annual-forecast/pdf', details,
+      final bytes = await api.postBytes('/reports/annual-forecast/pdf', details,
           query: {'forecast_year': '$year'});
       final dir = await getTemporaryDirectory();
       final file = File('${dir.path}/astroplan-$year.pdf');
       await file.writeAsBytes(bytes, flush: true);
       if (!mounted) return;
       await Share.shareXFiles(
-        [XFile(file.path, mimeType: 'application/pdf', name: 'astroplan-$year.pdf')],
+        [
+          XFile(file.path,
+              mimeType: 'application/pdf', name: 'astroplan-$year.pdf')
+        ],
       );
     } catch (error) {
       if (mounted) setState(() => errors['annual-pdf'] = error);
@@ -1081,13 +1455,16 @@ class _CelestialHomeState extends State<CelestialHome> {
                   .map((y) => DropdownMenuItem(value: y, child: Text('$y')))
                   .toList(),
               onChanged: (y) {
-                if (y == null || y == year || pending.contains('annual')) return;
+                if (y == null || y == year || pending.contains('annual')) {
+                  return;
+                }
                 setState(() => year = y);
                 openAnnual(y);
               }),
           gap(12),
           FilledButton(
-              onPressed: pending.contains('annual') ? null : () => openAnnual(year),
+              onPressed:
+                  pending.contains('annual') ? null : () => openAnnual(year),
               child: Text(t.annualAction)),
           gap(8),
           OutlinedButton.icon(
@@ -1096,29 +1473,33 @@ class _CelestialHomeState extends State<CelestialHome> {
               label: Text(t.annualPdfAction)),
           status('annual-pdf'),
         ])),
-        Column(key: annualAnchor, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          status('annual'),
-          if (data['annual'] case final annual?) ...[
-            gap(),
-            StatementPanel(
-                statement: jsonMap(annual['overview']),
-                title: shown(annual['year'])),
-            for (final q in jsonRows(annual['quarters'])) ...[
-              gap(),
-              StatementPanel(
-                  statement: jsonMap(q['theme_statement']),
-                  title: shown(q['quarter'])),
-              if (q['active_dasha'] != null)
-                Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: note('${t.dashaLabel}: ${shown(q['active_dasha'])}')),
-              if (q['key_transit_note'] != null)
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
-                    child: note(shown(q['key_transit_note']))),
-            ],
-          ],
-        ]),
+        Column(
+            key: annualAnchor,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              status('annual'),
+              if (data['annual'] case final annual?) ...[
+                gap(),
+                StatementPanel(
+                    statement: jsonMap(annual['overview']),
+                    title: shown(annual['year'])),
+                for (final q in jsonRows(annual['quarters'])) ...[
+                  gap(),
+                  StatementPanel(
+                      statement: jsonMap(q['theme_statement']),
+                      title: shown(q['quarter'])),
+                  if (q['active_dasha'] != null)
+                    Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: note(
+                            '${t.dashaLabel}: ${shown(q['active_dasha'])}')),
+                  if (q['key_transit_note'] != null)
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+                        child: note(shown(q['key_transit_note']))),
+                ],
+              ],
+            ]),
         gap(),
         OutlinedButton.icon(
             onPressed: editBirth,
@@ -1180,8 +1561,8 @@ class _CelestialHomeState extends State<CelestialHome> {
       if (closed)
         Opacity(
             opacity: .55,
-            child: GoldPanel(
-                key: const Key('ask_hold'), child: note(t.askHold))),
+            child:
+                GoldPanel(key: const Key('ask_hold'), child: note(t.askHold))),
       if (askUnmatched && response == null)
         GoldPanel(child: note(t.uncoveredLabel)),
       if (selectedArea != null) ...[
@@ -1267,42 +1648,37 @@ class _CelestialHomeState extends State<CelestialHome> {
             onChanged: (_) => setState(() {}),
             onSubmitted: (_) => ask()),
         gap(10),
-        Wrap(
-            spacing: 6,
-            runSpacing: 4,
-            children: [
-              for (final choice in choices.entries)
-                ChoiceChip(
-                    key: Key('ask_area_${choice.key}'),
-                    label: Text(choice.value),
-                    selected: selectedArea == choice.key,
-                    onSelected:
-                        chartReady ? (_) => chooseArea(choice.key) : null,
-                    labelStyle: TextStyle(
-                        color: !chartReady
-                            ? muted
-                            : selectedArea == choice.key
-                                ? night
-                                : ink,
-                        fontSize: 12),
-                    selectedColor: gold,
-                    backgroundColor: const Color(0xFF0A1020),
-                    disabledColor: const Color(0xFF0A1020),
-                    side: BorderSide(
-                        color: chartReady && selectedArea != choice.key
-                            ? hairline
-                            : const Color(0x14FFFFFF))),
-            ]),
+        Wrap(spacing: 6, runSpacing: 4, children: [
+          for (final choice in choices.entries)
+            ChoiceChip(
+                key: Key('ask_area_${choice.key}'),
+                label: Text(choice.value),
+                selected: selectedArea == choice.key,
+                onSelected: chartReady ? (_) => chooseArea(choice.key) : null,
+                labelStyle: TextStyle(
+                    color: !chartReady
+                        ? muted
+                        : selectedArea == choice.key
+                            ? night
+                            : ink,
+                    fontSize: 12),
+                selectedColor: gold,
+                backgroundColor: const Color(0xFF0A1020),
+                disabledColor: const Color(0xFF0A1020),
+                side: BorderSide(
+                    color: chartReady && selectedArea != choice.key
+                        ? hairline
+                        : const Color(0x14FFFFFF))),
+        ]),
         gap(12),
         SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
                 key: const Key('ask_submit'),
-                onPressed: chartReady &&
-                        !pending.contains('ask') &&
-                        questionReady
-                    ? ask
-                    : null,
+                onPressed:
+                    chartReady && !pending.contains('ask') && questionReady
+                        ? ask
+                        : null,
                 icon: const Icon(Icons.send, size: 18),
                 label: Text(t.chatSend))),
       ])),
@@ -1365,7 +1741,9 @@ class _CelestialHomeState extends State<CelestialHome> {
                   : () => editBirth(
                       forPartner: true, preConsented: partner != null),
               icon: Icon(
-                  partner == null ? Icons.person_add_alt_1 : Icons.edit_outlined,
+                  partner == null
+                      ? Icons.person_add_alt_1
+                      : Icons.edit_outlined,
                   size: 18),
               label: Text(partner == null ? t.addPartner : t.editPartnerLabel)),
         ])),
@@ -1574,177 +1952,197 @@ class _CelestialHomeState extends State<CelestialHome> {
   }
 
   Future<void> privacySheet() => goldSheet<String>(context,
-      title: t.privacyLabel,
-      child: StatefulBuilder(
-          builder: (sheetContext, update) =>
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                note(t.sessionPrivacy),
-                gap(12),
-                SwitchListTile(
-                    key: const Key('mute_notifications_toggle'),
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(t.notificationsLabel),
-                    subtitle: Text(t.notificationTime),
-                    value: !widget.muted,
-                    onChanged: notificationBusy
-                        ? null
-                        : (enabled) async {
-                            update(() => notificationBusy = true);
-                            try {
-                              await widget.onMutedChanged(!enabled, t);
-                              if (accountReady) {
-                                try {
-                                  await api.syncNotificationMute(!enabled);
-                                } catch (_) {
-                                  if (mounted) toast(t.notificationSyncFailure);
-                                }
-                              }
-                            } catch (_) {
-                              if (mounted) toast(t.notificationFailure);
-                            }
-                            notificationBusy = false;
-                            if (sheetContext.mounted) update(() {});
-                          }),
-                const Divider(),
-                if (firebaseAvailable) ...[
-                  if (isPhoneSignedIn && currentAccountLabel != null) ...[
-                    note(t.googleSignedInAs(currentAccountLabel!)),
-                    ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.logout, color: gold),
-                        title: Text(t.signOutLabel),
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          _handleSignOut();
-                        }),
-                  ] else ...[
-                    if (isGoogleSignedIn && currentAccountLabel != null)
-                      note(t.googleSignedInAs(currentAccountLabel!)),
-                    ListTile(
-                        key: const Key('phone_sign_in_profile'),
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.sms_outlined, color: gold),
-                        title: Text(t.phoneSignIn),
-                        subtitle: Text(t.phoneSignInHint),
-                        onTap: () => Navigator.pop(sheetContext, 'phone')),
-                    if (!isGoogleSignedIn)
-                      ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.login, color: gold),
-                          title: Text(t.googleSignIn),
-                          subtitle: Text(t.googleSignInHint),
-                          onTap: () {
-                            Navigator.pop(sheetContext);
-                            _handleGoogleSignIn();
-                          }),
-                  ],
-                  const Divider(),
-                ],
-                if (!api.authenticated) note(t.authError),
-                ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.data_object, color: gold),
-                    title: Text(t.exportLabel),
-                    enabled: api.authenticated,
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      showRemote(
-                          t.exportLabel,
-                          () => api.get('/privacy/export', protected: true),
-                          (result) => SelectableText(
-                              const JsonEncoder.withIndent('  ')
-                                  .convert(result)));
-                    }),
-                ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.delete_outline, color: gold),
-                    title: Text(t.deleteLabel),
-                    enabled: api.authenticated,
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      confirmErase();
-                    }),
-                ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.restart_alt, color: gold),
-                    title: Text(t.clearSession),
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      clearSession();
-                    }),
-                ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.info_outline, color: gold),
-                    title: Text(t.aboutLabel),
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      showRemote(
-                          t.aboutLabel,
-                          () => api.get('/trust/about-predictions',
-                              query: {'lang': widget.locale.languageCode}),
-                          (result) => Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    for (final key in [
-                                      'calculations_note',
-                                      'interpretations_note',
-                                      'ledger_methodology',
-                                      'professional_advice_disclaimer'
-                                    ])
-                                      if (result[key] != null) ...[
-                                        Text(shown(result[key]),
+          title: t.privacyLabel,
+          child: StatefulBuilder(
+              builder: (sheetContext, update) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        note(t.sessionPrivacy),
+                        gap(12),
+                        SwitchListTile(
+                            key: const Key('mute_notifications_toggle'),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(t.notificationsLabel),
+                            subtitle: Text(t.notificationTime),
+                            value: !widget.muted,
+                            onChanged: notificationBusy
+                                ? null
+                                : (enabled) async {
+                                    update(() => notificationBusy = true);
+                                    try {
+                                      await widget.onMutedChanged(!enabled, t);
+                                      if (accountReady) {
+                                        try {
+                                          await api
+                                              .syncNotificationMute(!enabled);
+                                        } catch (_) {
+                                          if (mounted) {
+                                            toast(t.notificationSyncFailure);
+                                          }
+                                        }
+                                      }
+                                    } catch (_) {
+                                      if (mounted) toast(t.notificationFailure);
+                                    }
+                                    notificationBusy = false;
+                                    if (sheetContext.mounted) update(() {});
+                                  }),
+                        const Divider(),
+                        if (_firebaseEnabled) ...[
+                          if (_accountSignedIn && _accountLabel != null)
+                            note(t.googleSignedInAs(_accountLabel!)),
+                          if (!_phoneSignedIn)
+                            ListTile(
+                                key: const Key('phone_sign_in_profile'),
+                                contentPadding: EdgeInsets.zero,
+                                leading:
+                                    const Icon(Icons.sms_outlined, color: gold),
+                                title: Text(t.phoneSignIn),
+                                subtitle: Text(t.phoneSignInHint),
+                                onTap: () =>
+                                    Navigator.pop(sheetContext, 'phone')),
+                          if (!_googleSignedIn)
+                            ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: const Icon(Icons.login, color: gold),
+                                title: Text(t.googleSignIn),
+                                subtitle: Text(t.googleSignInHint),
+                                onTap: () {
+                                  Navigator.pop(sheetContext);
+                                  _handleGoogleSignIn();
+                                }),
+                          if (_accountSignedIn)
+                            ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: const Icon(Icons.logout, color: gold),
+                                title: Text(t.signOutLabel),
+                                onTap: () {
+                                  Navigator.pop(sheetContext);
+                                  _handleSignOut();
+                                }),
+                          const Divider(),
+                        ],
+                        if (!api.authenticated) note(t.authError),
+                        ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.data_object, color: gold),
+                            title: Text(t.exportLabel),
+                            enabled: api.authenticated,
+                            onTap: () {
+                              Navigator.pop(sheetContext);
+                              showRemote(
+                                  t.exportLabel,
+                                  () => api.get('/privacy/export',
+                                      protected: true),
+                                  (result) => SelectableText(
+                                      const JsonEncoder.withIndent('  ')
+                                          .convert(result)));
+                            }),
+                        ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading:
+                                const Icon(Icons.delete_outline, color: gold),
+                            title: Text(t.deleteLabel),
+                            enabled: api.authenticated,
+                            onTap: () {
+                              Navigator.pop(sheetContext);
+                              confirmErase();
+                            }),
+                        ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.restart_alt, color: gold),
+                            title: Text(t.clearSession),
+                            onTap: () async {
+                              Navigator.pop(sheetContext);
+                              await LocalProfileStore.clearAll();
+                              if (mounted) clearSession();
+                            }),
+                        ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading:
+                                const Icon(Icons.info_outline, color: gold),
+                            title: Text(t.aboutLabel),
+                            onTap: () {
+                              Navigator.pop(sheetContext);
+                              showRemote(
+                                  t.aboutLabel,
+                                  () => api.get('/trust/about-predictions',
+                                          query: {
+                                            'lang': widget.locale.languageCode
+                                          }),
+                                  (result) => Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            for (final key in [
+                                              'calculations_note',
+                                              'interpretations_note',
+                                              'ledger_methodology',
+                                              'professional_advice_disclaimer'
+                                            ])
+                                              if (result[key] != null) ...[
+                                                Text(shown(result[key]),
+                                                    style: const TextStyle(
+                                                        height: 1.6)),
+                                                gap(14)
+                                              ],
+                                            if (result['grievance_officer']
+                                                is Map)
+                                              SelectableText(jsonMap(result[
+                                                      'grievance_officer'])
+                                                  .values
+                                                  .map(shown)
+                                                  .join(' · ')),
+                                          ]));
+                            }),
+                        ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.code, color: gold),
+                            title: Text(t.sourceOfferLabel),
+                            onTap: () {
+                              Navigator.pop(sheetContext);
+                              goldSheet(context,
+                                  title: t.sourceOfferLabel,
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(t.sourceOfferNote,
                                             style:
                                                 const TextStyle(height: 1.6)),
-                                        gap(14)
-                                      ],
-                                    if (result['grievance_officer'] is Map)
-                                      SelectableText(
-                                          jsonMap(result['grievance_officer'])
-                                              .values
-                                              .map(shown)
-                                              .join(' · ')),
-                                  ]));
-                    }),
-                ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.code, color: gold),
-                    title: Text(t.sourceOfferLabel),
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      goldSheet(context,
-                          title: t.sourceOfferLabel,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(t.sourceOfferNote,
-                                    style: const TextStyle(height: 1.6)),
-                                gap(14),
-                                const SelectableText(kSourceOfferUrl),
-                                gap(14),
-                                const SelectableText(kSourceOfferLicense),
-                              ]));
-                    }),
-                ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.menu_book_outlined, color: gold),
-                    title: Text(t.glossaryLabel),
-                    onTap: () {
-                      Navigator.pop(sheetContext);
-                      showRemote(
-                          t.glossaryLabel,
-                          () => api.get('/glossary',
-                              query: {'lang': widget.locale.languageCode}),
-                          (result) => Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    for (final value in result.values) ...[
-                                      Text(shown(value),
-                                          style: const TextStyle(height: 1.6)),
-                                      const Divider(height: 28)
-                                    ],
-                                  ]));
-                    }),
-              ]))).then((action) async {
+                                        gap(14),
+                                        const SelectableText(kSourceOfferUrl),
+                                        gap(14),
+                                        const SelectableText(
+                                            kSourceOfferLicense),
+                                      ]));
+                            }),
+                        ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.menu_book_outlined,
+                                color: gold),
+                            title: Text(t.glossaryLabel),
+                            onTap: () {
+                              Navigator.pop(sheetContext);
+                              showRemote(
+                                  t.glossaryLabel,
+                                  () => api.get('/glossary', query: {
+                                        'lang': widget.locale.languageCode
+                                      }),
+                                  (result) => Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            for (final value
+                                                in result.values) ...[
+                                              Text(shown(value),
+                                                  style: const TextStyle(
+                                                      height: 1.6)),
+                                              const Divider(height: 28)
+                                            ],
+                                          ]));
+                            }),
+                      ]))).then((action) async {
         if (action == 'phone' && mounted) await phoneLoginSheet();
       });
   void showRemote(String title, Future<Json> Function() request,
@@ -1765,8 +2163,7 @@ class _CelestialHomeState extends State<CelestialHome> {
                       const LinearProgressIndicator(),
                       gap(),
                       SlowLoadHint(
-                          label: t.loadingLabel,
-                          slowLabel: t.loadingSlowLabel)
+                          label: t.loadingLabel, slowLabel: t.loadingSlowLabel)
                     ]));
               }
               return content(snapshot.data!);
@@ -1789,6 +2186,7 @@ class _CelestialHomeState extends State<CelestialHome> {
     if (confirmed != true || !mounted) return;
     try {
       await api.delete('/privacy/delete');
+      await LocalProfileStore.clearAll();
       if (!mounted) return;
       clearSession();
       toast(t.erasedLabel);
@@ -1798,6 +2196,7 @@ class _CelestialHomeState extends State<CelestialHome> {
   }
 
   Widget phoneGate() => Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
           decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -1806,9 +2205,13 @@ class _CelestialHomeState extends State<CelestialHome> {
                   colors: [Color(0xFF0D1427), Color(0xFF080D1C), night],
                   stops: [0, .45, 1])),
           child: SafeArea(
-              child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-                  children: [
+              child: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                 Row(children: [
                   const Spacer(),
                   OutlinedButton(
@@ -1822,17 +2225,55 @@ class _CelestialHomeState extends State<CelestialHome> {
                           style: const TextStyle(
                               fontSize: 10, letterSpacing: 1.2))),
                 ]),
-                const SizedBox(height: 28),
-                Text(t.phoneGateTitle, style: serif(32)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
+                Text(t.appTitle, style: serif(27)),
+                const SizedBox(height: 14),
+                Text(t.phoneGateTitle, style: serif(28)),
+                const SizedBox(height: 10),
                 note(t.phoneGateBody),
-                const SizedBox(height: 22),
-                PhoneAuthPanel(onSignedIn: _afterPhoneSignedIn),
-              ]))));
+                const SizedBox(height: 18),
+                GoldPanel(
+                    accent: true,
+                    child: PhoneAuthPanel(
+                        startOtp: widget.startOtp,
+                        confirmOtp: widget.confirmOtp,
+                        onSignedIn: _afterPhoneSignedIn)),
+                gap(18),
+                Row(children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: note(t.orDividerLabel)),
+                  const Expanded(child: Divider()),
+                ]),
+                gap(16),
+                SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                        key: const Key('google_sign_in_gate'),
+                        onPressed: authBusy ? null : _handleGoogleSignIn,
+                        icon: const Icon(Icons.login, size: 18),
+                        label: Text(t.googleSignIn))),
+              ])))));
+
+  Widget sessionSplash() => const Scaffold(
+      body: DecoratedBox(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF0D1427), Color(0xFF080D1C), night],
+                  stops: [0, .45, 1])),
+          child: Center(
+              child: SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(strokeWidth: 2)))));
 
   @override
   Widget build(BuildContext context) {
-    if (firebaseAvailable && !isPhoneSignedIn) return phoneGate();
+    if (_firebaseEnabled && !_authSettled) return sessionSplash();
+    if (_firebaseEnabled && !_accountSignedIn) return phoneGate();
     final labels = [t.tabToday, t.tabChart, t.tabAsk, t.tabMatch, t.tabLedger];
     const icons = [
       Icons.wb_sunny_outlined,
@@ -1854,7 +2295,11 @@ class _CelestialHomeState extends State<CelestialHome> {
             Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 14, 4),
                 child: Row(children: [
-                  Expanded(child: Text(t.appTitle, style: serif(27))),
+                  Expanded(
+                      child: Text(t.appTitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: serif(27))),
                   OutlinedButton(
                       key: const Key('language_selector'),
                       onPressed: languageSheet,
@@ -1866,9 +2311,26 @@ class _CelestialHomeState extends State<CelestialHome> {
                           style: const TextStyle(
                               fontSize: 10, letterSpacing: 1.2))),
                   const SizedBox(width: 6),
+                  if (_firebaseEnabled) ...[
+                    IconButton(
+                        key: const Key('account_button'),
+                        tooltip: t.accountTitle,
+                        visualDensity: VisualDensity.compact,
+                        onPressed: accountSheet,
+                        style: IconButton.styleFrom(
+                            backgroundColor: gold.withValues(alpha: .10),
+                            foregroundColor: gold),
+                        icon: Icon(
+                            _phoneSignedIn
+                                ? Icons.verified_user_outlined
+                                : Icons.sms_outlined,
+                            size: 20)),
+                    const SizedBox(width: 4),
+                  ],
                   IconButton(
                       key: const Key('profile_button'),
                       tooltip: t.birthDetails,
+                      visualDensity: VisualDensity.compact,
                       onPressed: editBirth,
                       style: IconButton.styleFrom(
                           backgroundColor: gold.withValues(alpha: .13),
@@ -1876,6 +2338,7 @@ class _CelestialHomeState extends State<CelestialHome> {
                       icon: const Icon(Icons.person_outline, size: 22)),
                   IconButton(
                       tooltip: t.privacyLabel,
+                      visualDensity: VisualDensity.compact,
                       onPressed: privacySheet,
                       icon: const Icon(Icons.more_horiz, color: muted)),
                 ])),
@@ -1973,9 +2436,42 @@ class _CelestialHomeState extends State<CelestialHome> {
   }
 }
 
+String phoneAuthMessage(AppLocalizations t, String? code) {
+  switch (code) {
+    case 'invalid_phone_number':
+    case 'invalid-phone-number':
+    case 'missing-phone-number':
+      return t.phoneInvalidNumber;
+    case 'invalid_otp':
+    case 'invalid-verification-code':
+    case 'invalid-verification-id':
+    case 'missing-verification-code':
+    case 'missing-verification-id':
+    case 'session-expired':
+      return t.phoneInvalidCode;
+    case 'otp_timeout':
+    case 'too-many-requests':
+    case 'quota-exceeded':
+      return t.phoneTryLater;
+    case 'network-request-failed':
+      return t.networkError;
+    default:
+      return t.phoneSignInFailed;
+  }
+}
+
 class PhoneAuthPanel extends StatefulWidget {
-  const PhoneAuthPanel({super.key, required this.onSignedIn});
+  const PhoneAuthPanel({
+    super.key,
+    required this.onSignedIn,
+    this.startOtp,
+    this.confirmOtp,
+  });
   final Future<void> Function() onSignedIn;
+  final Future<PhoneAuthResult> Function(String rawPhone,
+      {int? forceResendingToken})? startOtp;
+  final Future<PhoneAuthResult> Function(
+      {required String verificationId, required String smsCode})? confirmOtp;
 
   @override
   State<PhoneAuthPanel> createState() => _PhoneAuthPanelState();
@@ -1985,6 +2481,7 @@ class _PhoneAuthPanelState extends State<PhoneAuthPanel> {
   final phoneController = TextEditingController();
   final otpController = TextEditingController();
   String verificationId = '';
+  int? resendToken;
   String? errorText;
   bool busy = false;
 
@@ -1995,46 +2492,53 @@ class _PhoneAuthPanelState extends State<PhoneAuthPanel> {
     super.dispose();
   }
 
-  Future<void> sendCode() async {
+  Future<void> sendCode({bool resend = false}) async {
+    FocusScope.of(context).unfocus();
     setState(() {
       busy = true;
       errorText = null;
     });
-    final result = await startPhoneOtp(phoneController.text);
+    final start = widget.startOtp ?? startPhoneOtp;
+    final result = await start(
+      phoneController.text,
+      forceResendingToken: resend ? resendToken : null,
+    );
     if (!mounted) return;
     if (result.signedIn) {
-      setState(() => busy = false);
       await widget.onSignedIn();
+      if (mounted) setState(() => busy = false);
       return;
     }
     setState(() {
       busy = false;
       verificationId = result.verificationId ?? '';
+      resendToken = result.resendToken ?? resendToken;
       errorText = result.verificationId == null
-          ? (result.errorMessage ??
-              AppLocalizations.of(context)!.phoneSignInFailed)
+          ? phoneAuthMessage(AppLocalizations.of(context)!, result.errorMessage)
           : null;
     });
   }
 
   Future<void> verifyCode() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       busy = true;
       errorText = null;
     });
-    final result = await confirmPhoneOtp(
+    final confirm = widget.confirmOtp ?? confirmPhoneOtp;
+    final result = await confirm(
         verificationId: verificationId, smsCode: otpController.text);
     if (!mounted) return;
     if (!result.signedIn) {
       setState(() {
         busy = false;
-        errorText = result.errorMessage ??
-            AppLocalizations.of(context)!.phoneSignInFailed;
+        errorText = phoneAuthMessage(
+            AppLocalizations.of(context)!, result.errorMessage);
       });
       return;
     }
-    setState(() => busy = false);
     await widget.onSignedIn();
+    if (mounted) setState(() => busy = false);
   }
 
   @override
@@ -2048,6 +2552,21 @@ class _PhoneAuthPanelState extends State<PhoneAuthPanel> {
           key: const Key('phone_number'),
           controller: phoneController,
           keyboardType: TextInputType.phone,
+          autofillHints: const [AutofillHints.telephoneNumber],
+          textInputAction: TextInputAction.done,
+          onChanged: (_) {
+            if (verificationId.isNotEmpty || errorText != null) {
+              setState(() {
+                verificationId = '';
+                resendToken = null;
+                otpController.clear();
+                errorText = null;
+              });
+            }
+          },
+          onSubmitted: (_) {
+            if (verificationId.isEmpty && !busy) sendCode();
+          },
           decoration: InputDecoration(
               labelText: t.phoneNumberLabel, hintText: t.phoneNumberHint)),
       if (verificationId.isNotEmpty) ...[
@@ -2056,6 +2575,11 @@ class _PhoneAuthPanelState extends State<PhoneAuthPanel> {
             key: const Key('otp_code'),
             controller: otpController,
             keyboardType: TextInputType.number,
+            autofillHints: const [AutofillHints.oneTimeCode],
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) {
+              if (!busy) verifyCode();
+            },
             decoration:
                 InputDecoration(labelText: t.otpLabel, hintText: t.otpHint)),
       ],
@@ -2075,6 +2599,15 @@ class _PhoneAuthPanelState extends State<PhoneAuthPanel> {
               child: Text(verificationId.isEmpty
                   ? t.sendOtpAction
                   : t.verifyOtpAction))),
+      if (verificationId.isNotEmpty) ...[
+        const SizedBox(height: 8),
+        Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+                key: const Key('phone_resend_otp'),
+                onPressed: busy ? null : () => sendCode(resend: true),
+                child: Text(t.resendOtpAction))),
+      ],
     ]);
   }
 }

@@ -40,15 +40,24 @@ class PrivacyRepo:
             raise ValueError("age_gate_or_parental_consent_required")
         now = datetime.now(UTC)
         with self._session_factory() as s, s.begin():
-            row = UserRow(
-                user_id=user_id,
-                preferred_language=preferred_language,
-                dpdp_consent_granted=True,
-                age_verified_18_plus=age_verified_18_plus,
-                parental_consent_verified=parental_consent_verified,
-                dpdp_consent_timestamp=now,
-            )
-            s.merge(row)
+            existing = s.scalar(select(UserRow).where(UserRow.user_id == user_id))
+            if existing is None:
+                s.add(
+                    UserRow(
+                        user_id=user_id,
+                        preferred_language=preferred_language,
+                        dpdp_consent_granted=True,
+                        age_verified_18_plus=age_verified_18_plus,
+                        parental_consent_verified=parental_consent_verified,
+                        dpdp_consent_timestamp=now,
+                    )
+                )
+            else:
+                existing.preferred_language = preferred_language
+                existing.dpdp_consent_granted = True
+                existing.age_verified_18_plus = age_verified_18_plus
+                existing.parental_consent_verified = parental_consent_verified
+                existing.dpdp_consent_timestamp = now
         return {
             "user_id": user_id,
             "dpdp_consent_granted": True,

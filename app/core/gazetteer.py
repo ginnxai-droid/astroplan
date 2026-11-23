@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import sqlite3
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -148,9 +149,59 @@ def search_places(db_path: str, query: str, limit: int = 8) -> list[PlaceHit]:
     ]
 
 
-def prefer_country(hits: list[PlaceHit], country: str | None) -> list[PlaceHit]:
+_COUNTRY_ALIASES = {
+    "usa": "united states",
+    "us": "united states",
+    "u s": "united states",
+    "u s a": "united states",
+    "america": "united states",
+    "united states of america": "united states",
+    "uk": "united kingdom",
+    "u k": "united kingdom",
+    "britain": "united kingdom",
+    "great britain": "united kingdom",
+    "england": "united kingdom",
+    "uae": "united arab emirates",
+    "u a e": "united arab emirates",
+    "bharat": "india",
+    "hindustan": "india",
+    "russia": "russian federation",
+    "south korea": "korea republic of",
+    "republic of korea": "korea republic of",
+    "czechia": "czech republic",
+}
+
+
+def fold_name(value: str) -> str:
+    text = unicodedata.normalize("NFKD", value)
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z0-9]", "", text.casefold())
+
+
+def canonical_country(value: str) -> str:
+    text = unicodedata.normalize("NFKD", value)
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    text = re.sub(r"[^a-z\s]", " ", text.casefold())
+    text = " ".join(text.split())
+    return _COUNTRY_ALIASES.get(text, text)
+
+
+def country_matches(left: str, right: str) -> bool:
+    a, b = canonical_country(left), canonical_country(right)
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    short, long = (a, b) if len(a) <= len(b) else (b, a)
+    return len(short) >= 4 and (long.startswith(f"{short} ") or long.endswith(f" {short}"))
+
+
+def prefer_country(
+    hits: list[PlaceHit], country: str | None, *, strict: bool = False
+) -> list[PlaceHit]:
     if not country:
         return hits
-    wanted = country.casefold()
-    matched = [hit for hit in hits if hit.country.casefold() == wanted]
-    return matched or hits
+    matched = [hit for hit in hits if country_matches(hit.country, country)]
+    if matched or strict:
+        return matched
+    return hits

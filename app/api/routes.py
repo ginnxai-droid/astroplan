@@ -62,7 +62,12 @@ from app.interpretation.audit import LLMAuditLog
 from app.interpretation.forecast import generate_annual_forecast_report
 from app.interpretation.forecast_pdf import render_annual_pdf
 from app.interpretation.language import Catalog
-from app.interpretation.llm import SafeRephraser
+from app.interpretation.llm import (
+    SafeRephraser,
+    make_llm_client,
+    polish_statement,
+    reading_facts,
+)
 from app.interpretation.match_reading import describe_partnership
 from app.interpretation.readings import (
     generate_daily_area_readings,
@@ -177,7 +182,7 @@ async def _resolve_place(
         )
         return resolved.latitude, resolved.longitude, resolved.timezone_iana
     query = f"{place_name}, {country}" if country else place_name
-    hits = prefer_country(search_places(settings.places_db, query, limit=5), country)
+    hits = prefer_country(search_places(settings.places_db, query, limit=5), country, strict=True)
     if hits:
         timezone = tz_override or hits[0].timezone
         load_zone(timezone)
@@ -213,6 +218,13 @@ def build_router(settings: Settings) -> APIRouter:
     festivals = load_festivals(settings.festivals_path, allow_draft=settings.allow_draft_rules)
     ask_lexicon = load_area_lexicon(settings.ask_lexicon_path)
     rephraser = SafeRephraser(settings, LLMAuditLog(session_factory=repo.session_factory))
+    llm_client = make_llm_client(settings)
+
+    def _spoken(
+        statement: ExplainedStatement, facts: str, lang: LanguageCode
+    ) -> ExplainedStatement:
+        return polish_statement(rephraser, llm_client, statement, facts, lang)
+
     current_user_dep = make_auth_dependency(settings)
 
     def verify_operator(x_operator_key: str | None = Header(default=None)) -> None:
@@ -233,7 +245,7 @@ def build_router(settings: Settings) -> APIRouter:
         return [
             {
                 "name": r.display_name.split(",")[0].strip(),
-                "country": "",
+                "country": r.country,
                 "display_name": r.display_name,
                 "latitude": r.latitude,
                 "longitude": r.longitude,
@@ -320,7 +332,12 @@ def build_router(settings: Settings) -> APIRouter:
             d = calculate_vimshottari_dasha(details.birth_date, moon.longitude, eff_date)
             p = calculate_daily_panchang(eff_date, lat, lon, tz)
             t = evaluate_current_transits(c, eff_date)
-            return generate_daily_insight(c, p, t, catalog, details.language, dasha=d)
+            statement = generate_daily_insight(c, p, t, catalog, details.language, dasha=d)
+            return _spoken(
+                statement,
+                reading_facts(c, dasha=d, transits=t, panchang=p),
+                details.language,
+            )
         except Exception as exc:
             raise _map(exc, catalog, details.language) from exc
 
@@ -347,6 +364,11 @@ def build_router(settings: Settings) -> APIRouter:
             p = calculate_daily_panchang(eff_date, lat, lon, tz)
             areas = generate_life_area_readings(c, d, t, rules, catalog, details.language)
             daily_areas = generate_daily_area_readings(c, d, t, p, rules, details.language)
+            facts = reading_facts(c, dasha=d, transits=t, panchang=p)
+            for bucket in (areas, daily_areas):
+                for items in bucket.values():
+                    for index, statement in enumerate(items):
+                        items[index] = _spoken(statement, facts, details.language)
             yogas = detect_yogas_and_doshas(c, catalog, details.language, rules=rules)
             return {
                 "dasha_summary": d,
@@ -538,8 +560,49 @@ def build_router(settings: Settings) -> APIRouter:
             )
             for month in (1, 4, 7, 10)
         ]
-        return generate_annual_forecast_report(
-            c, snapshots, rules, catalog, eff_year, details.language
+        month_facts: list[str] | None = [] if llm_client is not None else None
+        report = generate_annual_forecast_report(
+            c,
+            snapshots,
+            rules,
+            catalog,
+            eff_year,
+            details.language,
+            month_facts=month_facts,
+        )
+        base = reading_facts(c, dasha=snapshots[0][0], transits=snapshots[0][1])
+        quarters = []
+        for index, (quarter, snapshot) in enumerate(zip(report.quarters, snapshots, strict=True)):
+            q_dasha, q_transits = snapshot
+            month_line = ""
+            if month_facts is not None and index < len(month_facts):
+                month_line = month_facts[index]
+            extra = "\n".join(
+                part
+                for part in (quarter.quarter, month_line, quarter.key_transit_note)
+                if part
+            )
+            quarters.append(
+                quarter.model_copy(
+                    update={
+                        "theme_statement": _spoken(
+                            quarter.theme_statement,
+                            reading_facts(
+                                c,
+                                dasha=q_dasha,
+                                transits=q_transits,
+                                extra=extra,
+                            ),
+                            details.language,
+                        )
+                    }
+                )
+            )
+        return report.model_copy(
+            update={
+                "overview": _spoken(report.overview, base, details.language),
+                "quarters": quarters,
+            }
         )
 
     @router.post("/matching/ashtakoota")

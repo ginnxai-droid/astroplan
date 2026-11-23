@@ -326,11 +326,10 @@ void main() {
     expect(dial.natalMoon, 42.0);
     expect(h.requests.where((r) => r.url.path.contains('save')), isEmpty);
     final prefs = await SharedPreferences.getInstance();
-    for (final key in prefs.getKeys()) {
-      expect(key, isNot(contains('birth')));
-      expect(prefs.get(key).toString(), isNot(contains('Test Person')));
-      expect(prefs.get(key).toString(), isNot(contains('1990-01-02')));
-    }
+    final stored = prefs.getString('astroplan_profile_v1_test-user');
+    expect(stored, isNotNull);
+    expect(stored, contains('Test Person'));
+    expect(stored, contains('1990-01-02'));
   });
 
   testWidgets('country is mandatory and blocks chart calculation',
@@ -780,5 +779,103 @@ void main() {
     expect(h.at('/user/chart'), isNotEmpty);
     expect(jsonDecode(h.at('/user/chart').last.body)['details']['name'],
         'Updated User');
+  });
+
+  testWidgets(
+      'birth details, partner, and demographics persist across app restart even if server resets',
+      (tester) async {
+    final h1 = ApiHarness();
+    await startProfile(tester, h1);
+    await tapVisible(tester, find.byKey(const Key('tab_3')));
+    await tapVisible(tester, find.byKey(const Key('add_partner')));
+    await fillBirth(tester, name: 'Saved Partner', partner: true);
+    await tapVisible(tester, find.byKey(const Key('calculate_chart')));
+    expect(find.text('Saved Partner'), findsOneWidget);
+
+    // Unmount and mount a brand-new app instance against a server whose DB has no saved record.
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+
+    final h2 = ApiHarness();
+    h2.override = (r) => r.url.path == '/v1/user/profile'
+        ? reply({'saved': false, 'user_id': 'test-user'})
+        : null;
+    await tester.pumpWidget(
+        AstroplanApp(api: h2.api, notifier: RecordingNotifier()));
+    await tester.pumpAndSettle();
+
+    // Never re-prompts for birth details; restores self + partner immediately and re-syncs to server.
+    expect(find.text('Begin with your birth details'), findsNothing);
+    expect(find.text('Test Person'), findsOneWidget);
+    expect(h2.at('/user/chart').length, greaterThanOrEqualTo(2));
+    final selfUpload = h2
+        .at('/user/chart')
+        .firstWhere((r) => jsonDecode(r.body)['is_third_party_chart'] == false);
+    final selfBody = jsonDecode(selfUpload.body);
+    expect(selfBody['gender'], 'male');
+    expect(selfBody['marital_status'], 'single');
+    expect(selfBody['occupation'], 'employee');
+
+    // Partner is also restored on Match tab.
+    await tapVisible(tester, find.byKey(const Key('tab_3')));
+    expect(find.text('Saved Partner'), findsOneWidget);
+
+    // Edit details and confirm updated name persists across another restart even when server profile fails.
+    await tapVisible(tester, find.byKey(const Key('tab_0')));
+    await tapVisible(tester, find.byKey(const Key('today_edit_details')));
+    await tester.enterText(find.byKey(const Key('name')), 'Edited Person');
+    tester.testTextInput.hide();
+    await tester.drag(
+        find.byType(SingleChildScrollView).last, const Offset(0, -700));
+    await tester.pumpAndSettle();
+    await tapVisible(tester, find.byKey(const Key('calculate_chart')));
+    expect(find.text('Edited Person'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+
+    final h3 = ApiHarness();
+    h3.override = (r) => r.url.path == '/v1/user/profile'
+        ? reply({'detail': {'error': 'service_unavailable'}}, 503)
+        : null;
+    await tester.pumpWidget(
+        AstroplanApp(api: h3.api, notifier: RecordingNotifier()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Begin with your birth details'), findsNothing);
+    expect(find.text('Edited Person'), findsOneWidget);
+  });
+
+  testWidgets('privacy erase clears local persistence across restart',
+      (tester) async {
+    final h1 = ApiHarness();
+    await startProfile(tester, h1);
+    final prefsBefore = await SharedPreferences.getInstance();
+    expect(
+        prefsBefore
+            .getKeys()
+            .where((k) => k.startsWith('astroplan_profile_v1_')),
+        isNotEmpty);
+
+    await tapVisible(tester, find.byTooltip('Privacy & reminders'));
+    await tapVisible(tester, find.text('Erase my server data'));
+    await tapVisible(tester, find.text('Erase my server data'));
+    expect(find.text('Begin with your birth details'), findsOneWidget);
+
+    final prefsAfter = await SharedPreferences.getInstance();
+    expect(
+        prefsAfter
+            .getKeys()
+            .where((k) => k.startsWith('astroplan_profile_v1_')),
+        isEmpty);
+
+    // Restarting after erase stays on empty onboarding.
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    final h2 = ApiHarness();
+    await tester.pumpWidget(
+        AstroplanApp(api: h2.api, notifier: RecordingNotifier()));
+    await tester.pumpAndSettle();
+    expect(find.text('Begin with your birth details'), findsOneWidget);
   });
 }

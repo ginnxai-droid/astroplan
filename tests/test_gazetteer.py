@@ -1,6 +1,12 @@
 from pathlib import Path
 
-from app.core.gazetteer import init_database, insert_place, prefer_country, search_places
+from app.core.gazetteer import (
+    country_matches,
+    init_database,
+    insert_place,
+    prefer_country,
+    search_places,
+)
 
 
 def test_place_prefix_returns_coordinates(tmp_path: Path) -> None:
@@ -43,4 +49,9 @@ def test_place_prefix_returns_coordinates(tmp_path: Path) -> None:
     assert hits[0].display_name == "Pune, Maharashtra, India"
     chosen = prefer_country(hits, "India")
     assert chosen[0].country == "India"
+    assert prefer_country(hits, "Bharat")[0].country == "India"
+    assert prefer_country(hits, "Japan", strict=True) == []
+    assert country_matches("UK", "United Kingdom")
+    assert country_matches("USA", "United States")
+    assert not country_matches("India", "Indiana")
     assert search_places("", "Pune") == []

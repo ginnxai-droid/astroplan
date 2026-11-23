@@ -1,0 +1,155 @@
+{
+  "Sun": {
+    "helps": [
+      "What helps: the Sun in house {house} tends to support confidence, a visible role, and a clear duty around {matter}.",
+      "जो सहायक है: भाव {house} का सूर्य {matter} में आत्मविश्वास, दिखाई देने वाली भूमिका और साफ जिम्मेदारी को सहारा देता है।",
+      "जे मदत करते: भाव {house} मधील सूर्य {matter} मध्ये आत्मविश्वास, दिसणारी भूमिका आणि स्पष्ट जबाबदारी यांना आधार देतो."
+    ],
+    "care": [
+      "What needs care: fatigue or pride can make a setback in {matter} feel like a personal slight.",
+      "जहाँ सावधानी चाहिए: थकान या अहंकार {matter} की एक ठेस को निजी बात बना सकता है।",
+      "जिथे काळजी हवी: थकवा किंवा अहंकार {matter} मधील एक ठेस वैयक्तिक वाटू शकतो."
+    ],
+    "take": [
+      "Takeaway: finish one visible duty tied to {matter} in daylight, then stop for the day.",
+      "व्यावहारिक कदम: दिन के उजाले में {matter} से जुड़ा एक दिखाई देने वाला काम पूरा करें, फिर उस दिन रुक जाएँ।",
+      "व्यावहारिक पाऊल: दिवसाच्या उजेडात {matter} शी जोडलेले एक दिसणारे काम पूर्ण करा, मग त्या दिवसासाठी थांबा."
+    ]
+  },
+  "Moon": {
+    "helps": [
+      "What helps: the Moon in house {house} tends to support timing, care, and a steadier mood around {matter}.",
+      "जो सहायक है: भाव {house} का चंद्र {matter} में समय का चुनाव, देखभाल और मन की स्थिरता को सहारा देता है।",
+      "जे मदत करते: भाव {house} मधील चंद्र {matter} मध्ये वेळेची निवड, काळजी आणि मनाची स्थिरता यांना आधार देतो."
+    ],
+    "care": [
+      "What needs care: mood can shift around {matter}, and sleep or meals change how the day feels.",
+      "जहाँ सावधानी चाहिए: {matter} के आसपास मन बदल सकता है, और नींद या भोजन दिन का अनुभव बदल देते हैं।",
+      "जिथे काळजी हवी: {matter} भोवती मन बदलू शकते, आणि झोप किंवा जेवण दिवसाचा अनुभव बदलतो."
+    ],
+    "take": [
+      "Takeaway: decide about {matter} after food and a quiet hour, not in a rush.",
+      "व्यावहारिक कदम: {matter} का फैसला भोजन और एक शांत घंटे के बाद करें, जल्दबाजी में नहीं।",
+      "व्यावहारिक पाऊल: {matter} चा निर्णय जेवण आणि एका शांत तासानंतर घ्या, घाईत नाही."
+    ]
+  },
+  "Mars": {
+    "helps": [
+      "What helps: Mars in house {house} tends to support courage and a direct start on {matter}.",
+      "जो सहायक है: भाव {house} का मंगल {matter} में साहस और सीधी शुरुआत को सहारा देता है।",
+      "जे मदत करते: भाव {house} मधील मंगळ {matter} मध्ये धैर्य आणि थेट सुरुवात यांना आधार देतो."
+    ],
+    "care": [
+      "What needs care: haste or a sharp reply can spoil {matter} when someone says no.",
+      "जहाँ सावधानी चाहिए: जल्दबाजी या तीखा जवाब {matter} बिगाड़ सकता है जब कोई मना करे।",
+      "जिथे काळजी हवी: घाई किंवा टोकदार उत्तर {matter} बिघडवू शकते जेव्हा कोणी नकार देतो."
+    ],
+    "take": [
+      "Takeaway: put that energy into one concrete task for {matter}, and leave the argument until tomorrow.",
+      "व्यावहारिक कदम: वह ऊर्जा {matter} के एक ठोस काम में लगाएँ, और बहस कल तक छोड़ दें।",
+      "व्यावहारिक पाऊल: ती ऊर्जा {matter} च्या एका ठोस कामात लावा, आणि वाद उद्यापर्यंत ठेवा."
+    ]
+  },
+  "Mercury": {
+    "helps": [
+      "What helps: Mercury in house {house} tends to support clear speech, study, and practical detail in {matter}.",
+      "जो सहायक है: भाव {house} का बुध {matter} में साफ बात, अध्ययन और व्यावहारिक बारीकी को सहारा देता है।",
+      "जे मदत करते: भाव {house} मधील बुध {matter} मध्ये स्पष्ट बोलणे, अभ्यास आणि व्यावहारिक बारकावा यांना आधार देतो."
+    ],
+    "care": [
+      "What needs care: mixed messages or overthinking can tangle {matter}.",
+      "जहाँ सावधानी चाहिए: मिश्रित संदेश या अधिक सोच {matter} को उलझा सकती है।",
+      "जिथे काळजी हवी: मिश्र संदेश किंवा अतिविचार {matter} गोंधळात टाकू शकतो."
+    ],
+    "take": [
+      "Takeaway: write the next step for {matter} in one sentence before you discuss it.",
+      "व्यावहारिक कदम: {matter} का अगला कदम एक वाक्य में लिखें, फिर उस पर बात करें।",
+      "व्यावहारिक पाऊल: {matter} ची पुढची पायरी एका वाक्यात लिहा, मग त्यावर बोला."
+    ]
+  },
+  "Jupiter": {
+    "helps": [
+      "What helps: Guru (Jupiter) in house {house} tends to support learning, useful counsel, and a wider view of {matter}.",
+      "जो सहायक है: भाव {house} के गुरु (बृहस्पति) {matter} में सीख, अच्छी सलाह और व्यापक दृष्टि को सहारा देते हैं।",
+      "जे मदत करते: भाव {house} मधील गुरु (बृहस्पती) {matter} मध्ये शिकणे, चांगला सल्ला आणि व्यापक दृष्टी यांना आधार देतात."
+    ],
+    "care": [
+      "What needs care: a broad promise about {matter} can outrun the time or money you actually have.",
+      "जहाँ सावधानी चाहिए: {matter} के बारे में बहुत बड़ा वचन उस समय या धन से आगे निकल सकता है जो वास्तव में है।",
+      "जिथे काळजी हवी: {matter} बद्दलचे मोठे वचन त्या वेळेपेक्षा किंवा धनापेक्षा पुढे जाऊ शकते जे खरोखर आहे."
+    ],
+    "take": [
+      "Takeaway: ask one trusted teacher a single question about {matter}, then act on that answer.",
+      "व्यावहारिक कदम: {matter} पर एक विश्वसनीय शिक्षक से एक ही प्रश्न पूछें, फिर उसी उत्तर पर काम करें।",
+      "व्यावहारिक पाऊल: {matter} वर एका विश्वासू शिक्षकास एकच प्रश्न विचारा, मग त्या उत्तरावर काम करा."
+    ]
+  },
+  "Venus": {
+    "helps": [
+      "What helps: Venus in house {house} tends to support warmth, agreement, and comfort around {matter}.",
+      "जो सहायक है: भाव {house} का शुक्र {matter} में स्नेह, सहमति और सुविधा को सहारा देता है।",
+      "जे मदत करते: भाव {house} मधील शुक्र {matter} मध्ये स्नेह, सहमती आणि सोय यांना आधार देतो."
+    ],
+    "care": [
+      "What needs care: wanting comfort or approval can blur a boundary in {matter}.",
+      "जहाँ सावधानी चाहिए: सुविधा या स्वीकृति की चाह {matter} में सीमा धुंधली कर सकती है।",
+      "जिथे काळजी हवी: सोय किंवा मान्यतेची इच्छा {matter} मध्ये सीमा अस्पष्ट करू शकते."
+    ],
+    "take": [
+      "Takeaway: say what you want in {matter} kindly, and keep both the cost and the promise small.",
+      "व्यावहारिक कदम: {matter} में अपनी चाह विनम्रता से कहें, और खर्च तथा वचन छोटा रखें।",
+      "व्यावहारिक पाऊल: {matter} मध्ये आपली इच्छा सौम्यपणे सांगा, आणि खर्च व वचन लहान ठेवा."
+    ]
+  },
+  "Saturn": {
+    "helps": [
+      "What helps: Shani (Saturn) in house {house} tends to support patience, duty, and work that lasts in {matter}.",
+      "जो सहायक है: भाव {house} के शनि {matter} में धैर्य, कर्तव्य और टिकने वाले काम को सहारा देते हैं।",
+      "जे मदत करते: भाव {house} मधील शनी {matter} मध्ये धीर, कर्तव्य आणि टिकणारे काम यांना आधार देतात."
+    ],
+    "care": [
+      "What needs care: delay, or worry about getting {matter} wrong, can stall the next step.",
+      "जहाँ सावधानी चाहिए: देरी, या {matter} गलत होने की चिंता, अगला कदम रोक सकती है।",
+      "जिथे काळजी हवी: विलंब, किंवा {matter} चुकेल ही चिंता, पुढचे पाऊल थांबवू शकते."
+    ],
+    "take": [
+      "Takeaway: repeat one small duty for {matter} on the same day each week.",
+      "व्यावहारिक कदम: {matter} का एक छोटा कर्तव्य हर सप्ताह उसी दिन दोहराएँ।",
+      "व्यावहारिक पाऊल: {matter} चे एक छोटे कर्तव्य दर आठवड्यात त्याच दिवशी पुन्हा करा."
+    ]
+  },
+  "Rahu": {
+    "helps": [
+      "What helps: Rahu in house {house} tends to support ambition and an unusual opening around {matter}.",
+      "जो सहायक है: भाव {house} का राहु {matter} में महत्वाकांक्षा और एक असामान्य अवसर को सहारा देता है।",
+      "जे मदत करते: भाव {house} मधील राहू {matter} मध्ये महत्त्वाकांक्षा आणि एक असामान्य संधी यांना आधार देतो."
+    ],
+    "care": [
+      "What needs care: a shortcut, or a craving for more, can confuse {matter}.",
+      "जहाँ सावधानी चाहिए: छोटा रास्ता या और अधिक की लालसा {matter} को उलझा सकती है।",
+      "जिथे काळजी हवी: छोटा मार्ग किंवा अधिकची लालसा {matter} गोंधळात टाकू शकते."
+    ],
+    "take": [
+      "Takeaway: check one unusual idea about {matter} with a practical person before you chase it.",
+      "व्यावहारिक कदम: {matter} का एक असामान्य विचार किसी व्यावहारिक व्यक्ति से जाँचें, फिर उसका पीछा करें।",
+      "व्यावहारिक पाऊल: {matter} ची एक असामान्य कल्पना एखाद्या व्यावहारिक व्यक्तीकडून तपासा, मग तिचा पाठलाग करा."
+    ]
+  },
+  "Ketu": {
+    "helps": [
+      "What helps: Ketu in house {house} tends to support letting go, skill, and a quieter focus on {matter}.",
+      "जो सहायक है: भाव {house} का केतु {matter} में छोड़ने की क्षमता, कौशल और शांत ध्यान को सहारा देता है।",
+      "जे मदत करते: भाव {house} मधील केतू {matter} मध्ये सोडण्याची क्षमता, कौशल्य आणि शांत लक्ष यांना आधार देतो."
+    ],
+    "care": [
+      "What needs care: losing interest can leave {matter} half finished.",
+      "जहाँ सावधानी चाहिए: रुचि घटने से {matter} अधूरा रह सकता है।",
+      "जिथे काळजी हवी: रस कमी झाल्याने {matter} अर्धवट राहू शकते."
+    ],
+    "take": [
+      "Takeaway: keep one ordinary duty in {matter} even on a day when it feels dull.",
+      "व्यावहारिक कदम: जिस दिन {matter} नीरस लगे, उस दिन भी एक साधारण कर्तव्य निभाएँ।",
+      "व्यावहारिक पाऊल: ज्या दिवशी {matter} कंटाळवाणे वाटेल, त्या दिवशीही एक साधे कर्तव्य पूर्ण करा."
+    ]
+  }
+}

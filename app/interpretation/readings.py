@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
+from pathlib import Path
 
 from app.api.schemas import (
     ChartResponse,
@@ -18,9 +20,41 @@ from app.interpretation.phala import (
     daily_area_reading,
     daily_pro_reading,
     daily_reading,
+    house_matter,
 )
 from app.interpretation.rules import Rule
 from app.interpretation.terms import gloss
+
+_IMPACT: dict[str, dict[str, list[str]]] = json.loads(
+    Path(__file__).with_name("life_impact.json").read_text(encoding="utf-8")
+)
+_IMPACT_PLANETS = (
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Rahu",
+    "Ketu",
+)
+_LANG_IDX = {"en": 0, "hi": 1, "mr": 2}
+
+
+def life_impact_text(chart: ChartResponse, lang: LanguageCode) -> str:
+    """Everyday house impact: what helps, what needs care, and a takeaway."""
+    idx = _LANG_IDX[lang]
+    parts: list[str] = []
+    for name in _IMPACT_PLANETS:
+        planet = next(item for item in chart.planets if item.planet == name)
+        matter = house_matter(planet.house, lang)
+        block = _IMPACT[name]
+        for key in ("helps", "care", "take"):
+            parts.append(block[key][idx].format(house=planet.house, matter=matter))
+    text = " ".join(parts)
+    verify_text(text, languages=(lang,))
+    return text
 
 
 @dataclass(frozen=True)
@@ -78,6 +112,7 @@ def generate_life_area_readings(
 ) -> dict[LifeAreaCategory, list[ExplainedStatement]]:
     del catalog
     ctx = _ctx(chart, dasha, transits)
+    impact = life_impact_text(chart, lang)
     window = f"Active {ctx.md}-{ctx.ad} Dasha (until {ctx.ad_end_date})"
     out: dict[LifeAreaCategory, list[ExplainedStatement]] = {
         "career": [],
@@ -88,8 +123,9 @@ def generate_life_area_readings(
     for rule in rules:
         if rule.category not in out:
             continue
-        simple = area_reading(chart, dasha, transits, lang, rule.category)
+        simple = f"{area_reading(chart, dasha, transits, lang, rule.category)} {impact}"
         pro = area_pro_reading(chart, dasha, transits, lang, rule.category)
+        verify_text(simple, languages=(lang,))
         verify_text(pro, languages=(lang,))
         evidence = rule.evidence_template.format(
             **{name: gloss(value, lang) for name, value in vars(ctx).items()}
@@ -122,6 +158,7 @@ def generate_daily_area_readings(
     lang: LanguageCode,
 ) -> dict[LifeAreaCategory, list[ExplainedStatement]]:
     ctx = _ctx(chart, dasha, transits)
+    impact = life_impact_text(chart, lang)
     date_str = str(panchang["date"])
     window = f"{date_str} · {ctx.md}-{ctx.ad} Dasha"
     out: dict[LifeAreaCategory, list[ExplainedStatement]] = {
@@ -134,6 +171,8 @@ def generate_daily_area_readings(
         if rule.category not in out:
             continue
         simple, pro = daily_area_reading(chart, dasha, transits, panchang, lang, rule.category)
+        simple = f"{simple} {impact}"
+        verify_text(simple, languages=(lang,))
         evidence = rule.evidence_template.format(
             **{name: gloss(value, lang) for name, value in vars(ctx).items()}
         )
@@ -172,7 +211,10 @@ def generate_daily_insight(
     tithi = str(panchang["tithi"])
     date_str = str(panchang["date"])
 
-    simple = daily_reading(chart, panchang, transits, lang, dasha=dasha)
+    simple = (
+        f"{daily_reading(chart, panchang, transits, lang, dasha=dasha)} "
+        f"{life_impact_text(chart, lang)}"
+    )
     pro = daily_pro_reading(chart, panchang, transits, lang, dasha=dasha)
     verify_text(simple, languages=(lang,))
     verify_text(pro, languages=(lang,))
