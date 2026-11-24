@@ -9,14 +9,15 @@ from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_DEV_SHARE_SECRET = "dev-share-secret-change-in-production"
-# OpenRouter chat models, free variants first. :free only where that catalog entry exists.
-# Replace a retired id with ASTRO_OPENROUTER_MODELS; no code change is required.
+# OpenRouter chat models. The non-free id already in this list goes first so a
+# question can be followed; the free ids stay as fallback. :free only where
+# that catalog entry exists. Replace a retired id with ASTRO_OPENROUTER_MODELS.
 DEFAULT_OPENROUTER_MODELS = ",".join(
     (
+        "anthropic/claude-haiku-5.5",
         "nvidia/nemotron-3-ultra-550b-a55b:free",
         "google/gemma-4-31b-it:free",
         "openai/gpt-oss-120b:free",
-        "anthropic/claude-haiku-5.5",
     )
 )
 

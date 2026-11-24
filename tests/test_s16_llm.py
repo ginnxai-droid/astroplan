@@ -439,13 +439,13 @@ def _chat_reading(text: str) -> httpx.Response:
     return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
 
 
-def test_default_openrouter_models_are_free_first() -> None:
+def test_default_openrouter_models_try_haiku_then_free() -> None:
     settings = Settings(env="test", _env_file=None)
     assert _openrouter_models(settings) == [
+        "anthropic/claude-haiku-5.5",
         "nvidia/nemotron-3-ultra-550b-a55b:free",
         "google/gemma-4-31b-it:free",
         "openai/gpt-oss-120b:free",
-        "anthropic/claude-haiku-5.5",
     ]
     assert settings.openrouter_models == DEFAULT_OPENROUTER_MODELS
 

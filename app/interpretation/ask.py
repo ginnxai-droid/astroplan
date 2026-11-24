@@ -1,4 +1,4 @@
-"""Deterministic question routing, no model involvement."""
+"""Question routing and spoken answers."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ from pathlib import Path
 
 import yaml
 
-from app.api.schemas import ExplainedStatement, LanguageCode, LifeAreaCategory
-from app.interpretation.guardrails import validate_answer
+from app.api.schemas import ChartResponse, ExplainedStatement, LanguageCode, LifeAreaCategory
 from app.interpretation.llm import LLMClientProtocol, SafeRephraser
+from app.interpretation.question import answer_question
 from app.interpretation.rules import Rule
 
 AREA_ORDER: tuple[LifeAreaCategory, ...] = ("career", "relationships", "finances", "home")
@@ -103,6 +103,7 @@ class AskResolution:
     context: tuple[ExplainedStatement, ...]
     llm_used: bool
     fallback_reason: str | None
+    model: str | None = None
 
 
 def bundle_hash_for(statement: ExplainedStatement) -> str:
@@ -126,6 +127,9 @@ def compose_answer(
     daily_insight: ExplainedStatement | None,
     rephraser: SafeRephraser | None = None,
     llm_client: LLMClientProtocol | None = None,
+    chart: ChartResponse | None = None,
+    dasha: Mapping[str, object] | None = None,
+    transits: Mapping[str, object] | None = None,
 ) -> AskResolution:
     area, matched = classify_question(question, lexicon)
     if area is None:
@@ -137,34 +141,34 @@ def compose_answer(
     context: tuple[ExplainedStatement, ...] = (
         (daily_insight,) if daily_insight and is_present_time_question(question, lexicon) else ()
     )
-    display = canonical
+    spoken, facts = answer_question(
+        question=question,
+        lang=lang,
+        area=area,
+        time_window=canonical.time_window,
+        strength=canonical.why_this.strength_grade,
+        chart=chart,
+        dasha=dasha,
+        transits=transits,
+    )
+    display = canonical.model_copy(update={"simple_text": spoken})
     llm_used = False
     fallback_reason: str | None = None
+    model: str | None = None
     if rephraser is not None and llm_client is not None:
-
-        def check(reference: str, candidate: str) -> None:
-            validate_answer(
-                bundle=reference,
-                question=question,
-                area=area,
-                answer=candidate,
-                lang=lang,
-                lexicon=lexicon,
-            )
-
-        outcome = rephraser.rephrase_detailed(
-            canonical.simple_text,
+        outcome = rephraser.interpret_detailed(
+            spoken,
+            facts=facts,
             lang=lang,
             client=llm_client,
-            validator=check,
-            prompt_version="ask-answer-v1",
-            bundle_hash=bundle_hash_for(canonical),
-            question_area=area,
+            voice="question",
         )
         llm_used = outcome.accepted
         fallback_reason = outcome.fallback_reason
         if outcome.accepted:
             display = canonical.model_copy(update={"simple_text": outcome.text})
+            name = getattr(llm_client, "model_name", None)
+            model = name if isinstance(name, str) and name.strip() else None
     return AskResolution(
         area=area,
         matched_terms=tuple(matched),
@@ -173,6 +177,7 @@ def compose_answer(
         context=context,
         llm_used=llm_used,
         fallback_reason=fallback_reason,
+        model=model,
     )
 
 

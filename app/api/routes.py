@@ -365,10 +365,9 @@ def build_router(settings: Settings) -> APIRouter:
             areas = generate_life_area_readings(c, d, t, rules, catalog, details.language)
             daily_areas = generate_daily_area_readings(c, d, t, p, rules, details.language)
             facts = reading_facts(c, dasha=d, transits=t, panchang=p)
-            for bucket in (areas, daily_areas):
-                for items in bucket.values():
-                    for index, statement in enumerate(items):
-                        items[index] = _spoken(statement, facts, details.language)
+            for items in areas.values():
+                for index, statement in enumerate(items):
+                    items[index] = _spoken(statement, facts, details.language)
             yogas = detect_yogas_and_doshas(c, catalog, details.language, rules=rules)
             return {
                 "dasha_summary": d,
@@ -459,7 +458,10 @@ def build_router(settings: Settings) -> APIRouter:
             statements_by_area=areas,
             daily_insight=daily,
             rephraser=rephraser,
-            llm_client=None,
+            llm_client=llm_client,
+            chart=c,
+            dasha=d,
+            transits=t,
         )
         if resolution.canonical is None or resolution.display is None:
             return uncovered(area, list(resolution.matched_terms))
@@ -514,7 +516,7 @@ def build_router(settings: Settings) -> APIRouter:
             ledger_entry_id=entry_id,
             llm=LLMProvenance(
                 used=resolution.llm_used,
-                model=settings.anthropic_model if resolution.llm_used else None,
+                model=resolution.model if resolution.llm_used else None,
                 fallback_reason=resolution.fallback_reason,
             ),
             disclaimer=catalog.get("trust.professional_advice_disclaimer", lang),

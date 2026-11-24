@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -110,6 +112,40 @@ def test_short_question_is_422(ask_client) -> None:
         headers=HEADERS,
     )
     assert r.status_code == 422
+
+
+def test_house_question_answers_timing_not_the_catalog(ask_client) -> None:
+    r = ask_client.post(
+        "/v1/readings/ask",
+        json={"details": DETAILS, "question": "when I buy new house"},
+        headers=HEADERS,
+    )
+    assert r.status_code == 200
+    body = r.json()
+    text = body["statement"]["simple_text"]
+    assert body["coverage"]["area"] == "home"
+    assert "Lagna is" not in text
+    assert "नक्षत्र" not in text
+    assert re.search(r"home|house", text, re.IGNORECASE)
+    assert re.search(r"wait|period|through", text, re.IGNORECASE)
+    assert "Be cautious here" not in text
+
+
+def test_job_change_answers_work_not_the_catalog(ask_client) -> None:
+    r = ask_client.post(
+        "/v1/readings/ask",
+        json={
+            "details": DETAILS,
+            "question": "I'm desperate to change my job...when will I get it",
+        },
+        headers=HEADERS,
+    )
+    assert r.status_code == 200
+    text = r.json()["statement"]["simple_text"]
+    assert "Lagna is" not in text
+    assert re.search(r"work|job", text, re.IGNORECASE)
+    assert re.search(r"period|wait|suit|fit|through", text, re.IGNORECASE)
+    assert not text.startswith("Lagna")
 
 
 def test_quota_blocks_the_fourth_answer(ask_client) -> None:

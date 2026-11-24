@@ -1,0 +1,345 @@
+{
+  "skill": {
+    "en": "You are a calm jyotish sitting with this person. Read the question and answer that decision: a job change, buying a house, money, or a partner. Use only the fact lines below. Do not invent a planet, a month, or a date that is not written there. Write in English, in two or three short paragraphs, as one person explaining to another. Say what may happen. Use may or can. If stance is waiting, say plainly that this period is for waiting and the wish is not supported now. If stance is moving, say this period is for moving. If stance is careful, say a step may be possible if they go slowly. For a job change, say when a change is supported, whether the chart suits a change, and if named_work is no, use work_fit and say the exact post still depends on the work they want. Do not reply with a question. For buying a house, use already_home and new_home: say whether a home they already have is supported, whether a new or second home is supported, when a purchase is better supported, and whether this period allows it. If it is not supported, say so plainly and say this is a time to wait. Do not answer with be cautious or take protective measures. For money or a partner, answer the timing and whether this period supports that decision. Name the period only as period_spoken. If period_end is a real date, you may name that month and year. If period_end is unknown, do not invent a month. No house numbers, nakshatra names, sign names, gochar, D9, lagna, or the word dasha. No guarantee, no will definitely, no 100 percent, no assured, no destined, no certainly will. No medical, legal, or financial promise. Do not translate a slogan word for word. Speak the meaning.",
+    "hi": "आप एक शांत ज्योतिषी हैं और इस व्यक्ति के सामने बैठे हैं। पहले प्रश्न पढ़ें, फिर उसी फैसले का उत्तर दें: नौकरी बदलना, घर खरीदना, धन, या जोड़ीदार। केवल नीचे दी पंक्तियों के तथ्य लिखें। जो ग्रह, महीना या तारीख वहाँ नहीं है उसे न बनाएँ। उत्तर हिंदी में लिखें, दो या तीन छोटे पैराग्राफ में, जैसे एक व्यक्ति दूसरे को समझा रहा हो। हो सकता है, सकता है — वचन नहीं। stance waiting हो तो साफ कहें कि यह समय रुकने का है और इच्छा अभी साथ नहीं दे रही। stance moving हो तो कहें कि यह समय आगे बढ़ने का है। stance careful हो तो कहें कि धीरे कदम हो सकता है। नौकरी बदलने पर बताएँ कि बदलाव कब साथ देता है, चार्ट बदलाव के अनुकूल है या नहीं, और named_work no हो तो work_fit वाला काम बताएँ और कहें कि असली नौकरी इस पर निर्भर है कि वे कौन सा काम चाहते हैं। प्रश्न का प्रश्न से उत्तर न दें। घर खरीदने पर already_home और new_home से कहें कि पहले वाला घर साथ देता है या नहीं, नया या दूसरा घर साथ देता है या नहीं, खरीद कब बेहतर है, और यह समय अनुमति देता है या नहीं। साथ न दे तो साफ कहें कि यह रुकने का समय है। सावधानी रखें या रक्षात्मक उपाय लिखकर उत्तर न पूरा करें। धन या जोड़ीदार पर भी समय और इस समय की साथ बताएँ। काल का नाम केवल period_spoken से लें। period_end असली तारीख हो तो वही महीना और साल लें। unknown हो तो महीना न गढ़ें। भाव संख्या, नक्षत्र, राशि, गोचर, नवांश, लग्न या दशा शब्द न लिखें। गारंटी, पक्का, नक्की, 100 प्रतिशत न कहें। चिकित्सा, कानून या धन का वचन न दें। अंग्रेजी नारे का शब्द-ब-शब्द अनुवाद न करें। मतलब समझकर बोलें।",
+    "mr": "तुम्ही एक शांत ज्योतिषी आहात आणि ही व्यक्ती समोर बसली आहे. आधी प्रश्न वाचा, मग त्याच निर्णयाचे उत्तर द्या: नोकरी बदलणे, घर घेणे, धन, किंवा जोडीदार. फक्त खालील ओळींतील तथ्ये वापरा. जो ग्रह, महिना किंवा तारीख तिथे नाही तो तयार करू नका. उत्तर मराठीत लिहा, दोन किंवा तीन छोट्या परिच्छेदांत, जणू एक माणूस दुसऱ्याला समजावतो. शकतो, शकतं, होऊ शकते — वचन नाही. stance waiting असेल तर स्पष्ट सांगा की हा काळ थांबण्यासाठी आहे आणि इच्छा आत्ता साथ देत नाही. stance moving असेल तर सांगा की हा काळ पुढे जाण्यासाठी आहे. stance careful असेल तर सांगा की हळू पाऊल शक्य आहे. नोकरी बदलण्यावर सांगा की बदल कधी साथ देतो, बदल तुम्हाला साथ देतो का, आणि named_work no असेल तर work_fit मधला कामाचा प्रकार सांगा आणि नेमकी नोकरी त्यांना कोणते काम हवे यावर अवलंबून राहते असे सांगा. प्रश्नाच्या बदल्यात प्रश्न विचारू नका. घर घेण्यावर already_home आणि new_home वापरून सांगा की आधीचे घर साथ देते का, नवे किंवा दुसरे घर साथ देते का, खरेदी कधी बरी, आणि हा काळ तिला परवानगी देतो का. साथ नसेल तर स्पष्ट सांगा की हा थांबण्याचा काळ आहे. सावध राहा किंवा संरक्षणात्मक उपाय लिहून उत्तर संपवू नका. धन किंवा जोडीदारावरही काळ आणि या काळाची साथ सांगा. काळाचे नाव फक्त period_spoken मधून घ्या. period_end खरी तारीख असेल तर तोच महिना आणि वर्ष घ्या. unknown असेल तर महिना तयार करू नका. भाव क्रमांक, नक्षत्र, राशी, गोचर, नवांश, लग्न किंवा दशा हे शब्द लिहू नका. हमी, नक्की, निश्चित, 100 टक्के म्हणू नका. वैद्यकीय, कायदेशीर किंवा धनाचे वचन देऊ नका. इंग्रजी घोषणेचे शब्दशः भाषांतर करू नका. अर्थ समजून बोला. बोलण्याची लय या वाक्यासारखी ठेवा, त्याचे दावे कॉपी करू नका: आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो."
+  },
+  "planets": {
+    "Sun": {"en": "Sun", "hi": "सूर्य", "mr": "सूर्य"},
+    "Moon": {"en": "Moon", "hi": "चंद्र", "mr": "चंद्र"},
+    "Mars": {"en": "Mars", "hi": "मंगल", "mr": "मंगळ"},
+    "Mercury": {"en": "Mercury", "hi": "बुध", "mr": "बुध"},
+    "Jupiter": {"en": "Jupiter", "hi": "बृहस्पति", "mr": "गुरू"},
+    "Venus": {"en": "Venus", "hi": "शुक्र", "mr": "शुक्र"},
+    "Saturn": {"en": "Saturn", "hi": "शनि", "mr": "शनी"},
+    "Rahu": {"en": "Rahu", "hi": "राहु", "mr": "राहू"},
+    "Ketu": {"en": "Ketu", "hi": "केतु", "mr": "केतू"}
+  },
+  "months": {
+    "1": {"en": "January", "hi": "जनवरी", "mr": "जानेवारी"},
+    "2": {"en": "February", "hi": "फरवरी", "mr": "फेब्रुवारी"},
+    "3": {"en": "March", "hi": "मार्च", "mr": "मार्च"},
+    "4": {"en": "April", "hi": "अप्रैल", "mr": "एप्रिल"},
+    "5": {"en": "May", "hi": "मई", "mr": "मे"},
+    "6": {"en": "June", "hi": "जून", "mr": "जून"},
+    "7": {"en": "July", "hi": "जुलाई", "mr": "जुलै"},
+    "8": {"en": "August", "hi": "अगस्त", "mr": "ऑगस्ट"},
+    "9": {"en": "September", "hi": "सितंबर", "mr": "सप्टेंबर"},
+    "10": {"en": "October", "hi": "अक्टूबर", "mr": "ऑक्टोबर"},
+    "11": {"en": "November", "hi": "नवंबर", "mr": "नोव्हेंबर"},
+    "12": {"en": "December", "hi": "दिसंबर", "mr": "डिसेंबर"}
+  },
+  "period": {
+    "en": "{md}-{ad} period",
+    "hi": "{md} और {ad} का समय",
+    "mr": "{md}-{ad}चा काळ"
+  },
+  "period_line": {
+    "en": "This is the {period}{until}.",
+    "hi": "यह {period}{until} है।",
+    "mr": "हा {period}{until} आहे."
+  },
+  "period_unknown": {
+    "en": "This is the current period.",
+    "hi": "यह अभी का समय है।",
+    "mr": "हा सध्याचा काळ आहे."
+  },
+  "until": {
+    "en": ", through {month} {year}",
+    "hi": " {month} {year} तक",
+    "mr": " {month} {year} पर्यंत"
+  },
+  "transit": {
+    "jupiter": {
+      "en": "Jupiter can help you.",
+      "hi": "बृहस्पति आपको साथ दे सकता है।",
+      "mr": "गुरू तुम्हाला साथ देऊ शकतो."
+    },
+    "saturn": {
+      "en": "Saturn asks you to go slowly.",
+      "hi": "शनि कहता है कि आप धीरे चलें।",
+      "mr": "शनी सांगतो की तुम्ही हळू चला."
+    },
+    "both": {
+      "en": "Jupiter can help you, and Saturn asks you to go slowly.",
+      "hi": "बृहस्पति साथ दे सकता है, और शनि कहता है कि आप धीरे चलें।",
+      "mr": "गुरू तुम्हाला साथ देऊ शकतो, आणि शनी सांगतो की तुम्ही हळू चला."
+    }
+  },
+  "fit": {
+    "1": {
+      "en": "meeting people and choosing your own direction",
+      "hi": "लोगों से मिलना और अपनी दिशा चुनना",
+      "mr": "लोकांना भेटणे आणि स्वतःची दिशा निवडणे"
+    },
+    "2": {
+      "en": "speech, accounts, and what you already hold",
+      "hi": "बोलना, हिसाब, और जो पहले से हाथ में है",
+      "mr": "बोलणे, हिशोब, आणि जे आधीच हाती आहे"
+    },
+    "3": {
+      "en": "skill, messages, and short travel",
+      "hi": "हुनर, संदेश, और छोटा सफर",
+      "mr": "कौशल्य, निरोप, आणि छोटा प्रवास"
+    },
+    "4": {
+      "en": "care for people and a settled place",
+      "hi": "लोगों की देखभाल और एक स्थिर जगह",
+      "mr": "लोकांची काळजी आणि एक स्थिर जागा"
+    },
+    "5": {
+      "en": "study, affection, and making things",
+      "hi": "पढ़ाई, स्नेह, और कुछ बनाना",
+      "mr": "अभ्यास, स्नेह, आणि काही तयार करणे"
+    },
+    "6": {
+      "en": "service and the problems of the day",
+      "hi": "सेवा और दिन की अड़चनें",
+      "mr": "सेवा आणि दिवसातील अडथळे"
+    },
+    "7": {
+      "en": "sitting with one other person",
+      "hi": "किसी एक व्यक्ति के साथ आमने-सामने का काम",
+      "mr": "एका माणसासमोर बसून केलेले काम"
+    },
+    "8": {
+      "en": "shared resources and sudden change",
+      "hi": "साझे साधन और अचानक आया बदलाव",
+      "mr": "सामायिक साधने आणि अचानक आलेला बदल"
+    },
+    "9": {
+      "en": "teaching, guidance, and long travel",
+      "hi": "पढ़ाना, मार्गदर्शन, और लंबा सफर",
+      "mr": "शिकवणे, मार्गदर्शन, आणि लांब प्रवास"
+    },
+    "10": {
+      "en": "a public duty other people can see",
+      "hi": "ऐसा सार्वजनिक काम जिसे लोग देख सकें",
+      "mr": "लोकांना दिसणारे सार्वजनिक काम"
+    },
+    "11": {
+      "en": "gains that come through people around you",
+      "hi": "आसपास के लोगों से आने वाला लाभ",
+      "mr": "आजूबाजूच्या लोकांतून येणारा लाभ"
+    },
+    "12": {
+      "en": "quiet work done away from the crowd",
+      "hi": "भीड़ से हटकर किया शांत काम",
+      "mr": "गर्दीपासून दूर केलेले शांत काम"
+    }
+  },
+  "career_fit": {
+    "en": "The kind of work that can fit you runs through {fit}.",
+    "hi": "आपको जो काम रास आ सकता है, वह {fit} से जुड़ा हो सकता है।",
+    "mr": "तुम्हाला साजेल असे काम {fit} यांच्याभोवती असू शकतं."
+  },
+  "career_exact": {
+    "en": "The exact post still depends on the work you want.",
+    "hi": "असली नौकरी इस पर निर्भर है कि आप कौन सा काम चाहते हैं।",
+    "mr": "नेमकी नोकरी तुम्हाला कोणते काम हवे यावर अवलंबून राहते."
+  },
+  "house_exact": {
+    "en": "The exact house still depends on what you can arrange.",
+    "hi": "असली जगह इस पर निर्भर है कि आप क्या जुटा सकते हैं।",
+    "mr": "नेमके घर तुम्ही काय जमवू शकता यावर अवलंबून राहते."
+  },
+  "open": {
+    "change_moving": {
+      "en": "You are asking when a change of work can come. The chart can suit a change.",
+      "hi": "आप पूछ रहे हैं कि नौकरी कब बदलेगी। नौकरी बदलना आपके लिए संभव है।",
+      "mr": "तुम्ही नोकरी कधी बदलेल हे विचारत आहात. नोकरी बदलणे तुमच्यासाठी शक्य आहे."
+    },
+    "change_waiting": {
+      "en": "You are asking when a change of work can come. The chart suits the work you already have more than a change right now.",
+      "hi": "आप पूछ रहे हैं कि नौकरी कब बदलेगी। अभी बदलाव से ज्यादा वह काम साथ देता है जो आपके पास है।",
+      "mr": "तुम्ही नोकरी कधी बदलेल हे विचारत आहात. आत्ता बदलापेक्षा जे काम तुमच्याकडे आहे ते जास्त साथ देते."
+    },
+    "change_careful": {
+      "en": "You are asking when a change of work can come. The chart can suit a change if you go slowly.",
+      "hi": "आप पूछ रहे हैं कि नौकरी कब बदलेगी। धीरे चलें तो बदलाव आपके लिए संभव है।",
+      "mr": "तुम्ही नोकरी कधी बदलेल हे विचारत आहात. हळू चालाल तर नोकरी बदलणे तुमच्यासाठी शक्य आहे."
+    },
+    "work_moving": {
+      "en": "You are asking about your work. The chart can suit the work in front of you.",
+      "hi": "आप अपने काम के बारे में पूछ रहे हैं। सामने का काम आपको सूट कर सकता है।",
+      "mr": "तुम्ही तुमच्या कामाबद्दल विचारत आहात. समोरचे काम तुम्हाला साजू शकतं."
+    },
+    "work_waiting": {
+      "en": "You are asking about your work. The chart suits staying with the work you have.",
+      "hi": "आप अपने काम के बारे में पूछ रहे हैं। अभी वही काम साथ देता है जो आपके पास है।",
+      "mr": "तुम्ही तुमच्या कामाबद्दल विचारत आहात. आत्ता जे काम आहे त्यावर राहणे जास्त साथ देते."
+    },
+    "work_careful": {
+      "en": "You are asking about your work. The chart can suit this work if you go slowly.",
+      "hi": "आप अपने काम के बारे में पूछ रहे हैं। धीरे चलें तो यह काम आपको सूट कर सकता है।",
+      "mr": "तुम्ही तुमच्या कामाबद्दल विचारत आहात. हळू चालाल तर हे काम तुम्हाला साजू शकतं."
+    },
+    "buy_now": {
+      "en": "You are asking when you can buy a house. A home you already have can be supported, and a new or second home may also be possible.",
+      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। जो घर पहले से है वह साथ दे सकता है, और नया या दूसरा घर भी संभव हो सकता है।",
+      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. आधीपासून असलेले घर तुम्हाला साथ देऊ शकतं, आणि नवे किंवा दुसरे घरही शक्य होऊ शकतं."
+    },
+    "buy_later": {
+      "en": "You are asking when you can buy a house. A home you already have can still be supported. A new or second home can suit the chart, but not in this period.",
+      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। जो घर पहले से है वह साथ दे सकता है। नया या दूसरा घर बाद में साथ दे सकता है, पर इस समय नहीं।",
+      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. आधीपासून असलेले घर तुम्हाला साथ देऊ शकतं. नवे किंवा दुसरे घर जुळू शकतं, पण या काळात नाही."
+    },
+    "buy_hold": {
+      "en": "You are asking when you can buy a house. A home you already have can still be supported. A new or second home is not supported in this period.",
+      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। जो घर पहले से है वह साथ दे सकता है। नया या दूसरा घर इस समय साथ नहीं दे रहा।",
+      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. आधीपासून असलेले घर तुम्हाला साथ देऊ शकतं. नवे किंवा दुसरे घर या काळात साथ देत नाही."
+    },
+    "buy_no": {
+      "en": "You are asking when you can buy a house. A settled home is not well supported, and a new or second home is not supported either.",
+      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। टिका घर अच्छी तरह साथ नहीं दे रहा, और नया या दूसरा घर भी साथ नहीं दे रहा।",
+      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. स्थिर घर चांगले साथ देत नाही, आणि नवे किंवा दुसरे घरही साथ देत नाही."
+    },
+    "buy_move_unknown": {
+      "en": "You are asking when you can buy a house. A purchase may be supported in this period.",
+      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। खरीद इस समय में संभव हो सकती है।",
+      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. खरेदी या काळात शक्य होऊ शकते."
+    },
+    "buy_wait_unknown": {
+      "en": "You are asking when you can buy a house. A purchase is not supported in this period.",
+      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। खरीद इस समय साथ नहीं दे रही।",
+      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. खरेदी या काळात साथ देत नाही."
+    },
+    "home_ok": {
+      "en": "You are asking about your home. A home you already have can be supported.",
+      "hi": "आप अपने घर के बारे में पूछ रहे हैं। जो घर पहले से है वह साथ दे सकता है।",
+      "mr": "तुम्ही तुमच्या घराबद्दल विचारत आहात. आधीपासून असलेले घर तुम्हाला साथ देऊ शकतं."
+    },
+    "home_strain": {
+      "en": "You are asking about your home. A settled home is not well supported right now.",
+      "hi": "आप अपने घर के बारे में पूछ रहे हैं। टिका घर अभी अच्छी तरह साथ नहीं दे रहा।",
+      "mr": "तुम्ही तुमच्या घराबद्दल विचारत आहात. स्थिर घर आत्ता चांगले साथ देत नाही."
+    },
+    "home_moving": {
+      "en": "You are asking about your home. This period may support the home you are asking about.",
+      "hi": "आप अपने घर के बारे में पूछ रहे हैं। यह समय उस घर को साथ दे सकता है जिसके बारे में आप पूछ रहे हैं।",
+      "mr": "तुम्ही तुमच्या घराबद्दल विचारत आहात. हा काळ त्या घराला साथ देऊ शकतो ज्याबद्दल तुम्ही विचारता आहात."
+    },
+    "home_waiting": {
+      "en": "You are asking about your home. This period is better for waiting.",
+      "hi": "आप अपने घर के बारे में पूछ रहे हैं। यह समय रुकने के लिए बेहतर है।",
+      "mr": "तुम्ही तुमच्या घराबद्दल विचारत आहात. हा काळ थांबण्यासाठी जास्त बरा आहे."
+    },
+    "money_moving": {
+      "en": "You are asking about money. A careful step with money you already understand may be possible.",
+      "hi": "आप धन के बारे में पूछ रहे हैं। जिस धन को आप समझते हैं, उस पर एक छोटा कदम संभव हो सकता है।",
+      "mr": "तुम्ही धनाबद्दल विचारत आहात. जे धन तुम्हाला समजते त्यावर एक छोटे पाऊल शक्य होऊ शकतं."
+    },
+    "money_waiting": {
+      "en": "You are asking about money. A large new step with money is not supported right now.",
+      "hi": "आप धन के बारे में पूछ रहे हैं। धन पर बड़ा नया कदम अभी साथ नहीं दे रहा।",
+      "mr": "तुम्ही धनाबद्दल विचारत आहात. धनावर मोठे नवे पाऊल आत्ता साथ देत नाही."
+    },
+    "money_careful": {
+      "en": "You are asking about money. A small step may be possible if you go slowly.",
+      "hi": "आप धन के बारे में पूछ रहे हैं। धीरे चलें तो एक छोटा कदम संभव हो सकता है।",
+      "mr": "तुम्ही धनाबद्दल विचारत आहात. हळू चालाल तर एक छोटे पाऊल शक्य आहे."
+    },
+    "bond_moving": {
+      "en": "You are asking about a partner. A closer bond may be possible.",
+      "hi": "आप जोड़ीदार के बारे में पूछ रहे हैं। एक करीबी रिश्ता संभव हो सकता है।",
+      "mr": "तुम्ही जोडीदाराबद्दल विचारत आहात. जवळचे नाते शक्य होऊ शकतं."
+    },
+    "bond_waiting": {
+      "en": "You are asking about a partner. A new bond is not well supported right now.",
+      "hi": "आप जोड़ीदार के बारे में पूछ रहे हैं। नया रिश्ता अभी अच्छी तरह साथ नहीं दे रहा।",
+      "mr": "तुम्ही जोडीदाराबद्दल विचारत आहात. नवे नाते आत्ता चांगले साथ देत नाही."
+    },
+    "bond_careful": {
+      "en": "You are asking about a partner. A closer bond may be possible if you go slowly.",
+      "hi": "आप जोड़ीदार के बारे में पूछ रहे हैं। धीरे चलें तो करीबी रिश्ता संभव हो सकता है।",
+      "mr": "तुम्ही जोडीदाराबद्दल विचारत आहात. हळू चालाल तर जवळचे नाते शक्य आहे."
+    }
+  },
+  "tail": {
+    "career": {
+      "moving": {
+        "en": "This period is for moving. A change of work may be supported while this period is running.",
+        "hi": "यह समय आगे बढ़ने का है। नौकरी का बदलाव इस समय में हो सकता है।",
+        "mr": "हा काळ पुढे जाण्यासाठी आहे. नोकरीचा बदल या काळात होऊ शकतो."
+      },
+      "waiting": {
+        "en": "This period is for waiting. A change of work is better left until this period has passed.",
+        "hi": "यह समय रुकने का है। नौकरी बदलना इस समय के बाद बेहतर है।",
+        "mr": "हा काळ थांबण्यासाठी आहे. नोकरी बदलणे या काळानंतर बरे."
+      },
+      "careful": {
+        "en": "This period is for moving only if you go slowly. A change of work may be supported, and it can also wait.",
+        "hi": "यह समय धीरे आगे बढ़ने का है। नौकरी का बदलाव हो सकता है, और वह रुक भी सकता है।",
+        "mr": "हा काळ हळू पुढे जाण्यासाठी आहे. नोकरीचा बदल होऊ शकतो, आणि तो थांबवताही येतो."
+      }
+    },
+    "buy": {
+      "moving": {
+        "en": "This period is for moving. A purchase may be better supported while this period is running.",
+        "hi": "यह समय आगे बढ़ने का है। खरीद इस समय में बेहतर साथ पा सकती है।",
+        "mr": "हा काळ पुढे जाण्यासाठी आहे. खरेदी या काळात जास्त साथ मिळवू शकते."
+      },
+      "waiting": {
+        "en": "This period is for waiting. A purchase is better left until this period has passed.",
+        "hi": "यह समय रुकने का है। खरीद इस समय के बाद बेहतर है।",
+        "mr": "हा काळ थांबण्यासाठी आहे. खरेदी या काळानंतर बरी."
+      },
+      "careful": {
+        "en": "This period is for moving only if you go slowly. A purchase may be possible, and it can also wait.",
+        "hi": "यह समय धीरे आगे बढ़ने का है। खरीद संभव हो सकती है, और वह रुक भी सकती है।",
+        "mr": "हा काळ हळू पुढे जाण्यासाठी आहे. खरेदी शक्य होऊ शकते, आणि ती थांबवताही येते."
+      }
+    },
+    "home": {
+      "moving": {
+        "en": "This period is for moving. Time at home may be better supported while this period is running.",
+        "hi": "यह समय आगे बढ़ने का है। घर का समय इस दौरान साथ दे सकता है।",
+        "mr": "हा काळ पुढे जाण्यासाठी आहे. घराचा वेळ या काळात साथ देऊ शकतो."
+      },
+      "waiting": {
+        "en": "This period is for waiting. A hard step at home is better left until this period has passed.",
+        "hi": "यह समय रुकने का है। घर का कठिन कदम इस समय के बाद बेहतर है।",
+        "mr": "हा काळ थांबण्यासाठी आहे. घरातील कठीण पाऊल या काळानंतर बरे."
+      },
+      "careful": {
+        "en": "This period is for moving only if you go slowly. A step at home may be possible, and it can also wait.",
+        "hi": "यह समय धीरे आगे बढ़ने का है। घर का कदम संभव हो सकता है, और वह रुक भी सकता है।",
+        "mr": "हा काळ हळू पुढे जाण्यासाठी आहे. घरातील पाऊल शक्य आहे, आणि ते थांबवताही येते."
+      }
+    },
+    "finances": {
+      "moving": {
+        "en": "This period is for moving. A step with money may be supported while this period is running.",
+        "hi": "यह समय आगे बढ़ने का है। धन का कदम इस समय में हो सकता है।",
+        "mr": "हा काळ पुढे जाण्यासाठी आहे. धनाचे पाऊल या काळात शक्य आहे."
+      },
+      "waiting": {
+        "en": "This period is for waiting. A large step with money is better left until this period has passed.",
+        "hi": "यह समय रुकने का है। धन का बड़ा कदम इस समय के बाद बेहतर है।",
+        "mr": "हा काळ थांबण्यासाठी आहे. धनाचे मोठे पाऊल या काळानंतर बरे."
+      },
+      "careful": {
+        "en": "This period is for moving only if you go slowly. A small step with money may be possible, and it can also wait.",
+        "hi": "यह समय धीरे आगे बढ़ने का है। धन का छोटा कदम हो सकता है, और वह रुक भी सकता है।",
+        "mr": "हा काळ हळू पुढे जाण्यासाठी आहे. धनाचे छोटे पाऊल शक्य आहे, आणि ते थांबवताही येते."
+      }
+    },
+    "relationships": {
+      "moving": {
+        "en": "This period is for moving. A closer bond may be supported while this period is running.",
+        "hi": "यह समय आगे बढ़ने का है। करीबी रिश्ता इस समय में संभव हो सकता है।",
+        "mr": "हा काळ पुढे जाण्यासाठी आहे. जवळचे नाते या काळात शक्य आहे."
+      },
+      "waiting": {
+        "en": "This period is for waiting. A new bond is better left until this period has passed.",
+        "hi": "यह समय रुकने का है। नया रिश्ता इस समय के बाद बेहतर है।",
+        "mr": "हा काळ थांबण्यासाठी आहे. नवे नाते या काळानंतर बरे."
+      },
+      "careful": {
+        "en": "This period is for moving only if you go slowly. A closer bond may be possible, and it can also wait.",
+        "hi": "यह समय धीरे आगे बढ़ने का है। करीबी रिश्ता हो सकता है, और वह रुक भी सकता है।",
+        "mr": "हा काळ हळू पुढे जाण्यासाठी आहे. जवळचे नाते शक्य आहे, आणि ते थांबवताही येते."
+      }
+    }
+  }
+}

@@ -8,7 +8,7 @@
     "Sun": {
       "en": "It is Sunday, and you may want to be seen more than usual. Do the work properly, and do not wait for praise.",
       "hi": "आज रविवार है, और आपको दिखने की इच्छा ज्यादा हो सकती है। काम ठीक से करें, तारीफ का इंतजार न करें।",
-      "mr": "आज रविवार आहे, आणि तुम्हाला लोकांसमोर दिसावंसं वाटू शकते. काम नीट करा, पण स्तुती मागू नका."
+      "mr": "आज रविवार आहे, आणि तुम्हाला लोकांसमोर दिसावंसं वाटू शकते. काम नीट करा. स्तुती नंतरही चालेल."
     },
     "Moon": {
       "en": "It is Monday, and your mind may pull toward home. Give the people close to you a little time, and leave a hard talk for later.",
@@ -75,7 +75,7 @@
     "Sun": {
       "en": "This is the Sun's time for you. Work you do may be seen. Do not ask for praise. Let the work show.",
       "hi": "अभी सूर्य का समय आपके साथ है। आपका किया काम दिख सकता है। तारीफ न माँगें, काम ठीक से दिखाएँ।",
-      "mr": "सध्या सूर्याचा काळ तुमच्यासोबत आहे. तुम्ही केलेलं काम दिसू शकतं. स्तुती मागू नका, काम नीट दाखवा."
+      "mr": "सध्या सूर्याचा काळ तुमच्यासोबत आहे. तुम्ही केलेलं काम दिसू शकतं. स्तुती नंतरही चालेल."
     }
   },
   "careful": {
@@ -86,363 +86,363 @@
   "work": {
     "1": {
       "en": "At work, how you meet people matters more than a new plan.",
-      "hi": "काम में आज लोगों से मिलना नई योजना से बड़ा है।",
-      "mr": "कामात आज लोकांना भेटणे नव्या योजनेपेक्षा जास्त महत्त्वाचे आहे."
+      "hi": "काम में आज लोगों से मिलना नई योजना से बड़ा रह सकता है।",
+      "mr": "कामात आज लोकांना कसे भेटता हे नव्या योजनेपेक्षा जास्त महत्त्वाचे आहे."
     },
     "2": {
-      "en": "At work, tend what you already hold and leave a new scheme.",
-      "hi": "काम में आज जो हाथ में है उसे संभालें, नई योजना छोड़ें।",
-      "mr": "कामात आज जे हाती आहे ते सांभाळा, नवी योजना नको."
+      "en": "At work, tend what you already hold before you start something new.",
+      "hi": "काम में आज जो हाथ में है उसे पहले सँभालें, फिर नई बात निकालें।",
+      "mr": "कामात आज जे हाती आहे ते आधी सांभाळा, मग नवी गोष्ट काढा."
     },
     "3": {
-      "en": "At work, finish the short errand and do not enlarge it.",
-      "hi": "काम में आज छोटा काम खत्म करें, उसे बड़ा न बनाएँ।",
-      "mr": "कामात आज छोटा निरोप संपवा, त्याला मोठे करू नका."
+      "en": "At work, finish the short task and do not stretch it.",
+      "hi": "काम में आज छोटा काम खत्म करें। उसे लंबा न खींचें।",
+      "mr": "कामात आज छोटे काम संपवा. त्याला लांबवू नका."
     },
     "4": {
-      "en": "At work, give home a little time, then come back.",
-      "hi": "काम में आज घर को थोड़ा समय दें, फिर लौटें।",
-      "mr": "कामात आज घराला थोडा वेळ द्या, मग परत या."
+      "en": "At work, give the people at home a little time, then come back.",
+      "hi": "काम में आज घर वालों को थोड़ा समय दें, फिर काम पर लौटें।",
+      "mr": "कामात आज घरातल्यांना थोडा वेळ द्या, मग कामाकडे या."
     },
     "5": {
-      "en": "At work, stay with the task you like and do not crowd it.",
-      "hi": "काम में आज पसंद का काम रखें, और उसके आसपास भीड़ न करें।",
-      "mr": "कामात आज आवडते काम ठेवा, आणि त्याभोवती गर्दी करू नका."
+      "en": "At work, stay with the task you like. Do not pile other tasks on it.",
+      "hi": "काम में पसंद के काम पर रहें। उसके ऊपर और काम न लादें।",
+      "mr": "कामात आवडत्या कामावर राहा. त्यावर आणखी कामे रचू नका."
     },
     "6": {
-      "en": "At work, a small snag does not deserve the whole day.",
-      "hi": "काम में आज छोटी अड़चन को पूरा दिन न दें।",
-      "mr": "कामात आज छोटा अडथळा सगळा दिवस खाऊ देऊ नका."
+      "en": "At work, a small snag does not need your whole day.",
+      "hi": "काम में छोटी अड़चन को पूरा दिन न दें।",
+      "mr": "कामात छोटा अडथळा सगळा दिवस खाऊ देऊ नका."
     },
     "7": {
-      "en": "At work, one calm talk is enough.",
-      "hi": "काम में आज एक शांत बात काफी है।",
+      "en": "At work, one calm conversation can be enough.",
+      "hi": "काम में आज एक शांत बात काफी हो सकती है।",
       "mr": "कामात आज एक शांत बोलणे पुरे आहे."
     },
     "8": {
-      "en": "At work, something shared does not need a decision today.",
-      "hi": "काम में आज साझी बात का फैसला जरूरी नहीं।",
+      "en": "At work, a shared matter does not need a decision today.",
+      "hi": "काम में साझी बात का फैसला आज जरूरी नहीं।",
       "mr": "कामात सामायिक गोष्टीचा निर्णय आज नको."
     },
     "9": {
       "en": "At work, keep the long view and finish what is in your hands.",
-      "hi": "काम में आज दूर का चित्र रखें, और हाथ का काम पूरा करें।",
-      "mr": "कामात आज दूरचे चित्र ठेवा, आणि हातातले काम संपवा."
+      "hi": "काम में दूर का विचार रखें, और हाथ का काम पूरा करें।",
+      "mr": "कामात दूरचा विचार ठेवा, आणि हातातले काम संपवा."
     },
     "10": {
       "en": "At work, finish the one piece other people can see.",
-      "hi": "काम में आज वह काम पूरा करें जिसे लोग देख सकते हैं।",
-      "mr": "कामात आज जे काम लोक पाहू शकतात ते संपवा."
+      "hi": "काम में वह काम पूरा करें जिसे लोग देख सकते हैं।",
+      "mr": "कामात जे काम लोक पाहू शकतात ते आज संपवा."
     },
     "11": {
-      "en": "At work, keep any figure about income small and clear.",
-      "hi": "काम में आज कमाई का आंकड़ा छोटा और साफ रखें।",
-      "mr": "कामात आज उत्पन्नाचा आकडा लहान आणि स्पष्ट ठेवा."
+      "en": "At work, keep any word about what you earn short and clear.",
+      "hi": "काम में कमाई की बात छोटी और साफ रखें।",
+      "mr": "कामात मिळकतीबद्दल थोडक्यात आणि स्पष्ट बोला."
     },
     "12": {
       "en": "At work, finish one task before you step away.",
-      "hi": "काम में आज एक काम खत्म करके तब हटें।",
-      "mr": "कामात आज एक काम संपवून मग बाजूला व्हा."
+      "hi": "काम में एक काम खत्म करके तब हटें।",
+      "mr": "कामात एक काम संपवून मग बाजूला व्हा."
     }
   },
   "money": {
     "1": {
-      "en": "With money, do not spend in order to feel in charge.",
-      "hi": "धन में आज काबू पाने के लिए खर्च न करें।",
-      "mr": "धनात आज ताबा मिळवण्यासाठी खर्च करू नका."
+      "en": "With money, do not spend so that you feel more important.",
+      "hi": "धन में खुद को बड़ा महसूस करने के लिए खर्च न करें।",
+      "mr": "धनात स्वतःला मोठे वाटावे म्हणून खर्च करू नका."
     },
     "2": {
-      "en": "With money, what you already hold is enough today.",
-      "hi": "धन में आज हाथ का धन काफी है।",
-      "mr": "धनात आज हातातले तेवढे पुरे आहे."
+      "en": "With money, what you already hold can be enough today.",
+      "hi": "धन में आज जो हाथ में है वह काफी हो सकता है।",
+      "mr": "धनात आज जे हातात आहे ते पुरे होऊ शकते."
     },
     "3": {
-      "en": "With money, keep a small payment small.",
-      "hi": "धन में आज छोटा भुगतान छोटा ही रहने दें।",
-      "mr": "धनात आज लहान देय लहानच ठेवा."
+      "en": "With money, let a small payment stay small.",
+      "hi": "धन में छोटी रकम को छोटी ही रहने दें।",
+      "mr": "धनात छोटी रक्कम छोटीच राहू द्या."
     },
     "4": {
-      "en": "With money, look once at a home cost and then leave it.",
-      "hi": "धन में आज घर का खर्च एक बार देखें, फिर छोड़ें।",
-      "mr": "धनात आज घरचा खर्च एकदा बघा, मग सोडा."
+      "en": "With money, look once at a household cost, then leave it.",
+      "hi": "धन में घर का खर्च एक बार देखें, फिर छोड़ दें।",
+      "mr": "धनात घरचा खर्च एकदा बघा, मग सोडा."
     },
     "5": {
-      "en": "With money, do not fund a wish just because it feels dear.",
-      "hi": "धन में आज पसंद आने पर पैसा न लगाएँ।",
-      "mr": "धनात आज आवडते म्हणून पैसे देऊ नका."
+      "en": "With money, do not pay for a wish only because it feels dear.",
+      "hi": "धन में पसंद आ गया, इसीलिए पैसा न लगाएँ।",
+      "mr": "धनात आवडते वाटले म्हणून पैसे देऊ नका."
     },
     "6": {
-      "en": "With money, a small account tangle can wait.",
-      "hi": "धन में आज हिसाब की छोटी उलझन रुक सकती है।",
-      "mr": "धनात आज हिशोबाची छोटी गुंतागुंत थांबू शकते."
+      "en": "With money, a small tangle in the accounts can wait.",
+      "hi": "धन में हिसाब की छोटी उलझन रुक सकती है।",
+      "mr": "धनात हिशोबाची छोटी गुंतागुंत थांबू शकते."
     },
     "7": {
-      "en": "With money, keep any agreement with someone close simple.",
-      "hi": "धन में आज करीबी से समझौता सरल रखें।",
-      "mr": "धनात आज जवळच्याशी करार सोपा ठेवा."
+      "en": "With money, keep an agreement with someone close simple.",
+      "hi": "धन में किसी अपने से समझौता सरल रखें।",
+      "mr": "धनात जवळच्या माणसाशी करार सोपा ठेवा."
     },
     "8": {
       "en": "With money, a shared sum can wait until tomorrow.",
-      "hi": "धन में आज साझी रकम कल तक रह सकती है।",
-      "mr": "धनात आज सामायिक रक्कम उद्यापर्यंत राहू शकते."
+      "hi": "धन में साझी रकम कल तक रह सकती है।",
+      "mr": "धनात सामायिक रक्कम उद्यापर्यंत राहू शकते."
     },
     "9": {
-      "en": "With money, stay with the ordinary account today.",
+      "en": "With money, the ordinary account is enough today.",
       "hi": "धन में आज साधारण हिसाब काफी है।",
-      "mr": "धनात आज नेहमीचा हिशोब पुरे आहे."
+      "mr": "धनात नेहमीचा हिशोब आज पुरे आहे."
     },
     "10": {
       "en": "With money, keep a visible expense modest.",
-      "hi": "धन में आज दिखने वाला खर्च छोटा रखें।",
-      "mr": "धनात आज दिसणारा खर्च माफक ठेवा."
+      "hi": "धन में दिखने वाला खर्च छोटा रखें।",
+      "mr": "धनात दिसणारा खर्च माफक ठेवा."
     },
     "11": {
-      "en": "With money, say the income plainly and do not stretch it.",
-      "hi": "धन में आज कमाई सीधी कहें, आंकड़ा न बढ़ाएँ।",
-      "mr": "धनात आज उत्पन्न सरळ सांगा, आकडा ताणू नका."
+      "en": "With money, say what comes in plainly, and do not stretch the figure.",
+      "hi": "धन में जो आता है उसे सीधा कहें। आँकड़ा न बढ़ाएँ।",
+      "mr": "धनात जे येते ते सरळ सांगा. आकडा वाढवू नका."
     },
     "12": {
       "en": "With money, wait to spend until the necessary cost is clear.",
-      "hi": "धन में आज जरूरी खर्च साफ होने तक रुकें।",
-      "mr": "धनात आज गरजेचा खर्च स्पष्ट होईपर्यंत थांबा."
+      "hi": "धन में जरूरी खर्च साफ होने तक रुकें।",
+      "mr": "धनात गरजेचा खर्च कळेपर्यंत थांबा."
     }
   },
   "home": {
     "1": {
       "en": "At home, let people meet you as you are.",
-      "hi": "घर पर आज लोग आपको वैसे मिलें जैसे आप हैं।",
+      "hi": "घर पर लोगों को आप वैसे मिलें जैसे आप हैं।",
       "mr": "घरी आज तुम्हाला जसे आहात तसे भेटू द्या."
     },
     "2": {
-      "en": "At home, keep talk about family resources gentle.",
-      "hi": "घर पर आज परिवार के साधनों की बात नरम रखें।",
-      "mr": "घरी आज कौटुंबिक साधनांची भाषा मृदू ठेवा."
+      "en": "At home, speak gently if household costs come up.",
+      "hi": "घर पर खर्च की बात निकले तो धीरे बोलें।",
+      "mr": "घरी घरच्या खर्चाबद्दल हळू बोला."
     },
     "3": {
       "en": "At home, a short message to a sibling may be the real task.",
-      "hi": "घर पर आज भाई-बहन को छोटा संदेश असली विषय हो सकता है।",
-      "mr": "घरी आज भावंडाला छोटा निरोप हा खरा विषय असू शकतो."
+      "hi": "घर पर भाई-बहन को छोटा संदेश असली बात हो सकती है।",
+      "mr": "घरी भावंडाला छोटा निरोप हा खरा विषय असू शकतो."
     },
     "4": {
-      "en": "At home, rest matters more than sorting every feeling.",
-      "hi": "घर पर आज आराम ज्यादा जरूरी है।",
-      "mr": "घरी आज विश्रांती जास्त महत्त्वाची आहे."
+      "en": "At home, rest may matter more than sorting every feeling.",
+      "hi": "घर पर आज आराम ज्यादा काम आ सकता है।",
+      "mr": "घरी आज विश्रांती जास्त उपयोगी पडू शकते."
     },
     "5": {
-      "en": "At home, give a little time to what you care for.",
-      "hi": "घर पर आज जिसकी आपको चिंता है उसे थोड़ा समय दें।",
-      "mr": "घरी आज ज्याची काळजी आहे त्याला थोडा वेळ द्या."
+      "en": "At home, give a little time to someone you care for.",
+      "hi": "घर पर जिसकी आपको चिंता है उसे थोड़ा समय दें।",
+      "mr": "घरी ज्याची काळजी आहे त्याला थोडा वेळ द्या."
     },
     "6": {
       "en": "At home, a small irritation can wait until evening.",
-      "hi": "घर पर आज छोटी चिढ़ शाम तक रह सकती है।",
-      "mr": "घरी आज छोटी चिड संध्याकाळपर्यंत राहू द्या."
+      "hi": "घर पर छोटी चिढ़ शाम तक रह सकती है।",
+      "mr": "घरी छोटी चिड संध्याकाळपर्यंत राहू द्या."
     },
     "7": {
-      "en": "At home, one honest conversation is enough today.",
-      "hi": "घर पर आज एक ईमानदार बात काफी है।",
-      "mr": "घरी आज एक प्रामाणिक संभाषण पुरे आहे."
+      "en": "At home, one honest conversation can be enough.",
+      "hi": "घर पर आज एक ईमानदार बात काफी हो सकती है।",
+      "mr": "घरी आज एक प्रामाणिक बोलणे पुरे आहे."
     },
     "8": {
-      "en": "At home, name an unplanned change and then leave it.",
-      "hi": "घर पर आज अनियोजित बदलाव कहें, फिर छोड़ें।",
-      "mr": "घरी आज न योजलेला बदल सांगा, मग सोडा."
+      "en": "At home, you can name an unplanned change and then leave it.",
+      "hi": "घर पर अनियोजित बदलाव कहकर छोड़ सकते हैं।",
+      "mr": "घरी न योजलेला बदल सांगून मग सोडून द्या."
     },
     "9": {
-      "en": "At home, a short word with a parent is enough.",
-      "hi": "घर पर आज माता-पिता से एक छोटा शब्द काफी है।",
-      "mr": "घरी आज आईवडिलांशी एक छोटे बोलणे पुरे आहे."
+      "en": "At home, a short word with a parent can be enough.",
+      "hi": "घर पर माता-पिता से एक छोटी बात काफी है।",
+      "mr": "घरी आईवडिलांशी एक छोटे बोलणे पुरे आहे."
     },
     "10": {
-      "en": "At home, do not bring the whole public day inside.",
-      "hi": "घर पर आज बाहर का दिन अंदर न लाएँ।",
-      "mr": "घरी आज बाहेरचा दिवस आत आणू नका."
+      "en": "At home, you need not carry the whole public day inside.",
+      "hi": "घर पर बाहर का पूरा दिन अंदर लाने की जरूरत नहीं।",
+      "mr": "घरी बाहेरचा सगळा दिवस आत आणण्याची गरज नाही."
     },
     "11": {
       "en": "At home, thank the people who help you.",
-      "hi": "घर पर आज मदद करने वालों का धन्यवाद करें।",
-      "mr": "घरी आज मदत करणाऱ्यांचे आभार माना."
+      "hi": "घर पर मदद करने वालों का धन्यवाद करें।",
+      "mr": "घरी मदत करणाऱ्यांचे आभार माना."
     },
     "12": {
-      "en": "At home, take a little quiet and then come back.",
-      "hi": "घर पर आज थोड़ी शांति लें, फिर लौटें।",
-      "mr": "घरी आज थोडी शांतता घ्या, मग परत या."
+      "en": "At home, take a little quiet, then come back to the others.",
+      "hi": "घर पर थोड़ी शांति लें, फिर औरों के पास आएँ।",
+      "mr": "घरी थोडा शांत वेळ घ्या, मग इतरांकडे या."
     }
   },
   "talk": {
     "1": {
-      "en": "In conversation, be direct, and skip the speech.",
-      "hi": "बातचीत में आज सीधे बोलें, भाषण नहीं।",
-      "mr": "बोलताना आज थेट बोला, भाषण नको."
+      "en": "When you speak, say the point directly. A long speech can wait.",
+      "hi": "बोलते समय बात सीधे कहें। लंबा बोलना बाद में भी चल सकता है।",
+      "mr": "बोलताना मुद्दा थेट सांगा. लांब बोलणे नंतरही चालेल."
     },
     "2": {
-      "en": "In conversation, keep money talk soft and short.",
-      "hi": "बातचीत में आज धन की बात नरम और छोटी रखें।",
-      "mr": "बोलताना आज धनाची भाषा मृदू आणि छोटी ठेवा."
+      "en": "When you speak about money, keep it soft and short.",
+      "hi": "धन की बात करें तो आवाज नरम और बात छोटी रखें।",
+      "mr": "धनाबद्दल बोलताना आवाज मऊ आणि गोष्ट छोटी ठेवा."
     },
     "3": {
-      "en": "In conversation, one clear message is enough.",
-      "hi": "बातचीत में आज एक साफ संदेश काफी है।",
-      "mr": "बोलताना आज एक स्पष्ट निरोप पुरे आहे."
+      "en": "When you speak, one clear message can be enough.",
+      "hi": "बोलते समय एक साफ संदेश काफी हो सकता है।",
+      "mr": "बोलताना एक स्पष्ट निरोप पुरे आहे."
     },
     "4": {
-      "en": "In conversation, do not open a heavy topic while tired.",
-      "hi": "बातचीत में आज थकान में भारी विषय न खोलें।",
-      "mr": "बोलताना आज थकल्यावर जड विषय काढू नका."
+      "en": "When you speak, leave a heavy topic alone while you are tired.",
+      "hi": "थकान में भारी बात न खोलें।",
+      "mr": "थकले असता जड विषय काढू नका."
     },
     "5": {
-      "en": "In conversation, say what you care for and then let it rest.",
-      "hi": "बातचीत में आज जिसकी चिंता है उसे कहें, फिर रुकें।",
-      "mr": "बोलताना आज ज्याची काळजी आहे ते सांगा, मग थांबा."
+      "en": "When you speak, say what you care about, then let it rest.",
+      "hi": "जिसकी चिंता है उसे कहें, फिर रुकें।",
+      "mr": "ज्याची काळजी आहे ते सांगा, मग थांबा."
     },
     "6": {
-      "en": "In conversation, a complaint can wait.",
-      "hi": "बातचीत में आज शिकायत रुक सकती है।",
-      "mr": "बोलताना आज तक्रार थांबवता येईल."
+      "en": "When you speak, a complaint can wait.",
+      "hi": "शिकायत आज रुक सकती है।",
+      "mr": "तक्रार आज थांबवता येईल."
     },
     "7": {
-      "en": "In conversation, stay with one person and one point.",
-      "hi": "बातचीत में आज एक व्यक्ति और एक बात काफी है।",
-      "mr": "बोलताना आज एक माणूस आणि एक मुद्दा पुरे."
+      "en": "When you speak, stay with one person and one point.",
+      "hi": "एक व्यक्ति और एक बात काफी है।",
+      "mr": "एक माणूस आणि एक मुद्दा पुरे आहे."
     },
     "8": {
-      "en": "In conversation, name the shared thing and do not dig.",
-      "hi": "बातचीत में आज साझी बात कहें, आगे न खोदें।",
-      "mr": "बोलताना आज सामायिक गोष्ट सांगा, पुढे खणू नका."
+      "en": "When you speak, name what you share and do not keep digging.",
+      "hi": "साझी बात कह दें, आगे खोदते न रहें।",
+      "mr": "सामायिक गोष्ट सांगा, पुढे खणत राहू नका."
     },
     "9": {
-      "en": "In conversation, save the wider question for a calmer hour.",
-      "hi": "बातचीत में आज बड़ा सवाल शांत समय के लिए रखें।",
-      "mr": "बोलताना आज मोठा प्रश्न शांत वेळेसाठी ठेवा."
+      "en": "When you speak, save the larger question for a calmer hour.",
+      "hi": "बड़ा सवाल शांत समय के लिए रखें।",
+      "mr": "मोठा प्रश्न शांत वेळेसाठी ठेवा."
     },
     "10": {
-      "en": "In conversation, say the work fact, not the whole story.",
-      "hi": "बातचीत में आज काम का तथ्य कहें, पूरी कथा नहीं।",
-      "mr": "बोलताना आज कामाची वस्तुस्थिती सांगा, कथा नको."
+      "en": "When you speak, give the fact, not the whole story.",
+      "hi": "तथ्य कहें। पूरी कथा नहीं।",
+      "mr": "वस्तुस्थिती सांगा. सगळी कथा नको."
     },
     "11": {
-      "en": "In conversation, be specific if help or income comes up.",
-      "hi": "बातचीत में आज मदद या कमाई हो तो स्पष्ट बोलें।",
-      "mr": "बोलताना आज मदत किंवा उत्पन्न असेल तर नेमके बोला."
+      "en": "When you speak, be specific if help or earnings come up.",
+      "hi": "मदद या कमाई की बात हो तो साफ बोलें।",
+      "mr": "मदत किंवा मिळकत आली तर नेमके बोला."
     },
     "12": {
-      "en": "In conversation, end quietly rather than adding one more point.",
-      "hi": "बातचीत में आज एक और बात से बेहतर है शांत अंत।",
-      "mr": "बोलताना आज आणखी एक मुद्द्यापेक्षा शांत शेवट बरा."
+      "en": "When you speak, stop, rather than adding one more point.",
+      "hi": "एक और बात जोड़ने से बेहतर है कि आप रुक जाएँ।",
+      "mr": "आणखी एक मुद्दा जोडण्यापेक्षा शांत थांबा."
     }
   },
   "step": {
     "Sun": {
-      "en": "Let one duty be seen, and do not ask for praise.",
-      "hi": "एक काम दिखे, पर तारीफ न माँगें।",
-      "mr": "एक काम दिसावे, पण स्तुती मागू नका."
+      "en": "Let one task be seen. Praise can come later.",
+      "hi": "एक काम दिखे। तारीफ बाद में भी चल सकती है।",
+      "mr": "एक काम दिसावं. स्तुती नंतरही चालेल."
     },
     "Moon": {
-      "en": "Keep home steady if you feel upset.",
+      "en": "If you feel unsettled, keep the house quiet.",
       "hi": "मन बेचैन हो तो घर शांत रखें।",
-      "mr": "मन अस्वस्थ असेल तर घर शांत ठेवा."
+      "mr": "मन अस्वस्थ वाटलं तर घर शांत ठेवा."
     },
     "Mars": {
-      "en": "Answer a little later than your temper wants.",
-      "hi": "स्वभाव से थोड़ा देर में उत्तर दें।",
-      "mr": "स्वभावापेक्षा थोडे उशिरा उत्तर द्या."
+      "en": "Answer a little later, after the anger cools.",
+      "hi": "गुस्सा थोड़ा ठंडा होने पर उत्तर दें।",
+      "mr": "राग उतरल्यावर थोड्या वेळाने उत्तर द्या."
     },
     "Mercury": {
       "en": "Say one plain thing, and then stop.",
-      "hi": "एक सीधी बात कहकर रुकें।",
-      "mr": "एक सरळ गोष्ट सांगून थांबा."
+      "hi": "एक सीधी बात कहें, और फिर रुकें।",
+      "mr": "एक सरळ गोष्ट सांगा, आणि मग थांबा."
     },
     "Jupiter": {
-      "en": "Keep any promise small enough to keep.",
-      "hi": "वचन इतना छोटा रखें कि वह निभ जाए।",
-      "mr": "वचन इतके छोटे ठेवा की ते निभेल."
+      "en": "Give only a promise you can keep.",
+      "hi": "केवल वही वचन दें जिसे आप निभा सकें।",
+      "mr": "फक्त ते वचन द्या जे तुम्ही निभावू शकता."
     },
     "Venus": {
-      "en": "Stay courteous, and do not hide a disagreement.",
-      "hi": "शिष्ट रहें, और मतभेद न छिपाएँ।",
-      "mr": "सौजन्य ठेवा, आणि मतभेद लपवू नका."
+      "en": "Stay polite, and say the disagreement if it is real.",
+      "hi": "विनम्र रहें, और अनबन हो तो उसे कह दें।",
+      "mr": "नम्र राहा, आणि मतभेद खरा असेल तर तो सांगा."
     },
     "Saturn": {
-      "en": "Finish one real duty and leave the rest.",
-      "hi": "एक सच्चा कर्तव्य पूरा करें, बाकी छोड़ें।",
-      "mr": "एक खरे कर्तव्य संपवा, बाकी सोडा."
+      "en": "Finish one real duty. The rest can wait.",
+      "hi": "एक सच्चा काम पूरा करें। बाकी रुक सकता है।",
+      "mr": "एक खरे काम संपवा. बाकी थांबू शकतं."
     },
     "Rahu": {
-      "en": "Tell someone close before an unusual plan.",
-      "hi": "अनोखी योजना से पहले किसी करीबी को बताएँ।",
-      "mr": "वेगळी योजना आधी जवळच्या माणसाला सांगा."
+      "en": "Tell someone close before you try an unusual plan.",
+      "hi": "अनोखी योजना से पहले किसी अपने को बता दें।",
+      "mr": "वेगळी योजना करण्यापूर्वी जवळच्या माणसाला सांगा."
     },
     "Ketu": {
       "en": "Stay with one quiet task at home.",
-      "hi": "हटकर नहीं, घर का एक साधारण काम करें।",
-      "mr": "बाजूला न होता घरी एक साधे काम करा."
+      "hi": "घर का एक शांत काम करें, और उसी पर रहें।",
+      "mr": "घरी एका शांत कामावर राहा."
     }
   },
   "area_open": {
     "career": {
       "easy": {
-        "en": "For the work in front of you, one visible task will fit. Do it, and do not ask it to prove your worth.",
-        "hi": "आपके सामने के काम में आज एक दिखने वाला काम समाएगा। उसे करें, और उससे कीमत न साबित करें।",
-        "mr": "तुमच्या समोरच्या कामात आज एक दिसणारे काम मावेल. ते करा, आणि त्यातून किंमत सिद्ध करू नका."
+        "en": "Today one piece of your work can move if you stay with it. Finish that piece, and leave the rest for tomorrow.",
+        "hi": "आज आपके काम का एक हिस्सा आगे बढ़ सकता है, अगर आप उसी पर टिके रहें। उसे पूरा करें, बाकी कल रह सकता है।",
+        "mr": "आज तुमच्या कामाचा एक तुकडा पुढे जाऊ शकतो, जर तुम्ही त्याचवर राहिलात. तो संपवा, बाकी उद्या राहू दे."
       },
       "narrow": {
-        "en": "For the work in front of you, keep the task smaller than your pride. One proper piece is enough.",
-        "hi": "आपके सामने के काम को आज अभिमान से छोटा रखें। एक ठीक टुकड़ा काफी है।",
-        "mr": "तुमच्या समोरच्या कामात आज काम अहंकारापेक्षा छोटे ठेवा. एक नीट तुकडा पुरे आहे."
+        "en": "Today your work may feel heavier than it is. You can finish one piece, and you do not have to prove yourself.",
+        "hi": "आज आपका काम जितना है उससे भारी लग सकता है। आप एक हिस्सा पूरा कर सकते हैं, खुद को साबित करने की जरूरत नहीं।",
+        "mr": "आज तुमचं काम खरं आहे त्यापेक्षा जड वाटू शकतं. तुम्ही एक तुकडा संपवू शकता, स्वतःला सिद्ध करायची गरज नाही."
       }
     },
     "relationships": {
       "easy": {
-        "en": "With the people closest to you, kindness comes more easily. Still say the real point simply.",
-        "hi": "आपके सबसे करीबी लोगों के साथ आज शिष्टता आसान है। फिर भी असली बात सरल कहें।",
-        "mr": "तुमच्या जवळच्या लोकांशी आज सौजन्य सोपे आहे. तरी खरा मुद्दा सोप्या शब्दांत सांगा."
+        "en": "With the people close to you, a kind word may come easily today. Say the real point in a few words.",
+        "hi": "आज आपके करीबी लोगों के साथ मीठा बोलना आसान पड़ सकता है। असली बात थोड़े शब्दों में कह दें।",
+        "mr": "आज तुमच्या जवळच्या लोकांशी गोड बोलणं सोपं पडू शकतं. खरा मुद्दा थोड्या शब्दांत सांगून टाका."
       },
       "narrow": {
-        "en": "With the people closest to you, do not hide a disagreement just to keep the peace.",
-        "hi": "आपके सबसे करीबी लोगों के साथ शांति के लिए मतभेद न छिपाएँ।",
-        "mr": "तुमच्या जवळच्या लोकांशी शांतता राखण्यासाठी मतभेद लपवू नका."
+        "en": "With the people close to you, a disagreement may come up today. You can say it plainly, without covering it.",
+        "hi": "आज आपके करीबी लोगों के साथ अनबन निकल सकती है। आप उसे सीधे कह सकते हैं, ऊपर से ढकने की जरूरत नहीं।",
+        "mr": "आज तुमच्या जवळच्या लोकांशी मतभेद निघू शकतो. तुम्ही तो सरळ सांगू शकता, वरून झाकण्याची गरज नाही."
       }
     },
     "finances": {
       "easy": {
-        "en": "With money, you have a little room if the promise stays small.",
-        "hi": "धन में आज आपके लिए थोड़ी जगह है, अगर वचन छोटा रहे।",
-        "mr": "धनात आज तुम्हाला थोडी मोकळीक आहे, जर वचन छोटे राहिले तर."
+        "en": "With your money today, you can keep a small promise. Stay inside what you already have.",
+        "hi": "आज आपके धन में एक छोटा वचन निभ सकता है। जो आपके पास है उसी में रहें।",
+        "mr": "आज तुमच्या धनात एक छोटे वचन निभू शकतं. जे तुमच्याकडे आहे त्याच्या आत राहा."
       },
       "narrow": {
-        "en": "With money, keep the promise smaller than the hope you feel.",
-        "hi": "धन में आज वचन उस आशा से छोटा रखें जो आपको है।",
-        "mr": "धनात आज वचन त्या आशेपेक्षा छोटे ठेवा जी तुम्हाला वाटते आहे."
+        "en": "With your money today, the hope may be larger than what you can keep. Promise only what you can actually do.",
+        "hi": "आज आपके धन में उम्मीद उस बात से बड़ी हो सकती है जिसे आप निभा सकें। केवल वही वचन दें जो आप सच में कर सकते हैं।",
+        "mr": "आज तुमच्या धनात आशा त्या गोष्टीपेक्षा मोठी होऊ शकते जी तुम्ही निभावू शकता. फक्त ते वचन द्या जे तुम्ही खरोखर करू शकता."
       }
     },
     "home": {
       "easy": {
-        "en": "At home, the mood can be soft for you. Give yourself an unhurried hour.",
-        "hi": "घर पर आज आपका मूड नरम हो सकता है। अपने लिए एक बिना जल्दबाजी का घंटा रखें।",
-        "mr": "घरी आज तुमचा मूड मऊ असू शकतो. स्वतःला एक निवांत तास द्या."
+        "en": "At home today, you may feel a softer mood. Give yourself a quiet hour.",
+        "hi": "आज घर पर आपका मन नरम रह सकता है। अपने लिए एक शांत घंटा रखें।",
+        "mr": "आज घरी तुमचं मन मऊ राहू शकतं. स्वतःला एक शांत तास द्या."
       },
       "narrow": {
-        "en": "At home, the mood may shift on you. Do not settle a hard matter while you feel stirred.",
-        "hi": "घर पर आज आपका मूड बदल सकता है। बेचैनी में कठिन बात न सुलझाएँ।",
-        "mr": "घरी आज तुमचा मूड बदलू शकतो. अस्वस्थ असताना कठीण विषय मिटवू नका."
+        "en": "At home today, your mood may shift. Do not settle a hard matter while you feel unsettled.",
+        "hi": "आज घर पर आपका मन बदल सकता है। बेचैनी में कोई कठिन बात न सुलझाएँ।",
+        "mr": "आज घरी तुमचं मन बदलू शकतं. अस्वस्थ असताना कठीण विषय मिटवू नका."
       }
     }
   },
   "care_line": {
     "strain": {
-      "en": "Where the day feels heavy, go gently, and do not force an outcome.",
-      "hi": "जहाँ दिन भारी लगे वहाँ धीरे चलें, नतीजा न खींचें।",
-      "mr": "दिवस जड वाटेल तिथे हळू चला, निकाल ओढू नका."
+      "en": "Where the day feels heavy, go slowly. Do not push for a result today.",
+      "hi": "जहाँ दिन भारी लगे, वहाँ धीरे चलें। आज नतीजा जबरदस्ती न निकालें।",
+      "mr": "दिवस जड वाटेल तिथे हळू चला. आज निकाल जबरदस्तीने काढू नका."
     },
     "slow": {
-      "en": "Let this move more slowly than you hoped.",
-      "hi": "इसे आपकी चाह से धीमे चलने दें।",
-      "mr": "हे तुमच्या इच्छेपेक्षा सावकाश चालू द्या."
+      "en": "This may move more slowly than you hoped. You can let it.",
+      "hi": "यह आपकी उम्मीद से धीरे चल सकता है। आप उसे वैसा चलने दें।",
+      "mr": "हे तुम्ही विचारले त्यापेक्षा सावकाश जाऊ शकतं. तुम्ही त्याला तसे जाऊ द्या."
     },
     "hurry": {
-      "en": "Skip the choice you would make in a hurry.",
-      "hi": "जल्दबाजी वाला चुनाव आज छोड़ दें।",
-      "mr": "घाईत घ्यायचा निर्णय आज टाळा."
+      "en": "A choice you would make in a hurry may not suit you today. Leave it.",
+      "hi": "जल्दी में जो फैसला आप लेते, वह आज ठीक नहीं पड़ सकता। उसे छोड़ दें।",
+      "mr": "घाईत घेतलेला निर्णय आज तुम्हाला मानवणार नाही. तो सोडून द्या."
     }
   }
 }

@@ -36,6 +36,7 @@ from app.interpretation.audit import LLMAuditLog
 from app.interpretation.errors import GuardrailViolation
 from app.interpretation.guardrails import validate_rephrase, verify_text
 from app.interpretation.phala import today_support_fact
+from app.interpretation.question import question_instruction, question_voice_problem
 from app.interpretation.voice import today_instruction, today_voice_problem
 
 _PROMPT: dict[str, str] = json.loads(
@@ -733,6 +734,8 @@ def _reject_extra_placements(text: str, facts: str) -> None:
 def _instruction(lang: str, voice: str) -> str:
     if voice == "today":
         return today_instruction(lang)
+    if voice == "question":
+        return question_instruction(lang)
     return _PROMPT.get(lang, _PROMPT["en"])
 
 
@@ -865,8 +868,11 @@ class SafeRephraser:
                 fallback_reason="monthly_cap_reached",
             )
         self._calls_used += 1
-        spoken = voice if voice == "today" else "placement"
-        version = "today-spoken-v4" if spoken == "today" else "life-impact-v1"
+        spoken = voice if voice in {"today", "question"} else "placement"
+        version = {
+            "today": "today-spoken-v4",
+            "question": "ask-question-v1",
+        }.get(voice, "life-impact-v1")
         prompt = f"{_instruction(lang, spoken)}\n{facts}"
         candidate = ""
         guardrail_retries = 0
@@ -886,10 +892,16 @@ class SafeRephraser:
                     candidate = follow(prompt)
                 _reject_commitment(candidate, lang)
                 _reject_extra_placements(candidate, facts)
-                if spoken == "today" and _technical_verdict(candidate):
+                if spoken in {"today", "question"} and _technical_verdict(candidate):
                     raise GuardrailViolation("technical-verdict")
                 if spoken == "today":
                     problem = today_voice_problem(candidate)
+                    if problem is not None:
+                        raise GuardrailViolation(problem)
+                    if unsupported_grace(candidate, facts):
+                        raise GuardrailViolation("ungrounded-grace")
+                if spoken == "question":
+                    problem = question_voice_problem(candidate, facts)
                     if problem is not None:
                         raise GuardrailViolation(problem)
                     if unsupported_grace(candidate, facts):
