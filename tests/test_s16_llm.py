@@ -690,10 +690,10 @@ def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
     polished = polish_statement(rephraser, client, statement, facts, "en")
     assert polished.simple_text == _PLAIN_TODAY
     prompt = client.prompts[0]
-    assert "calm jyotish" in prompt
-    assert "work, money, family, energy" in prompt
-    assert "gentle next step" in prompt
-    assert "do not name a sign" in prompt
+    assert "experienced jyotish" in prompt
+    assert "work, money, home, conversations, and energy" in prompt
+    assert "120 words" in prompt
+    assert "do not name a sign" in prompt.lower()
     assert f"Sun {sun.sign_name} house {sun.house}" in prompt
     assert f"dasha {dasha['active_mahadasha']}-" in prompt
     assert "transit jupiter" in prompt
@@ -702,7 +702,7 @@ def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
     assert "Test Person" not in prompt
     assert "1992-05-10" not in prompt
     assert audit.events[-1].accepted is True
-    assert audit.events[-1].prompt_version == "today-spoken-v2"
+    assert audit.events[-1].prompt_version == "today-spoken-v3"
 
     verdict = _FakeLLM("A technical note: nakshatra and 23.4°.")
     blocked = polish_statement(rephraser, verdict, statement, facts, "en")
@@ -756,7 +756,17 @@ def test_today_marathi_returns_plain_model_text_and_hides_jargon() -> None:
     polished = polish_statement(rephraser, client, statement, facts, "mr")
     assert polished.simple_text == _PLAIN_TODAY_MR
     assert "ज्योतिषी" in client.prompts[0]
+    assert "धीर मागतो" in client.prompts[0]
+    assert "बाबतीत" in client.prompts[0]
     assert "Test Person" not in client.prompts[0]
+    slogan = _FakeLLM("आज मंगळ संभाषणात धीर मागतो, विशेषतः आवडीचे काम बाबतीत.")
+    rejected = polish_statement(rephraser, slogan, statement, facts, "mr")
+    assert rejected.simple_text == statement.simple_text
+    assert "धीर मागतो" not in rejected.simple_text
+    assert "बाबतीत" not in rejected.simple_text
+    one_line = _FakeLLM("Keep the day steady and do not rush a decision.")
+    clipped = polish_statement(rephraser, one_line, statement, facts, "mr")
+    assert clipped.simple_text == statement.simple_text
     jargon = _FakeLLM("आज गोचर चंद्र मेष मध्ये आहे आणि भाव 3 सक्रिय आहे.")
     blocked = polish_statement(rephraser, jargon, statement, facts, "mr")
     assert blocked.simple_text == statement.simple_text

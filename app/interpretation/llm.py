@@ -2,9 +2,10 @@
 
 Off by default. Hard-capped by llm_monthly_call_cap. The enabled path sends
 this birth's houses, dasha, transits, and panchang or quarter-month notes.
-Today asks for a spoken reading of work, money, family, energy, and one
-gentle next step. That same reading remains when the model is off, keyless,
-rate-limited, blocked, or when it answers with chart jargon or a guarantee.
+Today follows the jyotish voice guide: several ordinary sentences about
+work, money, home, conversation, and energy. That same reading remains when
+the model is off, keyless, rate-limited, blocked, or when it answers with
+chart jargon, a guarantee, or a one-line slogan.
 Providers run in order. A missing key is skipped. When ASTRO_LLM_PROVIDERS is
 unset, an OpenRouter key tries ASTRO_OPENROUTER_MODELS first, then Gemini,
 Gemma, and Anthropic when those keys exist. Rate limits, unknown-model 404s,
@@ -33,12 +34,10 @@ from app.config import Settings
 from app.interpretation.audit import LLMAuditLog
 from app.interpretation.errors import GuardrailViolation
 from app.interpretation.guardrails import validate_rephrase, verify_text
+from app.interpretation.voice import today_instruction, today_voice_problem
 
 _PROMPT: dict[str, str] = json.loads(
     Path(__file__).with_name("llm_prompt.json").read_text(encoding="utf-8")
-)
-_TODAY_PROMPT: dict[str, str] = json.loads(
-    Path(__file__).with_name("llm_today_prompt.json").read_text(encoding="utf-8")
 )
 _COMMITMENT = (
     re.compile(r"\bguaranteed\b", re.IGNORECASE),
@@ -728,8 +727,9 @@ def _reject_extra_placements(text: str, facts: str) -> None:
 
 
 def _instruction(lang: str, voice: str) -> str:
-    table = _TODAY_PROMPT if voice == "today" else _PROMPT
-    return table.get(lang, table["en"])
+    if voice == "today":
+        return today_instruction(lang)
+    return _PROMPT.get(lang, _PROMPT["en"])
 
 
 def _technical_verdict(text: str) -> bool:
@@ -850,7 +850,7 @@ class SafeRephraser:
             )
         self._calls_used += 1
         spoken = voice if voice == "today" else "placement"
-        version = "today-spoken-v2" if spoken == "today" else "life-impact-v1"
+        version = "today-spoken-v3" if spoken == "today" else "life-impact-v1"
         prompt = f"{_instruction(lang, spoken)}\n{facts}"
         candidate = ""
         guardrail_retries = 0
@@ -872,6 +872,10 @@ class SafeRephraser:
                 _reject_extra_placements(candidate, facts)
                 if spoken == "today" and _technical_verdict(candidate):
                     raise GuardrailViolation("technical-verdict")
+                if spoken == "today":
+                    problem = today_voice_problem(candidate)
+                    if problem is not None:
+                        raise GuardrailViolation(problem)
             except GuardrailViolation as exc:
                 if (
                     guardrail_retries >= 1

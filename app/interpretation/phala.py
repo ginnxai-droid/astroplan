@@ -10,6 +10,7 @@ from app.api.schemas import ChartResponse, LanguageCode, PlanetPosition
 from app.core.constants import RASHI_NAMES
 from app.interpretation.guardrails import verify_text
 from app.interpretation.terms import gloss
+from app.interpretation.voice import compose_area, compose_today
 
 _DATA: dict[str, Any] = json.loads(
     Path(__file__).with_name("phala_text.json").read_text(encoding="utf-8")
@@ -588,18 +589,6 @@ def _transit_moon_lagna_house(chart: ChartResponse, transits: dict[str, object])
     return ((t_idx - chart.lagna_sign_index) % 12) + 1
 
 
-def _behavior(planet: str, lang: str) -> str:
-    return _tpl("behavior", planet, lang)
-
-
-def _brief(house: int, lang: str) -> str:
-    return _tpl("brief", str(house), lang)
-
-
-def _planet_ask(planet: str, house: int, lang: str) -> str:
-    return _tpl("planet_ask", planet, lang, matter=_brief(house, lang))
-
-
 def _fresh_house(candidates: list[int], used: set[int]) -> int:
     for house in candidates:
         if house not in used:
@@ -625,14 +614,6 @@ def _care_house(
     return None
 
 
-def _care_sentence(house: int | None, lang: str, *, slow: bool) -> str:
-    if house is None:
-        return _line("today_hurry", lang)
-    if slow:
-        return _line("today_slow", lang, matter=_brief(house, lang))
-    return _line("today_strain", lang, matter=_brief(house, lang))
-
-
 def daily_human_reading(
     chart: ChartResponse,
     panchang: dict[str, object],
@@ -640,7 +621,7 @@ def daily_human_reading(
     lang: LanguageCode,
     dasha: dict[str, object] | None = None,
 ) -> str:
-    """Spoken life impact for today. A planet name says what today asks, not a placement."""
+    """A jyotish explaining today: weekday lord, moon, and the season, in ordinary life."""
     moon_house = int(str(transits["moon_house_from_natal_moon"]))
     lagna_house = _transit_moon_lagna_house(chart, transits)
     vara_lord_name = _VARA_LORDS.get(str(panchang["vara"]), "Sun")
@@ -649,30 +630,32 @@ def daily_human_reading(
     saturn_house = int(str(transits["saturn_house_from_moon"]))
     natal_moon_house = _planet(chart, "Moon").house
     used: set[int] = set()
-    ask_house = _fresh_house([vara_lord.house], used)
     work_house = _fresh_house([lagna_house, 10, 6], used)
     money_house = _fresh_house([jupiter_house, 2, 11], used)
-    family_house = _fresh_house([natal_moon_house, 4, 5], used)
-    energy_house = _fresh_house([moon_house, saturn_house, 1], used)
+    home_house = _fresh_house([natal_moon_house, 4, 5], used)
+    talk_house = _fresh_house([moon_house, vara_lord.house, 7], used)
     step_planet = str(dasha["active_mahadasha"]) if dasha is not None else vara_lord_name
-    text = _line(
-        "today_voice",
-        lang,
-        ask=_planet_ask(vara_lord_name, ask_house, lang),
-        work=_line("today_work", lang, matter=_brief(work_house, lang)),
-        money=_line("today_money", lang, matter=_brief(money_house, lang)),
-        family=_line("today_family", lang, matter=_brief(family_house, lang)),
-        energy=_line("today_energy", lang, matter=_brief(energy_house, lang)),
-        step=_behavior(step_planet, lang),
+    pressured = any(house in _PRESSURE for house in (moon_house, lagna_house, vara_lord.house))
+    text = compose_today(
+        lang=lang,
+        weekday_lord=vara_lord_name,
+        pressured=pressured,
+        money_easy=jupiter_house in _JUPITER_EASY,
+        saturn_easy=saturn_house in _SATURN_EASY,
+        work_house=work_house,
+        money_house=money_house,
+        home_house=home_house,
+        talk_house=talk_house,
+        step_planet=step_planet,
     )
     return _check(text, lang)
 
 
-_AREA_VOICE: dict[str, tuple[int, str, str]] = {
-    "relationships": (7, "Venus", "today_area_relationships"),
-    "career": (10, "Sun", "today_area_career"),
-    "finances": (2, "Jupiter", "today_area_finances"),
-    "home": (4, "Moon", "today_area_home"),
+_AREA_VOICE: dict[str, tuple[int, str]] = {
+    "relationships": (7, "Venus"),
+    "career": (10, "Sun"),
+    "finances": (2, "Jupiter"),
+    "home": (4, "Moon"),
 }
 
 
@@ -684,9 +667,9 @@ def daily_area_human(
     lang: LanguageCode,
     area: str,
 ) -> str:
-    """Today's note for one part of ordinary life, without a placement catalog."""
+    """Today's note for one part of ordinary life, in the same sitting voice."""
     del dasha, panchang
-    house_num, karaka_name, area_key = _AREA_VOICE[area]
+    house_num, karaka_name = _AREA_VOICE[area]
     _, lord = _lord(chart, house_num)
     moon_house = int(str(transits["moon_house_from_natal_moon"]))
     if area == "finances":
@@ -707,19 +690,19 @@ def daily_area_human(
         saturn_house in _SATURN_EASY,
         avoid={lean_house},
     )
-    support = _line(
-        "today_room" if easy else "today_small",
-        lang,
-        matter=_brief(support_house, lang),
-    )
-    text = _line(
-        "today_area_voice",
-        lang,
-        ask=_planet_ask(karaka_name, lean_house, lang),
-        about=_line(area_key, lang),
-        support=support,
-        care=_care_sentence(cared, lang, slow=cared == saturn_house and cared not in _PRESSURE),
-        step=_behavior(karaka_name, lang),
+    if cared is None:
+        care = "hurry"
+    elif cared == saturn_house and cared not in _PRESSURE:
+        care = "slow"
+    else:
+        care = "strain"
+    text = compose_area(
+        lang=lang,
+        area=area,
+        easy=easy,
+        care=care,
+        house=lean_house,
+        step_planet=karaka_name,
     )
     return _check(text, lang)
 

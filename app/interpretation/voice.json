@@ -1,0 +1,479 @@
+{
+  "guide": {
+    "en": "Speak to this person as you, the way a calm experienced jyotish speaks while sitting with them. Explain the life effect of today's real facts — the weekday lord, the Moon's movement, the season now running, and the panchang — in ordinary life: work, money, home, conversations, and energy. Write several connected sentences, with enough detail to feel like a real sitting, and stay under about 120 words. Do not write one clipped slogan. Use natural English, in a fluent shape, not a word-by-word gloss of a template. Do not name a sign, nakshatra, house number, gochar, or D9. Do not say dasha, transit, or lagna. A planet may be named only inside a sentence about their day. Do not promise a result, and do not make a medical, legal, or financial promise. Use only the facts below.",
+    "hi": "इस व्यक्ति से ऐसे बोलें जैसे एक शांत अनुभवी ज्योतिषी उनके सामने बैठा हो। उन्हें आप कहकर संबोधित करें। आज के असली तथ्य — वार का स्वामी, चंद्र की चाल, अभी चल रहा काल, और पंचांग — इनका असर साधारण जीवन में समझाएँ: काम, धन, घर, बातचीत, और ऊर्जा। कई जुड़े हुए वाक्य लिखें, इतने कि एक असली बैठक का एहसास हो, और लगभग 120 शब्दों के अंदर रहें। एक कटी हुई घोषणा न लिखें। हिंदी स्वाभाविक हो, किसी साँचे का शब्द-ब-शब्द अनुवाद नहीं। राशि, नक्षत्र, भाव संख्या, गोचर या नवांश का नाम न लें। दशा, गोचर या लग्न शब्द न कहें। ग्रह का नाम केवल उनके दिन वाले वाक्य में लें। फल का वचन न दें, और चिकित्सा, कानूनी या धन का वचन न दें। केवल नीचे दिए तथ्यों का उपयोग करें।",
+    "mr": "या व्यक्तीशी असे बोला जणू एक शांत अनुभवी ज्योतिषी त्यांच्या समोर बसला आहे. त्यांना तुम्ही म्हणून संबोधित करा. आजची खरी तथ्ये — वाराचा स्वामी, चंद्राची चाल, सध्या चाललेला काळ, आणि पंचांग — यांचा परिणाम साध्या जीवनात समजावून सांगा: काम, धन, घर, संभाषण, आणि जोम. अनेक जोडलेली वाक्ये लिहा, एवढी की खऱ्या बैठकीसारखे वाटेल, आणि सुमारे 120 शब्दांच्या आत रहा. एक छाटलेली घोषणा लिहू नका. मराठी नैसर्गिक असावी, साच्याचे शब्दशः भाषांतर नको. धीर मागतो आणि बाबतीत हे इंग्रजीचे ओढून आणलेले शब्द वापरू नका. राशी, नक्षत्र, भाव क्रमांक, गोचर किंवा नवांश सांगू नका. दशा, गोचर किंवा लग्न हे शब्द म्हणू नका. ग्रहाचे नाव फक्त त्यांच्या दिवसाच्या वाक्यात घ्या. फलाचे वचन देऊ नका, आणि वैद्यकीय, कायदेशीर किंवा धनाचे वचन देऊ नका. फक्त खालील तथ्यांचा वापर करा."
+  },
+  "opening": {
+    "Sun": {
+      "support": {
+        "en": "Sunday carries the Sun, so you may want the day to see you. Let the work show, and do not ask for praise.",
+        "hi": "आज रविवार सूर्य का दिन है, इसलिए आप चाहेंगे कि दिन आपको देखे। काम दिखने दें, तारीफ न माँगें।",
+        "mr": "आज रविवार सूर्याचा दिवस आहे, म्हणून तुम्हाला दिसायचे वाटेल. काम दिसावे, पण स्तुती मागू नका."
+      },
+      "care": {
+        "en": "Sunday carries the Sun, so being seen feels tender for you today. Do the visible work, and leave the praise aside.",
+        "hi": "आज रविवार सूर्य का दिन है, इसलिए आपको दिखना थोड़ा कोमल लगेगा। दिखने वाला काम करें, और तारीफ छोड़ दें।",
+        "mr": "आज रविवार सूर्याचा दिवस आहे, म्हणून तुम्हाला दिसण्याची इच्छा नाजूक वाटेल. काम लोकांसमोर करा, आणि स्तुतीला राहू द्या."
+      }
+    },
+    "Moon": {
+      "support": {
+        "en": "Monday follows the Moon, so your mood colors home and the people in it. Keep the pace easy, and save a hard talk.",
+        "hi": "आज सोमवार चंद्र के साथ है, इसलिए आपका मूड घर पर छा जाएगा। चाल धीमी रखें, और कठिन बात बाद के लिए छोड़ें।",
+        "mr": "आज सोमवार चंद्राबरोबर येतो, म्हणून तुमचा मूड घरावर पसरेल. चाल सावकाश ठेवा, आणि कठीण बोलणे नंतर ठेवा."
+      },
+      "care": {
+        "en": "Monday follows the Moon, so home can change mood on you. Give the people you live with a quiet hour, and delay a hard matter.",
+        "hi": "आज सोमवार चंद्र के साथ है, इसलिए घर आप पर जल्दी मूड बदल सकता है। अपनों को एक शांत घंटा दें, और कठिन बात टालें।",
+        "mr": "आज सोमवार चंद्राबरोबर येतो, म्हणून घर तुमच्यावर लवकर मूड बदलू शकते. जवळच्यांना एक शांत तास द्या, आणि कठीण विषय थांबवा."
+      }
+    },
+    "Mars": {
+      "support": {
+        "en": "Tuesday carries Mars, so a little heat can enter the way you speak. Let the first answer wait, and use that heat on one shared task.",
+        "hi": "आज मंगलवार मंगल का दिन है, इसलिए आपकी बात में थोड़ी गरमी आएगी। पहला उत्तर रोकें, और जोश साझे काम में लगाएँ।",
+        "mr": "आज मंगळवार मंगळाचा दिवस आहे, म्हणून तुमच्या बोलण्यात थोडी उष्णता येईल. पहिले उत्तर थांबवा, आणि ती उष्णता सामायिक कामात लावा."
+      },
+      "care": {
+        "en": "Tuesday carries Mars, so your speech can heat up faster than you mean. Pause, then put that heat into one ordinary task.",
+        "hi": "आज मंगलवार मंगल का दिन है, इसलिए आपकी बात जल्दी तीखी हो सकती है। रुककर उत्तर दें, और जोश एक साधारण काम में लगाएँ।",
+        "mr": "आज मंगळवार मंगळाचा दिवस आहे, म्हणून तुमचे बोलणे लवकर तापू शकते. थांबून उत्तर द्या, आणि तो जोर साध्या कामात लावा."
+      }
+    },
+    "Mercury": {
+      "support": {
+        "en": "Wednesday belongs to Mercury, so you need one plain sentence. Say the practical point, and do not win by being clever.",
+        "hi": "आज बुधवार बुध का दिन है, इसलिए आपको एक सीधा वाक्य चाहिए। व्यावहारिक बात कहें, चतुराई से न जीतें।",
+        "mr": "आज बुधवार बुधाचा दिवस आहे, म्हणून तुम्हाला एक सरळ वाक्य उपयोगी पडेल. व्यावहारिक मुद्दा सांगा, हुशारीने जिंकू नका."
+      },
+      "care": {
+        "en": "Wednesday belongs to Mercury, so words will come at you quickly. Say one plain thing and then stop.",
+        "hi": "आज बुधवार बुध का दिन है, इसलिए शब्द आपके पास जल्दी आएँगे। एक सीधी बात कहकर रुक जाएँ।",
+        "mr": "आज बुधवार बुधाचा दिवस आहे, म्हणून शब्द तुमच्याकडे लवकर येतील. एक सरळ गोष्ट सांगून थांबा."
+      }
+    },
+    "Jupiter": {
+      "support": {
+        "en": "Thursday carries Jupiter, so advice wants to come out of you. Offer it without a lecture, and keep a money promise small.",
+        "hi": "आज गुरुवार बृहस्पति का दिन है, इसलिए आप सलाह देना चाहेंगे। बिना उपदेश के कहें, और धन का वचन छोटा रखें।",
+        "mr": "आज गुरुवार गुरुचा दिवस आहे, म्हणून तुम्हाला सल्ला द्यावासा वाटेल. उपदेशाशिवाय सांगा, आणि धनाचे वचन छोटे ठेवा."
+      },
+      "care": {
+        "en": "Thursday carries Jupiter, so you may want to offer a large assurance. Make the promise smaller than that feeling.",
+        "hi": "आज गुरुवार बृहस्पति का दिन है, इसलिए आपको बड़ा आश्वासन देना भाएगा। वचन उस भावना से छोटा रखें।",
+        "mr": "आज गुरुवार गुरुचा दिवस आहे, म्हणून तुम्हाला मोठे आश्वासन द्यावेसे वाटेल. वचन त्या इच्छेपेक्षा छोटे ठेवा."
+      }
+    },
+    "Venus": {
+      "support": {
+        "en": "Friday follows Venus, so courtesy matters more for you than being right. Keep it kind, and do not sweeten a disagreement.",
+        "hi": "आज शुक्रवार शुक्र के साथ है, इसलिए आपके लिए शिष्टता सही होने से बड़ी है। स्वर नरम रखें, मतभेद न ढकें।",
+        "mr": "आज शुक्रवार शुक्राबरोबर येतो, म्हणून तुमच्यासाठी सौजन्य बरोबर असण्यापेक्षा जास्त आहे. सूर मृदू ठेवा, मतभेद झाकू नका."
+      },
+      "care": {
+        "en": "Friday follows Venus, so you will want to smooth things over. Stay polite, and still say the disagreement simply.",
+        "hi": "आज शुक्रवार शुक्र के साथ है, इसलिए आप सब कुछ चिकना करना चाहेंगे। विनम्र रहें, और मतभेद सरल कहें।",
+        "mr": "आज शुक्रवार शुक्राबरोबर येतो, म्हणून तुम्हाला सगळे गुळगुळीत करायचे वाटेल. नम्र राहा, आणि मतभेद सोपे सांगा."
+      }
+    },
+    "Saturn": {
+      "support": {
+        "en": "Saturday carries Saturn, so the day wants a slower pace from you. One real duty, done properly, is enough.",
+        "hi": "आज शनिवार शनि का दिन है, इसलिए आपको धीमी चाल भाएगी। एक सच्चा काम ठीक से करें, वही काफी है।",
+        "mr": "आज शनिवार शनीचा दिवस आहे, म्हणून तुम्हाला सावकाश चाल बरी वाटेल. एक खरे काम नीट करा, तेवढे पुरे."
+      },
+      "care": {
+        "en": "Saturday carries Saturn, so hurry will cost you. Take the slow pace, finish one duty, and leave the rest.",
+        "hi": "आज शनिवार शनि का दिन है, इसलिए जल्दी आपको महँगी पड़ सकती है। धीरे एक कर्तव्य पूरा करें, बाकी छोड़ दें।",
+        "mr": "आज शनिवार शनीचा दिवस आहे, म्हणून घाई तुम्हाला महाग पडू शकते. सावकाश एक कर्तव्य संपवा, बाकी राहू द्या."
+      }
+    }
+  },
+  "work": {
+    "1": {
+      "en": "At work, how you meet people matters more than a new plan.",
+      "hi": "काम में आज लोगों से मिलना नई योजना से बड़ा है।",
+      "mr": "कामात आज लोकांना भेटणे नव्या योजनेपेक्षा जास्त महत्त्वाचे आहे."
+    },
+    "2": {
+      "en": "At work, tend what you already hold and leave a new scheme.",
+      "hi": "काम में आज जो हाथ में है उसे संभालें, नई योजना छोड़ें।",
+      "mr": "कामात आज जे हाती आहे ते सांभाळा, नवी योजना नको."
+    },
+    "3": {
+      "en": "At work, finish the short errand and do not enlarge it.",
+      "hi": "काम में आज छोटा काम खत्म करें, उसे बड़ा न बनाएँ।",
+      "mr": "कामात आज छोटा निरोप संपवा, त्याला मोठे करू नका."
+    },
+    "4": {
+      "en": "At work, give home a little time, then come back.",
+      "hi": "काम में आज घर को थोड़ा समय दें, फिर लौटें।",
+      "mr": "कामात आज घराला थोडा वेळ द्या, मग परत या."
+    },
+    "5": {
+      "en": "At work, stay with the task you like and do not crowd it.",
+      "hi": "काम में आज पसंद का काम रखें, और उसके आसपास भीड़ न करें।",
+      "mr": "कामात आज आवडते काम ठेवा, आणि त्याभोवती गर्दी करू नका."
+    },
+    "6": {
+      "en": "At work, a small snag does not deserve the whole day.",
+      "hi": "काम में आज छोटी अड़चन को पूरा दिन न दें।",
+      "mr": "कामात आज छोटा अडथळा सगळा दिवस खाऊ देऊ नका."
+    },
+    "7": {
+      "en": "At work, one calm talk is enough.",
+      "hi": "काम में आज एक शांत बात काफी है।",
+      "mr": "कामात आज एक शांत बोलणे पुरे आहे."
+    },
+    "8": {
+      "en": "At work, something shared does not need a decision today.",
+      "hi": "काम में आज साझी बात का फैसला जरूरी नहीं।",
+      "mr": "कामात सामायिक गोष्टीचा निर्णय आज नको."
+    },
+    "9": {
+      "en": "At work, keep the long view and finish what is in your hands.",
+      "hi": "काम में आज दूर का चित्र रखें, और हाथ का काम पूरा करें।",
+      "mr": "कामात आज दूरचे चित्र ठेवा, आणि हातातले काम संपवा."
+    },
+    "10": {
+      "en": "At work, finish the one piece other people can see.",
+      "hi": "काम में आज वह काम पूरा करें जिसे लोग देख सकते हैं।",
+      "mr": "कामात आज जे काम लोक पाहू शकतात ते संपवा."
+    },
+    "11": {
+      "en": "At work, keep any figure about income small and clear.",
+      "hi": "काम में आज कमाई का आंकड़ा छोटा और साफ रखें।",
+      "mr": "कामात आज उत्पन्नाचा आकडा लहान आणि स्पष्ट ठेवा."
+    },
+    "12": {
+      "en": "At work, finish one task before you step away.",
+      "hi": "काम में आज एक काम खत्म करके तब हटें।",
+      "mr": "कामात आज एक काम संपवून मग बाजूला व्हा."
+    }
+  },
+  "money": {
+    "1": {
+      "en": "With money, do not spend in order to feel in charge.",
+      "hi": "धन में आज काबू पाने के लिए खर्च न करें।",
+      "mr": "धनात आज ताबा मिळवण्यासाठी खर्च करू नका."
+    },
+    "2": {
+      "en": "With money, what you already hold is enough today.",
+      "hi": "धन में आज हाथ का धन काफी है।",
+      "mr": "धनात आज हातातले तेवढे पुरे आहे."
+    },
+    "3": {
+      "en": "With money, keep a small payment small.",
+      "hi": "धन में आज छोटा भुगतान छोटा ही रहने दें।",
+      "mr": "धनात आज लहान देय लहानच ठेवा."
+    },
+    "4": {
+      "en": "With money, look once at a home cost and then leave it.",
+      "hi": "धन में आज घर का खर्च एक बार देखें, फिर छोड़ें।",
+      "mr": "धनात आज घरचा खर्च एकदा बघा, मग सोडा."
+    },
+    "5": {
+      "en": "With money, do not fund a wish just because it feels dear.",
+      "hi": "धन में आज पसंद आने पर पैसा न लगाएँ।",
+      "mr": "धनात आज आवडते म्हणून पैसे देऊ नका."
+    },
+    "6": {
+      "en": "With money, a small account tangle can wait.",
+      "hi": "धन में आज हिसाब की छोटी उलझन रुक सकती है।",
+      "mr": "धनात आज हिशोबाची छोटी गुंतागुंत थांबू शकते."
+    },
+    "7": {
+      "en": "With money, keep any agreement with someone close simple.",
+      "hi": "धन में आज करीबी से समझौता सरल रखें।",
+      "mr": "धनात आज जवळच्याशी करार सोपा ठेवा."
+    },
+    "8": {
+      "en": "With money, a shared sum can wait until tomorrow.",
+      "hi": "धन में आज साझी रकम कल तक रह सकती है।",
+      "mr": "धनात आज सामायिक रक्कम उद्यापर्यंत राहू शकते."
+    },
+    "9": {
+      "en": "With money, stay with the ordinary account today.",
+      "hi": "धन में आज साधारण हिसाब काफी है।",
+      "mr": "धनात आज नेहमीचा हिशोब पुरे आहे."
+    },
+    "10": {
+      "en": "With money, keep a visible expense modest.",
+      "hi": "धन में आज दिखने वाला खर्च छोटा रखें।",
+      "mr": "धनात आज दिसणारा खर्च माफक ठेवा."
+    },
+    "11": {
+      "en": "With money, say the income plainly and do not stretch it.",
+      "hi": "धन में आज कमाई सीधी कहें, आंकड़ा न बढ़ाएँ।",
+      "mr": "धनात आज उत्पन्न सरळ सांगा, आकडा ताणू नका."
+    },
+    "12": {
+      "en": "With money, wait to spend until the necessary cost is clear.",
+      "hi": "धन में आज जरूरी खर्च साफ होने तक रुकें।",
+      "mr": "धनात आज गरजेचा खर्च स्पष्ट होईपर्यंत थांबा."
+    }
+  },
+  "money_tone": {
+    "easy": {
+      "en": "There is a little room if any new promise stays small.",
+      "hi": "नया वचन छोटा रहे तो यहाँ थोड़ी जगह है।",
+        "mr": "नवे वचन छोटे ठेवले तर आज थोडी मोकळीक आहे."
+    },
+    "tight": {
+      "en": "Keep this smaller than you hoped, with no new promise.",
+      "hi": "इसे चाह से छोटा रखें, नया वचन न जोड़ें।",
+        "mr": "आजची गोष्ट इच्छेपेक्षा छोटी ठेवा, आणि नवे वचन जोडू नका."
+    }
+  },
+  "home": {
+    "1": {
+      "en": "At home, let people meet you as you are.",
+      "hi": "घर पर आज लोग आपको वैसे मिलें जैसे आप हैं।",
+      "mr": "घरी आज तुम्हाला जसे आहात तसे भेटू द्या."
+    },
+    "2": {
+      "en": "At home, keep talk about family resources gentle.",
+      "hi": "घर पर आज परिवार के साधनों की बात नरम रखें।",
+      "mr": "घरी आज कौटुंबिक साधनांची भाषा मृदू ठेवा."
+    },
+    "3": {
+      "en": "At home, a short message to a sibling may be the real task.",
+      "hi": "घर पर आज भाई-बहन को छोटा संदेश असली विषय हो सकता है।",
+      "mr": "घरी आज भावंडाला छोटा निरोप हा खरा विषय असू शकतो."
+    },
+    "4": {
+      "en": "At home, rest matters more than sorting every feeling.",
+      "hi": "घर पर आज आराम ज्यादा जरूरी है।",
+      "mr": "घरी आज विश्रांती जास्त महत्त्वाची आहे."
+    },
+    "5": {
+      "en": "At home, give a little time to what you care for.",
+      "hi": "घर पर आज जिसकी आपको चिंता है उसे थोड़ा समय दें।",
+      "mr": "घरी आज ज्याची काळजी आहे त्याला थोडा वेळ द्या."
+    },
+    "6": {
+      "en": "At home, a small irritation can wait until evening.",
+      "hi": "घर पर आज छोटी चिढ़ शाम तक रह सकती है।",
+      "mr": "घरी आज छोटी चिड संध्याकाळपर्यंत राहू द्या."
+    },
+    "7": {
+      "en": "At home, one honest conversation is enough today.",
+      "hi": "घर पर आज एक ईमानदार बात काफी है।",
+      "mr": "घरी आज एक प्रामाणिक संभाषण पुरे आहे."
+    },
+    "8": {
+      "en": "At home, name an unplanned change and then leave it.",
+      "hi": "घर पर आज अनियोजित बदलाव कहें, फिर छोड़ें।",
+      "mr": "घरी आज न योजलेला बदल सांगा, मग सोडा."
+    },
+    "9": {
+      "en": "At home, a short word with a parent is enough.",
+      "hi": "घर पर आज माता-पिता से एक छोटा शब्द काफी है।",
+      "mr": "घरी आज आईवडिलांशी एक छोटे बोलणे पुरे आहे."
+    },
+    "10": {
+      "en": "At home, do not bring the whole public day inside.",
+      "hi": "घर पर आज बाहर का दिन अंदर न लाएँ।",
+      "mr": "घरी आज बाहेरचा दिवस आत आणू नका."
+    },
+    "11": {
+      "en": "At home, thank the people who help you.",
+      "hi": "घर पर आज मदद करने वालों का धन्यवाद करें।",
+      "mr": "घरी आज मदत करणाऱ्यांचे आभार माना."
+    },
+    "12": {
+      "en": "At home, take a little quiet and then come back.",
+      "hi": "घर पर आज थोड़ी शांति लें, फिर लौटें।",
+      "mr": "घरी आज थोडी शांतता घ्या, मग परत या."
+    }
+  },
+  "talk": {
+    "1": {
+      "en": "In conversation, be direct, and skip the speech.",
+      "hi": "बातचीत में आज सीधे बोलें, भाषण नहीं।",
+      "mr": "बोलताना आज थेट बोला, भाषण नको."
+    },
+    "2": {
+      "en": "In conversation, keep money talk soft and short.",
+      "hi": "बातचीत में आज धन की बात नरम और छोटी रखें।",
+      "mr": "बोलताना आज धनाची भाषा मृदू आणि छोटी ठेवा."
+    },
+    "3": {
+      "en": "In conversation, one clear message is enough.",
+      "hi": "बातचीत में आज एक साफ संदेश काफी है।",
+      "mr": "बोलताना आज एक स्पष्ट निरोप पुरे आहे."
+    },
+    "4": {
+      "en": "In conversation, do not open a heavy topic while tired.",
+      "hi": "बातचीत में आज थकान में भारी विषय न खोलें।",
+      "mr": "बोलताना आज थकल्यावर जड विषय काढू नका."
+    },
+    "5": {
+      "en": "In conversation, say what you care for and then let it rest.",
+      "hi": "बातचीत में आज जिसकी चिंता है उसे कहें, फिर रुकें।",
+      "mr": "बोलताना आज ज्याची काळजी आहे ते सांगा, मग थांबा."
+    },
+    "6": {
+      "en": "In conversation, a complaint can wait.",
+      "hi": "बातचीत में आज शिकायत रुक सकती है।",
+      "mr": "बोलताना आज तक्रार थांबवता येईल."
+    },
+    "7": {
+      "en": "In conversation, stay with one person and one point.",
+      "hi": "बातचीत में आज एक व्यक्ति और एक बात काफी है।",
+      "mr": "बोलताना आज एक माणूस आणि एक मुद्दा पुरे."
+    },
+    "8": {
+      "en": "In conversation, name the shared thing and do not dig.",
+      "hi": "बातचीत में आज साझी बात कहें, आगे न खोदें।",
+      "mr": "बोलताना आज सामायिक गोष्ट सांगा, पुढे खणू नका."
+    },
+    "9": {
+      "en": "In conversation, save the wider question for a calmer hour.",
+      "hi": "बातचीत में आज बड़ा सवाल शांत समय के लिए रखें।",
+      "mr": "बोलताना आज मोठा प्रश्न शांत वेळेसाठी ठेवा."
+    },
+    "10": {
+      "en": "In conversation, say the work fact, not the whole story.",
+      "hi": "बातचीत में आज काम का तथ्य कहें, पूरी कथा नहीं।",
+      "mr": "बोलताना आज कामाची वस्तुस्थिती सांगा, कथा नको."
+    },
+    "11": {
+      "en": "In conversation, be specific if help or income comes up.",
+      "hi": "बातचीत में आज मदद या कमाई हो तो स्पष्ट बोलें।",
+      "mr": "बोलताना आज मदत किंवा उत्पन्न असेल तर नेमके बोला."
+    },
+    "12": {
+      "en": "In conversation, end quietly rather than adding one more point.",
+      "hi": "बातचीत में आज एक और बात से बेहतर है शांत अंत।",
+      "mr": "बोलताना आज आणखी एक मुद्द्यापेक्षा शांत शेवट बरा."
+    }
+  },
+  "energy": {
+    "easy": {
+      "en": "Your energy can hold one steady task, then the day can stay ordinary.",
+      "hi": "ऊर्जा आज एक सधे काम के लिए काफी है, फिर दिन साधारण रह सकता है।",
+      "mr": "जोम आज एका सलग कामासाठी पुरेसा आहे, मग दिवस साधा राहू द्या."
+    },
+    "quiet": {
+      "en": "Your energy is quieter today, so one real task is enough.",
+      "hi": "ऊर्जा आज शांत है, इसलिए एक सच्चा काम काफी है।",
+      "mr": "जोम आज शांत आहे, म्हणून एक खरे काम पुरे."
+    }
+  },
+  "step": {
+    "Sun": {
+      "en": "Let one duty be seen, and do not ask for praise.",
+      "hi": "एक काम दिखे, पर तारीफ न माँगें।",
+      "mr": "एक काम दिसावे, पण स्तुती मागू नका."
+    },
+    "Moon": {
+      "en": "Keep home steady if you feel upset.",
+      "hi": "मन बेचैन हो तो घर शांत रखें।",
+      "mr": "मन अस्वस्थ असेल तर घर शांत ठेवा."
+    },
+    "Mars": {
+      "en": "Answer a little later than your temper wants.",
+      "hi": "स्वभाव से थोड़ा देर में उत्तर दें।",
+      "mr": "स्वभावापेक्षा थोडे उशिरा उत्तर द्या."
+    },
+    "Mercury": {
+      "en": "Say one plain thing, and then stop.",
+      "hi": "एक सीधी बात कहकर रुकें।",
+      "mr": "एक सरळ गोष्ट सांगून थांबा."
+    },
+    "Jupiter": {
+      "en": "Keep any promise small enough to keep.",
+      "hi": "वचन इतना छोटा रखें कि वह निभ जाए।",
+      "mr": "वचन इतके छोटे ठेवा की ते निभेल."
+    },
+    "Venus": {
+      "en": "Stay courteous, and do not hide a disagreement.",
+      "hi": "शिष्ट रहें, और मतभेद न छिपाएँ।",
+      "mr": "सौजन्य ठेवा, आणि मतभेद लपवू नका."
+    },
+    "Saturn": {
+      "en": "Finish one real duty and leave the rest.",
+      "hi": "एक सच्चा कर्तव्य पूरा करें, बाकी छोड़ें।",
+      "mr": "एक खरे कर्तव्य संपवा, बाकी सोडा."
+    },
+    "Rahu": {
+      "en": "Tell someone close before an unusual plan.",
+      "hi": "अनोखी योजना से पहले किसी करीबी को बताएँ।",
+      "mr": "वेगळी योजना आधी जवळच्या माणसाला सांगा."
+    },
+    "Ketu": {
+      "en": "Stay with an ordinary task at home.",
+      "hi": "हटकर नहीं, घर का एक साधारण काम करें।",
+      "mr": "बाजूला न होता घरी एक साधे काम करा."
+    }
+  },
+  "area_open": {
+    "career": {
+      "easy": {
+        "en": "For the work in front of you, one visible task will fit. Do it, and do not ask it to prove your worth.",
+        "hi": "आपके सामने के काम में आज एक दिखने वाला काम समाएगा। उसे करें, और उससे कीमत न साबित करें।",
+        "mr": "तुमच्या समोरच्या कामात आज एक दिसणारे काम मावेल. ते करा, आणि त्यातून किंमत सिद्ध करू नका."
+      },
+      "narrow": {
+        "en": "For the work in front of you, keep the task smaller than your pride. One proper piece is enough.",
+        "hi": "आपके सामने के काम को आज अभिमान से छोटा रखें। एक ठीक टुकड़ा काफी है।",
+        "mr": "तुमच्या समोरच्या कामात आज काम अहंकारापेक्षा छोटे ठेवा. एक नीट तुकडा पुरे आहे."
+      }
+    },
+    "relationships": {
+      "easy": {
+        "en": "With the people closest to you, kindness comes more easily. Still say the real point simply.",
+        "hi": "आपके सबसे करीबी लोगों के साथ आज शिष्टता आसान है। फिर भी असली बात सरल कहें।",
+        "mr": "तुमच्या जवळच्या लोकांशी आज सौजन्य सोपे आहे. तरी खरा मुद्दा सोप्या शब्दांत सांगा."
+      },
+      "narrow": {
+        "en": "With the people closest to you, do not hide a disagreement just to keep the peace.",
+        "hi": "आपके सबसे करीबी लोगों के साथ शांति के लिए मतभेद न छिपाएँ।",
+        "mr": "तुमच्या जवळच्या लोकांशी शांतता राखण्यासाठी मतभेद लपवू नका."
+      }
+    },
+    "finances": {
+      "easy": {
+        "en": "With money, you have a little room if the promise stays small.",
+        "hi": "धन में आज आपके लिए थोड़ी जगह है, अगर वचन छोटा रहे।",
+        "mr": "धनात आज तुम्हाला थोडी मोकळीक आहे, जर वचन छोटे राहिले तर."
+      },
+      "narrow": {
+        "en": "With money, keep the promise smaller than the hope you feel.",
+        "hi": "धन में आज वचन उस आशा से छोटा रखें जो आपको है।",
+        "mr": "धनात आज वचन त्या आशेपेक्षा छोटे ठेवा जी तुम्हाला वाटते आहे."
+      }
+    },
+    "home": {
+      "easy": {
+        "en": "At home, the mood can be soft for you. Give yourself an unhurried hour.",
+        "hi": "घर पर आज आपका मूड नरम हो सकता है। अपने लिए एक बिना जल्दबाजी का घंटा रखें।",
+        "mr": "घरी आज तुमचा मूड मऊ असू शकतो. स्वतःला एक निवांत तास द्या."
+      },
+      "narrow": {
+        "en": "At home, the mood may shift on you. Do not settle a hard matter while you feel stirred.",
+        "hi": "घर पर आज आपका मूड बदल सकता है। बेचैनी में कठिन बात न सुलझाएँ।",
+        "mr": "घरी आज तुमचा मूड बदलू शकतो. अस्वस्थ असताना कठीण विषय मिटवू नका."
+      }
+    }
+  },
+  "care_line": {
+    "strain": {
+      "en": "Where the day feels heavy, go gently, and do not force an outcome.",
+      "hi": "जहाँ दिन भारी लगे वहाँ धीरे चलें, नतीजा न खींचें।",
+      "mr": "दिवस जड वाटेल तिथे हळू चला, निकाल ओढू नका."
+    },
+    "slow": {
+      "en": "Let this move more slowly than you hoped.",
+      "hi": "इसे आपकी चाह से धीमे चलने दें।",
+      "mr": "हे तुमच्या इच्छेपेक्षा सावकाश चालू द्या."
+    },
+    "hurry": {
+      "en": "Skip the choice you would make in a hurry.",
+      "hi": "जल्दबाजी वाला चुनाव आज छोड़ दें।",
+      "mr": "घाईत घ्यायचा निर्णय आज टाळा."
+    }
+  }
+}
