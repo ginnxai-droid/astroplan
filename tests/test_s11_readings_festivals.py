@@ -21,8 +21,13 @@ from app.interpretation.rules import load_rules
 pytestmark = pytest.mark.s11
 
 _TECHNICAL_TODAY = re.compile(
-    r"\bnakshatras?\b|नक्षत्र|\bhouse\s+\d|\b\d{1,2}(?:st|nd|rd|th)?\s+houses?\b|"
-    r"भाव\s*\d|\d+(?:\.\d+)?\s*°",
+    r"\bnakshatras?\b|नक्षत्र|\bgochars?\b|गोचर|\bD9\b|नवांश|"
+    r"\blagnas?\b|लग्न|\bkundalis?\b|कुंडली|"
+    r"\bhouse\s+\d|\b\d{1,2}(?:st|nd|rd|th)?\s+houses?\b|"
+    r"भाव\s*\d|\d+(?:\.\d+)?\s*°|"
+    r"\b(?:aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|"
+    r"capricorn|aquarius|pisces)\b|"
+    r"मेष|वृषभ|मिथुन|कर्क|सिंह|कन्या|तुला|वृश्चिक|धनु|मकर|कुंभ|मीन",
     re.IGNORECASE,
 )
 
@@ -59,7 +64,13 @@ def test_all_four_life_areas_daily_insight_yogas_and_astronomical_vrats() -> Non
     assert daily.why_this.rule_id == "RULE_GOCHARA_CHANDRA_DAILY"
     assert daily.safety_verified is True
     _assert_human_today(daily.simple_text)
-    assert "झुक" in daily.simple_text
+    assert "कामात" in daily.simple_text
+    assert "धनात" in daily.simple_text
+    assert "कुटुंबात" in daily.simple_text
+    assert "ऊर्जा" in daily.simple_text
+    assert "पुढचे पाऊल" in daily.simple_text
+    assert "Test Person" not in daily.simple_text
+    assert "नवांश" in daily.pro_text
 
     yogas = detect_yogas_and_doshas(chart, cat, "mr", rules=rules)
     assert isinstance(yogas, list)
@@ -115,10 +126,15 @@ def test_personalized_today_and_chart_differ_by_kundali() -> None:
     assert "Steady professional progress" not in day1.simple_text
     for day in (day1, day2):
         _assert_human_today(day.simple_text)
-        assert "leaning toward" in day.simple_text
-        assert "What can feel supportive" in day.simple_text
-        assert "What needs care" in day.simple_text
-        assert "A gentle next step" in day.simple_text
+        assert "At work" in day.simple_text
+        assert "With money" in day.simple_text
+        assert "With family" in day.simple_text
+        assert "Your energy" in day.simple_text
+        assert "A gentle next step is to" in day.simple_text
+        assert "today asks" in day.simple_text
+        assert "Aarav" not in day.simple_text
+        assert "Meera" not in day.simple_text
+        assert "D9" in day.pro_text
 
     areas1 = generate_life_area_readings(c1, d1, t1, rules, cat, "en")
     areas2 = generate_life_area_readings(c2, d2, t2, rules, cat, "en")
@@ -132,6 +148,8 @@ def test_personalized_today_and_chart_differ_by_kundali() -> None:
     for area in d_areas1.values():
         _assert_human_today(area[0].simple_text)
         assert "What helps:" not in area[0].simple_text
+        assert "A gentle next step is to" in area[0].simple_text
+        assert "today asks" in area[0].simple_text
 
     impact = areas1["career"][0].simple_text
     for planet in ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"):

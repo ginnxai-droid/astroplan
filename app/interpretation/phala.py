@@ -592,20 +592,22 @@ def _behavior(planet: str, lang: str) -> str:
     return _tpl("behavior", planet, lang)
 
 
-def _spoken(house: int, lang: str) -> str:
-    return _tpl("spoken", str(house), lang)
+def _brief(house: int, lang: str) -> str:
+    return _tpl("brief", str(house), lang)
 
 
-def _lean_phrase(primary: int, secondary: int, lang: str, *, hide_secondary: bool = False) -> str:
-    lean = _spoken(primary, lang)
-    if hide_secondary or primary == secondary:
-        return lean
-    return _line("today_lean_two", lang, lean=lean, other=_spoken(secondary, lang))
+def _planet_ask(planet: str, house: int, lang: str) -> str:
+    return _tpl("planet_ask", planet, lang, matter=_brief(house, lang))
 
 
-def _support_phrase(house: int, easy: bool, lang: str) -> str:
-    key = "today_support_easy" if easy else "today_support_hard"
-    return _line(key, lang, matter=_spoken(house, lang))
+def _fresh_house(candidates: list[int], used: set[int]) -> int:
+    for house in candidates:
+        if house not in used:
+            used.add(house)
+            return house
+    house = candidates[0]
+    used.add(house)
+    return house
 
 
 def _care_house(
@@ -623,27 +625,12 @@ def _care_house(
     return None
 
 
-def _care_phrase(house: int | None, lang: str, *, slow: bool) -> str:
+def _care_sentence(house: int | None, lang: str, *, slow: bool) -> str:
     if house is None:
-        return _line("today_care_plain", lang)
-    key = "today_care_slow" if slow else "today_care_pressure"
-    return _line(key, lang, matter=_spoken(house, lang))
-
-
-def _reflection(
-    lang: str,
-    *,
-    lean: str,
-    support: str,
-    care: str,
-    step: str,
-    area: str | None = None,
-) -> str:
-    if area is None:
-        return _line("today_human", lang, lean=lean, support=support, care=care, step=step)
-    return _line(
-        "today_area_human", lang, area=area, lean=lean, support=support, care=care, step=step
-    )
+        return _line("today_hurry", lang)
+    if slow:
+        return _line("today_slow", lang, matter=_brief(house, lang))
+    return _line("today_strain", lang, matter=_brief(house, lang))
 
 
 def daily_human_reading(
@@ -653,38 +640,30 @@ def daily_human_reading(
     lang: LanguageCode,
     dasha: dict[str, object] | None = None,
 ) -> str:
-    """Ordinary-life reflection for today. No sign, nakshatra, house number, or degree."""
+    """Spoken life impact for today. A planet name says what today asks, not a placement."""
     moon_house = int(str(transits["moon_house_from_natal_moon"]))
     lagna_house = _transit_moon_lagna_house(chart, transits)
     vara_lord_name = _VARA_LORDS.get(str(panchang["vara"]), "Sun")
     vara_lord = _planet(chart, vara_lord_name)
     jupiter_house = int(str(transits["jupiter_house_from_moon"]))
     saturn_house = int(str(transits["saturn_house_from_moon"]))
-    if dasha is not None:
-        step = _behavior(str(dasha["active_mahadasha"]), lang)
-    else:
-        step = _behavior(vara_lord_name, lang)
-    if jupiter_house in _JUPITER_EASY and jupiter_house != moon_house:
-        support_house = jupiter_house
-        support_easy = True
-    elif vara_lord.house != moon_house:
-        support_house = vara_lord.house
-        support_easy = False
-    else:
-        support_house = lagna_house
-        support_easy = lagna_house not in _PRESSURE
-    cared = _care_house(
-        [moon_house, lagna_house, vara_lord.house],
-        saturn_house,
-        saturn_house in _SATURN_EASY,
-        avoid={moon_house},
-    )
-    text = _reflection(
+    natal_moon_house = _planet(chart, "Moon").house
+    used: set[int] = set()
+    ask_house = _fresh_house([vara_lord.house], used)
+    work_house = _fresh_house([lagna_house, 10, 6], used)
+    money_house = _fresh_house([jupiter_house, 2, 11], used)
+    family_house = _fresh_house([natal_moon_house, 4, 5], used)
+    energy_house = _fresh_house([moon_house, saturn_house, 1], used)
+    step_planet = str(dasha["active_mahadasha"]) if dasha is not None else vara_lord_name
+    text = _line(
+        "today_voice",
         lang,
-        lean=_lean_phrase(moon_house, lagna_house, lang, hide_secondary=cared == lagna_house),
-        support=_support_phrase(support_house, support_easy, lang),
-        care=_care_phrase(cared, lang, slow=cared == saturn_house and cared not in _PRESSURE),
-        step=step,
+        ask=_planet_ask(vara_lord_name, ask_house, lang),
+        work=_line("today_work", lang, matter=_brief(work_house, lang)),
+        money=_line("today_money", lang, matter=_brief(money_house, lang)),
+        family=_line("today_family", lang, matter=_brief(family_house, lang)),
+        energy=_line("today_energy", lang, matter=_brief(energy_house, lang)),
+        step=_behavior(step_planet, lang),
     )
     return _check(text, lang)
 
@@ -728,12 +707,18 @@ def daily_area_human(
         saturn_house in _SATURN_EASY,
         avoid={lean_house},
     )
-    text = _reflection(
+    support = _line(
+        "today_room" if easy else "today_small",
         lang,
-        area=_line(area_key, lang),
-        lean=_lean_phrase(lean_house, moon_house, lang, hide_secondary=cared == moon_house),
-        support=_support_phrase(support_house, easy, lang),
-        care=_care_phrase(cared, lang, slow=cared == saturn_house and cared not in _PRESSURE),
+        matter=_brief(support_house, lang),
+    )
+    text = _line(
+        "today_area_voice",
+        lang,
+        ask=_planet_ask(karaka_name, lean_house, lang),
+        about=_line(area_key, lang),
+        support=support,
+        care=_care_sentence(cared, lang, slow=cared == saturn_house and cared not in _PRESSURE),
         step=_behavior(karaka_name, lang),
     )
     return _check(text, lang)

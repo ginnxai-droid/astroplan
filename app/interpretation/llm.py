@@ -2,8 +2,9 @@
 
 Off by default. Hard-capped by llm_monthly_call_cap. The enabled path sends
 this birth's houses, dasha, transits, and panchang or quarter-month notes.
-Today asks for a short reflection about ordinary life. That same reflection is
-what remains when the model is off, keyless, rate-limited, or blocked.
+Today asks for a spoken reading of work, money, family, energy, and one
+gentle next step. That same reading remains when the model is off, keyless,
+rate-limited, blocked, or when it answers with chart jargon or a guarantee.
 Providers run in order. A missing key is skipped. When ASTRO_LLM_PROVIDERS is
 unset, an OpenRouter key tries ASTRO_OPENROUTER_MODELS first, then Gemini,
 Gemma, and Anthropic when those keys exist. Rate limits, unknown-model 404s,
@@ -78,18 +79,53 @@ _HOUSE_NUM = re.compile(
     r"\b(?:houses?|भाव|घर)\s+(\d{1,2})\b|\b(\d{1,2})(?:st|nd|rd|th)?\s+houses?\b",
     re.IGNORECASE,
 )
+_DEV_TECHNICAL = (
+    "नक्षत्र",
+    "नवांश",
+    "गोचर",
+    "कुंडली",
+    "कुण्डली",
+    "राशि",
+    "राशी",
+    "लग्न",
+    "विंशोत्तरी",
+    "पाराशरी",
+    "महादशा",
+    "चरण",
+    "मेष",
+    "वृषभ",
+    "मिथुन",
+    "कर्क",
+    "सिंह",
+    "कन्या",
+    "तुला",
+    "तूळ",
+    "वृश्चिक",
+    "धनु",
+    "मकर",
+    "कुंभ",
+    "मीन",
+)
+_DEV_DIGITS = "\u0966-\u096f"
 _TECHNICAL_VERDICT = (
-    re.compile(r"\bnakshatras?\b|नक्षत्र", re.IGNORECASE),
+    re.compile(r"\bnakshatras?\b|\bpadas?\b|\btransits?\b", re.IGNORECASE),
     re.compile(
-        r"\b(?:houses?|भाव|घर)\s*\d{1,2}\b|\b\d{1,2}(?:st|nd|rd|th)?\s+houses?\b",
+        (
+            r"\b(?:houses?|bhava|bhavas)\s*[0-9]{1,2}\b"
+            r"|\b[0-9]{1,2}(?:st|nd|rd|th)?\s+houses?\b"
+            rf"|(?<![ऀ-ॿ])(?:भाव|घर)\s*[0-9{_DEV_DIGITS}]{{1,2}}(?![ऀ-ॿ])"
+            rf"|(?<![ऀ-ॿ])[0-9{_DEV_DIGITS}]{{1,2}}\s*(?:भाव|घर)(?![ऀ-ॿ])"
+        ),
         re.IGNORECASE,
     ),
-    re.compile(r"\d+(?:\.\d+)?\s*°"),
+    re.compile(rf"\d+(?:\.\d+)?\s*°|[0-9{_DEV_DIGITS}]+(?:\.\d+)?\s*°"),
     re.compile(
         r"\b(?:aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|"
-        r"capricorn|aquarius|pisces|navamsa|lagna|kundali|kundli|dasha|gochara)\b|\bD9\b|नवांश",
+        r"capricorn|aquarius|pisces|navamsa|lagna|kundali|kundli|dasha|gochar|gochara)\b"
+        r"|\bD\s*-?\s*9\b",
         re.IGNORECASE,
     ),
+    re.compile("|".join(rf"(?<![ऀ-ॿ]){term}(?![ऀ-ॿ])" for term in _DEV_TECHNICAL)),
 )
 _DEGREE_ONLY = re.compile(r"""^[\d\s°.'"+\-]+$""")
 
@@ -814,7 +850,7 @@ class SafeRephraser:
             )
         self._calls_used += 1
         spoken = voice if voice == "today" else "placement"
-        version = "today-reflection-v1" if spoken == "today" else "life-impact-v1"
+        version = "today-spoken-v2" if spoken == "today" else "life-impact-v1"
         prompt = f"{_instruction(lang, spoken)}\n{facts}"
         candidate = ""
         guardrail_retries = 0

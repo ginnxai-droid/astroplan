@@ -690,9 +690,10 @@ def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
     polished = polish_statement(rephraser, client, statement, facts, "en")
     assert polished.simple_text == _PLAIN_TODAY
     prompt = client.prompts[0]
-    assert "ordinary life" in prompt
+    assert "calm jyotish" in prompt
+    assert "work, money, family, energy" in prompt
     assert "gentle next step" in prompt
-    assert "what needs care" in prompt
+    assert "do not name a sign" in prompt
     assert f"Sun {sun.sign_name} house {sun.house}" in prompt
     assert f"dasha {dasha['active_mahadasha']}-" in prompt
     assert "transit jupiter" in prompt
@@ -701,7 +702,7 @@ def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
     assert "Test Person" not in prompt
     assert "1992-05-10" not in prompt
     assert audit.events[-1].accepted is True
-    assert audit.events[-1].prompt_version == "today-reflection-v1"
+    assert audit.events[-1].prompt_version == "today-spoken-v2"
 
     verdict = _FakeLLM("A technical note: nakshatra and 23.4°.")
     blocked = polish_statement(rephraser, verdict, statement, facts, "en")
@@ -715,3 +716,49 @@ def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
     kept = polish_statement(off, silent, statement, facts, "en")
     assert kept.simple_text == statement.simple_text
     assert silent.prompts == []
+
+
+_PLAIN_TODAY_MR = (
+    "आज काम शांत ठेवा. धनात जुने वचन पुरे. "
+    "कुटुंबात थोडा वेळ द्या. ऊर्जा एका कामासाठी ठेवा. "
+    "एक सौम्य पुढचे पाऊल म्हणजे एक छोटे काम पूर्ण करा."
+)
+
+
+def test_today_marathi_returns_plain_model_text_and_hides_jargon() -> None:
+    inp = BirthDetailsInput(
+        birth_date=date(1992, 5, 10),
+        birth_time=time(14, 30),
+        name="Test Person",
+        place_name="Pune",
+        country="India",
+        latitude=18.5204,
+        longitude=73.8567,
+        language="mr",
+    )
+    chart = calculate_chart(inp, 18.5204, 73.8567, "Asia/Kolkata")
+    moon = next(p for p in chart.planets if p.planet == "Moon")
+    target = date(2026, 11, 24)
+    dasha = calculate_vimshottari_dasha(inp.birth_date, moon.longitude, target)
+    transits = evaluate_current_transits(chart, target)
+    panchang = calculate_daily_panchang(target, 18.5204, 73.8567, "Asia/Kolkata")
+    statement = generate_daily_insight(
+        chart, panchang, transits, Catalog("i18n"), "mr", dasha=dasha
+    )
+    assert "भाव 3" not in statement.simple_text
+    assert "house 2" not in statement.simple_text.lower()
+    assert "गोचर" not in statement.simple_text
+    assert "नक्षत्र" not in statement.simple_text
+    assert "Test Person" not in statement.simple_text
+    facts = reading_facts(chart, dasha=dasha, transits=transits, panchang=panchang)
+    rephraser, _audit = _enabled()
+    client = _FakeLLM(_PLAIN_TODAY_MR)
+    polished = polish_statement(rephraser, client, statement, facts, "mr")
+    assert polished.simple_text == _PLAIN_TODAY_MR
+    assert "ज्योतिषी" in client.prompts[0]
+    assert "Test Person" not in client.prompts[0]
+    jargon = _FakeLLM("आज गोचर चंद्र मेष मध्ये आहे आणि भाव 3 सक्रिय आहे.")
+    blocked = polish_statement(rephraser, jargon, statement, facts, "mr")
+    assert blocked.simple_text == statement.simple_text
+    assert "गोचर" not in blocked.simple_text
+    assert "भाव 3" not in blocked.simple_text

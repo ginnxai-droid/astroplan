@@ -578,9 +578,7 @@ def build_router(settings: Settings) -> APIRouter:
             if month_facts is not None and index < len(month_facts):
                 month_line = month_facts[index]
             extra = "\n".join(
-                part
-                for part in (quarter.quarter, month_line, quarter.key_transit_note)
-                if part
+                part for part in (quarter.quarter, month_line, quarter.key_transit_note) if part
             )
             quarters.append(
                 quarter.model_copy(

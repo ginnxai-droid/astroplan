@@ -108,6 +108,53 @@
       "माघार घेण्याऐवजी घरातील साध्या कर्तव्यात उपस्थित राहा"
     ]
   },
+  "planet_ask": {
+    "Sun": [
+      "The Sun today asks you to let {matter} be seen, without asking for praise.",
+      "आज सूर्य कहता है कि {matter} को दिखने दें, पर उसकी प्रशंसा न माँगें।",
+      "आज सूर्य सांगतो की {matter} दिसू द्या, पण त्याबद्दल स्तुती मागू नका."
+    ],
+    "Moon": [
+      "The Moon today asks you to keep {matter} unhurried.",
+      "आज चंद्र कहता है कि {matter} को बिना जल्दबाजी के रखें।",
+      "आज चंद्र सांगतो की {matter} घाईशिवाय ठेवा."
+    ],
+    "Mars": [
+      "Mars today asks for patience in conversations, especially around {matter}.",
+      "आज मंगल बातचीत में धीर माँगता है, खासकर {matter} को लेकर।",
+      "आज मंगळ संभाषणात धीर मागतो, विशेषतः {matter} बाबतीत."
+    ],
+    "Mercury": [
+      "Mercury today asks you to say one plain thing about {matter}.",
+      "आज बुध कहता है कि {matter} के बारे में एक सीधी बात कहें।",
+      "आज बुध सांगतो की {matter} बद्दल एक सरळ गोष्ट सांगा."
+    ],
+    "Jupiter": [
+      "Jupiter today asks you to keep any promise about {matter} small enough to keep.",
+      "आज बृहस्पति कहता है कि {matter} का वचन इतना छोटा रखें कि वह निभ जाए।",
+      "आज गुरु सांगतो की {matter} चे वचन इतके छोटे ठेवा की ते निभावता येईल."
+    ],
+    "Venus": [
+      "Venus today asks you to keep courtesy around {matter}, and not to hide a disagreement.",
+      "आज शुक्र कहता है कि {matter} में शिष्टता रखें, और मतभेद को मीठे शब्दों से न ढकें।",
+      "आज शुक्र सांगतो की {matter} मध्ये सौजन्य ठेवा, आणि मतभेद गोड शब्दांनी झाकू नका."
+    ],
+    "Saturn": [
+      "Saturn today asks for a slower pace around {matter}.",
+      "आज शनि {matter} के लिए धीमी गति माँगता है।",
+      "आज शनी {matter} साठी सावकाश गती मागतो."
+    ],
+    "Rahu": [
+      "Rahu today asks you to tell someone close before an unusual plan about {matter}.",
+      "आज राहु कहता है कि {matter} की अनोखी योजना से पहले किसी करीबी को बता दें।",
+      "आज राहू सांगतो की {matter} ची वेगळी योजना आधी जवळच्या माणसाला सांगा."
+    ],
+    "Ketu": [
+      "Ketu today asks you to stay with {matter} instead of stepping away.",
+      "आज केतु कहता है कि {matter} के साथ रहें, और किनारे न हटें।",
+      "आज केतू सांगतो की {matter} जवळ राहा, आणि बाजूला होऊ नका."
+    ]
+  },
   "matter": {
     "1": [
       "the body, personal direction, and how people meet you",
@@ -172,9 +219,9 @@
   },
   "spoken": {
     "1": [
-      "how you meet people, and how you want to meet the day",
-      "लोग आपसे कैसे मिलते हैं, और आप दिन से कैसे मिलना चाहते हैं",
-      "लोक तुम्हाला कसे भेटतात, आणि तुम्ही दिवसाला कसे भेटू इच्छिता"
+      "the way you meet people, and the way you want to meet the day",
+      "लोगों से मिलना, और दिन से मिलने का आपका तरीका",
+      "लोकांना भेटणे, आणि दिवसाला भेटण्याची तुमची रीत"
     ],
     "2": [
       "the money you already hold, and the words you use about it",
@@ -230,6 +277,68 @@
       "spending, rest, and time away from home",
       "खर्च, विश्राम, और घर से दूर का समय",
       "खर्च, विश्रांती, आणि घरापासून दूरचा वेळ"
+    ]
+  },
+  "brief": {
+    "1": [
+      "the way you meet the day",
+      "मिलना-जुलना",
+      "लोकांना भेटणे"
+    ],
+    "2": [
+      "money already in hand",
+      "हाथ का धन",
+      "हातातले धन"
+    ],
+    "3": [
+      "a short errand",
+      "एक छोटा संदेश",
+      "एक छोटा निरोप"
+    ],
+    "4": [
+      "rest at home",
+      "घर का विश्राम",
+      "घरातील विश्रांती"
+    ],
+    "5": [
+      "something you care for",
+      "अपनी पसंद का काम",
+      "आवडीचे काम"
+    ],
+    "6": [
+      "a small snag in the day",
+      "दिन की छोटी अड़चन",
+      "दिवसातील छोटा अडथळा"
+    ],
+    "7": [
+      "one close conversation",
+      "एक करीबी बात",
+      "एक जवळचे संभाषण"
+    ],
+    "8": [
+      "something shared",
+      "साझी बात",
+      "सामायिक गोष्ट"
+    ],
+    "9": [
+      "a wider view",
+      "व्यापक दृष्टि",
+      "व्यापक दृष्टी"
+    ],
+    "10": [
+      "the work others can see",
+      "दिखने वाला काम",
+      "दिसणारे काम"
+    ],
+    "11": [
+      "income",
+      "आमदनी",
+      "येणारे उत्पन्न"
+    ],
+    "12": [
+      "quiet time away",
+      "दूर का विश्राम",
+      "दूरची विश्रांती"
     ]
   },
   "lines": {
@@ -320,24 +429,79 @@
       "एक छोटे काम पूर्ण करा, मग उरलेला दिवस साधा राहू द्या"
     ],
     "today_area_relationships": [
-      "the people closest to you",
-      "सबसे करीबी लोगों",
-      "सर्वात जवळच्या लोकां"
+      "This part of the day is about the people closest to you.",
+      "आज का यह भाग सबसे करीबी लोगों के बारे में है।",
+      "आजचा हा भाग सर्वात जवळच्या लोकांबद्दल आहे."
     ],
     "today_area_career": [
-      "work and the duties in front of you",
-      "काम और सामने के दायित्वों",
-      "काम आणि समोरच्या जबाबदाऱ्या"
+      "This part of the day is about the work in front of you.",
+      "आज का यह भाग सामने के काम के बारे में है।",
+      "आजचा हा भाग समोरच्या कामाबद्दल आहे."
     ],
     "today_area_finances": [
-      "money and what you keep",
-      "धन और जो आप संभाल कर रखते हैं",
-      "धन आणि जे तुम्ही जपून ठेवता"
+      "This part of the day is about money and what you keep.",
+      "आज का यह भाग धन और जो आप संभाल कर रखते हैं, उसके बारे में है।",
+      "आजचा हा भाग धन आणि जे तुम्ही जपून ठेवता याबद्दल आहे."
     ],
     "today_area_home": [
-      "home and the people you live with",
-      "घर और जिनके साथ आप रहते हैं",
-      "घर आणि ज्यांच्यासोबत तुम्ही राहता"
+      "This part of the day is about home and the people you live with.",
+      "आज का यह भाग घर और जिनके साथ आप रहते हैं, उसके बारे में है।",
+      "आजचा हा भाग घर आणि ज्यांच्यासोबत तुम्ही राहता याबद्दल आहे."
+    ],
+    "today_voice": [
+      "{ask} {work} {money} {family} {energy} A gentle next step is to {step}.",
+      "{ask} {work} {money} {family} {energy} एक हल्का अगला कदम यह है कि {step}।",
+      "{ask} {work} {money} {family} {energy} एक सौम्य पुढचे पाऊल म्हणजे {step}."
+    ],
+    "today_work": [
+      "At work, quieter attention belongs to {matter}.",
+      "काम में आज {matter} शांत ढंग से संभालें।",
+      "कामात आज {matter} शांतपणे सांभाळा."
+    ],
+    "today_money": [
+      "With money, stay with {matter}, and leave a new promise for another day.",
+      "धन में आज {matter} ही काफी है, और नया वचन दूसरे दिन के लिए छोड़ें।",
+      "धनात आज {matter} पुरे आहे, आणि नवे वचन दुसऱ्या दिवसासाठी ठेवा."
+    ],
+    "today_family": [
+      "With family, make a little room for {matter}.",
+      "परिवार में आज {matter} के लिए थोड़ी जगह बनाएँ।",
+      "कुटुंबात हळू घ्यायचा विषय आज {matter} आहे."
+    ],
+    "today_energy": [
+      "Your energy covers {matter}, and one real task, not a long new list.",
+      "ऊर्जा आज {matter} और एक वास्तविक काम के लिए काफी है, लंबी नई सूची के लिए नहीं।",
+      "ऊर्जा आज {matter} आणि एका खऱ्या कामासाठी पुरेशी आहे, नव्या लांब यादीसाठी नाही."
+    ],
+    "today_area_voice": [
+      "{ask} {about} {support} {care} A gentle next step is to {step}.",
+      "{ask} {about} {support} {care} एक हल्का अगला कदम यह है कि {step}।",
+      "{ask} {about} {support} {care} एक सौम्य पुढचे पाऊल म्हणजे {step}."
+    ],
+    "today_room": [
+      "There is a little more room today for {matter}.",
+      "आज {matter} के लिए थोड़ी और जगह है।",
+      "आज {matter} साठी थोडी अधिक जागा आहे."
+    ],
+    "today_small": [
+      "Small practical attention for {matter} is enough.",
+      "{matter} पर छोटा व्यावहारिक ध्यान काफी है।",
+      "{matter} वर छोटे व्यावहारिक लक्ष पुरे आहे."
+    ],
+    "today_strain": [
+      "Go gently, because strain can gather around {matter}.",
+      "धीरे चलें, क्योंकि {matter} के आसपास तनाव जमा हो सकता है।",
+      "हळू चला, कारण {matter} भोवती ताण साचू शकतो."
+    ],
+    "today_slow": [
+      "Let {matter} move more slowly than you hoped.",
+      "{matter} को आपकी चाह से धीमे चलने दें।",
+      "{matter} ला तुमच्या इच्छेपेक्षा सावकाश चालू द्या."
+    ],
+    "today_hurry": [
+      "The part to skip is choosing in a hurry.",
+      "जल्दबाजी में चुनना आज छोड़ दें।",
+      "घाईत निवड करणे आज टाळा."
     ],
     "observance": [
       "For {planet} in house {house}, the fitting observance is {deity} on {weekday}: {practice}. This supports {matter}. The practice asks for no purchase, and it does not force a result.",
