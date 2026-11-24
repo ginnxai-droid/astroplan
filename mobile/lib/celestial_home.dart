@@ -2436,7 +2436,7 @@ class _CelestialHomeState extends State<CelestialHome> {
   }
 }
 
-String phoneAuthMessage(AppLocalizations t, String? code) {
+String phoneAuthMessage(AppLocalizations t, String? code, {bool sending = false}) {
   switch (code) {
     case 'invalid_phone_number':
     case 'invalid-phone-number':
@@ -2455,8 +2455,16 @@ String phoneAuthMessage(AppLocalizations t, String? code) {
       return t.phoneTryLater;
     case 'network-request-failed':
       return t.networkError;
+    case 'billing-not-enabled':
+    case 'operation-not-allowed':
+    case 'app-not-authorized':
+    case 'missing-client-identifier':
+    case 'missing-app-credential':
+    case 'invalid-app-credential':
+    case 'captcha-check-failed':
+      return t.phoneSmsNotSent;
     default:
-      return t.phoneSignInFailed;
+      return sending ? t.phoneSmsNotSent : t.phoneSignInFailed;
   }
 }
 
@@ -2514,7 +2522,8 @@ class _PhoneAuthPanelState extends State<PhoneAuthPanel> {
       verificationId = result.verificationId ?? '';
       resendToken = result.resendToken ?? resendToken;
       errorText = result.verificationId == null
-          ? phoneAuthMessage(AppLocalizations.of(context)!, result.errorMessage)
+          ? phoneAuthMessage(AppLocalizations.of(context)!, result.errorMessage,
+              sending: true)
           : null;
     });
   }

@@ -192,12 +192,46 @@ class PhoneAuthResult {
   final bool signedIn;
 }
 
+/// Collapses a Firebase phone-auth failure into a short code the UI can translate.
+/// The raw message is only used to recognize a known refusal; it is never shown.
+String classifyPhoneFailure(String code, String message) {
+  final haystack = '${code.trim()} $message'.toLowerCase();
+  if (haystack.contains('billing_not_enabled') ||
+      haystack.contains('billing-not-enabled')) {
+    return 'billing-not-enabled';
+  }
+  if (haystack.contains('region enabled') || haystack.contains('sms region')) {
+    return 'operation-not-allowed';
+  }
+  if (haystack.contains('app-not-authorized') ||
+      haystack.contains('app not authorized') ||
+      haystack.contains('not authorized to use firebase')) {
+    return 'app-not-authorized';
+  }
+  if (haystack.contains('missing-client-identifier') ||
+      haystack.contains('missing a valid app identifier') ||
+      haystack.contains('play integrity') ||
+      haystack.contains('recaptcha checks were unsuccessful')) {
+    return 'missing-client-identifier';
+  }
+  if (haystack.contains('captcha-check-failed') ||
+      (haystack.contains('captcha') && haystack.contains('fail'))) {
+    return 'captcha-check-failed';
+  }
+  if (haystack.contains('invalid-app-credential') ||
+      haystack.contains('invalid app credential')) {
+    return 'invalid-app-credential';
+  }
+  final trimmed = code.trim();
+  if (trimmed.isNotEmpty) return trimmed;
+  return 'phone_auth_failed';
+}
+
 String _phoneFailure(Object error) {
   if (error is FirebaseAuthException) {
-    final code = error.code.trim();
-    if (code.isNotEmpty) return code;
+    return classifyPhoneFailure(error.code, error.message ?? '');
   }
-  return 'phone_auth_failed';
+  return classifyPhoneFailure('', error.toString());
 }
 
 Future<bool> _signInWithPhoneCredential(PhoneAuthCredential credential) async {

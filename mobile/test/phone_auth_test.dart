@@ -75,6 +75,64 @@ void main() {
     expect(phoneAuthMessage(t, 'invalid-verification-code'), t.phoneInvalidCode);
     expect(phoneAuthMessage(t, 'too-many-requests'), t.phoneTryLater);
     expect(phoneAuthMessage(t, 'network-request-failed'), t.networkError);
+    for (final code in [
+      'billing-not-enabled',
+      'operation-not-allowed',
+      'app-not-authorized',
+      'missing-client-identifier',
+      'invalid-app-credential',
+      'captcha-check-failed',
+    ]) {
+      expect(phoneAuthMessage(t, code), t.phoneSmsNotSent);
+    }
+    expect(phoneAuthMessage(t, 'internal-error', sending: true), t.phoneSmsNotSent);
+    expect(phoneAuthMessage(t, 'phone_auth_failed'), t.phoneSignInFailed);
+    expect(t.phoneSmsNotSent, isNot(contains('OTP')));
+  });
+
+  testWidgets(
+      '10-digit Indian number shows no error until Send OTP, then a plain SMS failure',
+      (tester) async {
+    String? captured;
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: PhoneAuthPanel(
+          startOtp: (rawPhone, {int? forceResendingToken}) async {
+            captured = rawPhone;
+            expect(normalizeE164Phone(rawPhone), '+919225529390');
+            return const PhoneAuthResult(errorMessage: 'billing-not-enabled');
+          },
+          confirmOtp: (
+                  {required String verificationId, required String smsCode}) async =>
+              const PhoneAuthResult(errorMessage: 'invalid_otp'),
+          onSignedIn: () async {},
+        ),
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Send OTP'), findsOneWidget);
+    expect(find.text('The text message was not sent. Please try again.'),
+        findsNothing);
+    expect(find.textContaining('could not be completed'), findsNothing);
+    expect(find.byKey(const Key('otp_code')), findsNothing);
+
+    await tester.enterText(find.byKey(const Key('phone_number')), '9225529390');
+    await tester.pumpAndSettle();
+    expect(find.text('The text message was not sent. Please try again.'),
+        findsNothing);
+    expect(find.text('Send OTP'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('phone_otp_action')));
+    await tester.pumpAndSettle();
+    expect(captured, '9225529390');
+    expect(find.text('The text message was not sent. Please try again.'),
+        findsOneWidget);
+    expect(find.text('Send OTP'), findsOneWidget);
+    expect(find.byKey(const Key('otp_code')), findsNothing);
+    expect(find.textContaining('billing'), findsNothing);
   });
 
   testWidgets(

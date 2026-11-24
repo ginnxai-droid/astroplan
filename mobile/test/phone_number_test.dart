@@ -8,6 +8,7 @@ void main() {
 
   test('indian and international mobile numbers become E.164', () {
     expect(normalizeE164Phone('9876543210'), '+919876543210');
+    expect(normalizeE164Phone('9225529390'), '+919225529390');
     expect(normalizeE164Phone('09876543210'), '+919876543210');
     expect(normalizeE164Phone('91 98765 43210'), '+919876543210');
     expect(normalizeE164Phone('+91 98765 43210'), '+919876543210');
@@ -15,6 +16,32 @@ void main() {
     expect(normalizeE164Phone('+1 (415) 555-2671'), '+14155552671');
     expect(normalizeE164Phone('12345'), isNull);
     expect(normalizeE164Phone('+00123456789'), isNull);
+  });
+
+  test('phone failures before an OTP stay classifiable without raw text', () {
+    expect(
+      classifyPhoneFailure(
+          'internal-error', 'An internal error has occurred. [ BILLING_NOT_ENABLED ]'),
+      'billing-not-enabled',
+    );
+    expect(
+      classifyPhoneFailure(
+          'operation-not-allowed',
+          'SMS unable to be sent until this region enabled by the app developer.'),
+      'operation-not-allowed',
+    );
+    expect(
+      classifyPhoneFailure(
+          'unknown', 'This app is not authorized to use Firebase Authentication.'),
+      'app-not-authorized',
+    );
+    expect(
+      classifyPhoneFailure('missing-client-identifier',
+          'This request is missing a valid app identifier, meaning Play Integrity checks were unsuccessful.'),
+      'missing-client-identifier',
+    );
+    expect(classifyPhoneFailure('invalid-phone-number', 'bad number'),
+        'invalid-phone-number');
   });
 
   test('local profile store scopes by account and clears cleanly', () async {
