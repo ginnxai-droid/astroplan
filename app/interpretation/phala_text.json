@@ -170,6 +170,68 @@
       "खर्च, विश्रांती आणि घरापासून दूरचा काळ"
     ]
   },
+  "spoken": {
+    "1": [
+      "how you meet people, and how you want to meet the day",
+      "लोग आपसे कैसे मिलते हैं, और आप दिन से कैसे मिलना चाहते हैं",
+      "लोक तुम्हाला कसे भेटतात, आणि तुम्ही दिवसाला कसे भेटू इच्छिता"
+    ],
+    "2": [
+      "the money you already hold, and the words you use about it",
+      "जो धन पहले से है, और उसके बारे में आपके शब्द",
+      "जे धन आधीच आहे, आणि त्याबद्दल तुमचे शब्द"
+    ],
+    "3": [
+      "practice, a message, or a short trip",
+      "अभ्यास, एक संदेश, या एक छोटी यात्रा",
+      "सराव, एक संदेश, किंवा एक छोटा प्रवास"
+    ],
+    "4": [
+      "home, and the rest you take there",
+      "घर, और वहाँ लिया गया विश्राम",
+      "घर, आणि तिथे घेतलेली विश्रांती"
+    ],
+    "5": [
+      "something you love making, learning, or looking after",
+      "कुछ ऐसा जिसे आप बनाना, सीखना या सँभालना चाहते हैं",
+      "काहीतरी जे तुम्हाला बनवायला, शिकायला किंवा सांभाळायला आवडते"
+    ],
+    "6": [
+      "chores and the small snags in the day",
+      "रोज के काम और दिन की छोटी अड़चनें",
+      "रोजची कामे आणि दिवसातील छोटे अडथळे"
+    ],
+    "7": [
+      "a close conversation, and an agreement with one other person",
+      "एक करीबी बातचीत, और एक व्यक्ति से किया गया समझौता",
+      "एक जवळचे संभाषण, आणि एका व्यक्तीशी केलेला करार"
+    ],
+    "8": [
+      "something shared, and a change you did not plan",
+      "कोई साझी बात, और एक बदलाव जिसकी योजना नहीं थी",
+      "काहीतरी सामायिक, आणि एक बदल ज्याची योजना नव्हती"
+    ],
+    "9": [
+      "a teacher, a longer journey, or a wider view",
+      "एक शिक्षक, एक लंबी यात्रा, या चीजों को थोड़ा व्यापक देखना",
+      "एक शिक्षक, एक लांब प्रवास, किंवा गोष्टींकडे थोडे व्यापक बघणे"
+    ],
+    "10": [
+      "work that other people can see",
+      "वह काम जो दूसरे लोग देख सकते हैं",
+      "ते काम जे इतर लोक पाहू शकतात"
+    ],
+    "11": [
+      "income, and the people who help it come in",
+      "आय, और जो लोग उसे आगे बढ़ाते हैं",
+      "उत्पन्न, आणि जे लोक ते येऊ देतात"
+    ],
+    "12": [
+      "spending, rest, and time away from home",
+      "खर्च, विश्राम, और घर से दूर का समय",
+      "खर्च, विश्रांती, आणि घरापासून दूरचा वेळ"
+    ]
+  },
   "lines": {
     "where": [
       "{planet} is in {sign}, house {house}, nakshatra {nak}, pada {pada}, with Navamsa (D9) in {d9}",
@@ -211,6 +273,71 @@
       "Saturn's transit asks for slower commitments and cleaner routines.",
       "शनि का गोचर धीमे वचन और साफ दिनचर्या माँगता है।",
       "शनीचे गोचर सावकाश वचन आणि स्वच्छ दिनक्रम मागते."
+    ],
+    "today_human": [
+      "You may notice today leaning toward {lean}. What can feel supportive is {support}. What needs care is {care}. A gentle next step: {step}.",
+      "आज आप महसूस कर सकते हैं कि दिन {lean} की ओर झुक रहा है। जो सहारा दे सकता है, वह है {support}। जहाँ थोड़ी सावधानी चाहिए, वह है {care}। एक हल्का अगला कदम: {step}।",
+      "आज तुम्हाला जाणवू शकते की दिवस {lean} कडे झुकतो. जे आधार देऊ शकते ते {support}. जिथे थोडी काळजी हवी ते {care}. एक सौम्य पुढचे पाऊल: {step}."
+    ],
+    "today_area_human": [
+      "For {area}, today leans toward {lean}. What can feel supportive is {support}. What needs care is {care}. A gentle next step: {step}.",
+      "{area} के लिए आज का दिन {lean} की ओर झुकता है। जो सहारा दे सकता है, वह है {support}। जहाँ थोड़ी सावधानी चाहिए, वह है {care}। एक हल्का अगला कदम: {step}।",
+      "{area}साठी आजचा दिवस {lean} कडे झुकतो. जे आधार देऊ शकते ते {support}. जिथे थोडी काळजी हवी ते {care}. एक सौम्य पुढचे पाऊल: {step}."
+    ],
+    "today_lean_two": [
+      "{lean}. It also touches {other}",
+      "{lean}। यह {other} को भी छूता है",
+      "{lean}. हे {other} लाही स्पर्श करते"
+    ],
+    "today_support_easy": [
+      "a little more room for {matter}",
+      "{matter} के लिए थोड़ी और जगह",
+      "{matter} साठी थोडी अधिक जागा"
+    ],
+    "today_support_hard": [
+      "a smaller, practical kind of attention for {matter}",
+      "{matter} पर छोटा और व्यावहारिक ध्यान",
+      "{matter} वर छोटे आणि व्यावहारिक लक्ष"
+    ],
+    "today_care_pressure": [
+      "the strain that can gather around {matter}",
+      "{matter} के आसपास जमा हो सकने वाला तनाव",
+      "{matter} भोवती साचू शकणारा ताण"
+    ],
+    "today_care_slow": [
+      "a slower pace around {matter}",
+      "{matter} के आसपास धीमी गति",
+      "{matter} भोवती सावकाश गती"
+    ],
+    "today_care_plain": [
+      "choosing in a hurry, before the day has had a quiet moment",
+      "जल्दबाजी में चुनना, इससे पहले कि दिन को एक शांत क्षण मिले",
+      "घाईत निवड करणे, दिवसाला एक शांत क्षण मिळण्यापूर्वी"
+    ],
+    "today_step_quiet": [
+      "finish one small thing, then let the rest of the day stay ordinary",
+      "एक छोटा काम पूरा करें, फिर बाकी दिन को साधारण रहने दें",
+      "एक छोटे काम पूर्ण करा, मग उरलेला दिवस साधा राहू द्या"
+    ],
+    "today_area_relationships": [
+      "the people closest to you",
+      "सबसे करीबी लोगों",
+      "सर्वात जवळच्या लोकां"
+    ],
+    "today_area_career": [
+      "work and the duties in front of you",
+      "काम और सामने के दायित्वों",
+      "काम आणि समोरच्या जबाबदाऱ्या"
+    ],
+    "today_area_finances": [
+      "money and what you keep",
+      "धन और जो आप संभाल कर रखते हैं",
+      "धन आणि जे तुम्ही जपून ठेवता"
+    ],
+    "today_area_home": [
+      "home and the people you live with",
+      "घर और जिनके साथ आप रहते हैं",
+      "घर आणि ज्यांच्यासोबत तुम्ही राहता"
     ],
     "observance": [
       "For {planet} in house {house}, the fitting observance is {deity} on {weekday}: {practice}. This supports {matter}. The practice asks for no purchase, and it does not force a result.",

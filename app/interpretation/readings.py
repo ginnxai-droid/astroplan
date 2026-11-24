@@ -17,9 +17,10 @@ from app.interpretation.language import Catalog
 from app.interpretation.phala import (
     area_pro_reading,
     area_reading,
+    daily_area_human,
     daily_area_reading,
+    daily_human_reading,
     daily_pro_reading,
-    daily_reading,
     house_matter,
 )
 from app.interpretation.rules import Rule
@@ -158,7 +159,6 @@ def generate_daily_area_readings(
     lang: LanguageCode,
 ) -> dict[LifeAreaCategory, list[ExplainedStatement]]:
     ctx = _ctx(chart, dasha, transits)
-    impact = life_impact_text(chart, lang)
     date_str = str(panchang["date"])
     window = f"{date_str} · {ctx.md}-{ctx.ad} Dasha"
     out: dict[LifeAreaCategory, list[ExplainedStatement]] = {
@@ -170,8 +170,8 @@ def generate_daily_area_readings(
     for rule in rules:
         if rule.category not in out:
             continue
-        simple, pro = daily_area_reading(chart, dasha, transits, panchang, lang, rule.category)
-        simple = f"{simple} {impact}"
+        simple = daily_area_human(chart, dasha, transits, panchang, lang, rule.category)
+        _, pro = daily_area_reading(chart, dasha, transits, panchang, lang, rule.category)
         verify_text(simple, languages=(lang,))
         evidence = rule.evidence_template.format(
             **{name: gloss(value, lang) for name, value in vars(ctx).items()}
@@ -211,10 +211,7 @@ def generate_daily_insight(
     tithi = str(panchang["tithi"])
     date_str = str(panchang["date"])
 
-    simple = (
-        f"{daily_reading(chart, panchang, transits, lang, dasha=dasha)} "
-        f"{life_impact_text(chart, lang)}"
-    )
+    simple = daily_human_reading(chart, panchang, transits, lang, dasha=dasha)
     pro = daily_pro_reading(chart, panchang, transits, lang, dasha=dasha)
     verify_text(simple, languages=(lang,))
     verify_text(pro, languages=(lang,))

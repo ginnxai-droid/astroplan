@@ -2,6 +2,8 @@
 
 Off by default. Hard-capped by llm_monthly_call_cap. The enabled path sends
 this birth's houses, dasha, transits, and panchang or quarter-month notes.
+Today asks for a short reflection about ordinary life. That same reflection is
+what remains when the model is off, keyless, rate-limited, or blocked.
 Providers run in order. A missing key is skipped. When ASTRO_LLM_PROVIDERS is
 unset, an OpenRouter key tries ASTRO_OPENROUTER_MODELS first, then Gemini,
 Gemma, and Anthropic when those keys exist. Rate limits, unknown-model 404s,
@@ -33,6 +35,9 @@ from app.interpretation.guardrails import validate_rephrase, verify_text
 
 _PROMPT: dict[str, str] = json.loads(
     Path(__file__).with_name("llm_prompt.json").read_text(encoding="utf-8")
+)
+_TODAY_PROMPT: dict[str, str] = json.loads(
+    Path(__file__).with_name("llm_today_prompt.json").read_text(encoding="utf-8")
 )
 _COMMITMENT = (
     re.compile(r"\bguaranteed\b", re.IGNORECASE),
@@ -73,6 +78,20 @@ _HOUSE_NUM = re.compile(
     r"\b(?:houses?|भाव|घर)\s+(\d{1,2})\b|\b(\d{1,2})(?:st|nd|rd|th)?\s+houses?\b",
     re.IGNORECASE,
 )
+_TECHNICAL_VERDICT = (
+    re.compile(r"\bnakshatras?\b|नक्षत्र", re.IGNORECASE),
+    re.compile(
+        r"\b(?:houses?|भाव|घर)\s*\d{1,2}\b|\b\d{1,2}(?:st|nd|rd|th)?\s+houses?\b",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\d+(?:\.\d+)?\s*°"),
+    re.compile(
+        r"\b(?:aries|taurus|gemini|cancer|leo|virgo|libra|scorpio|sagittarius|"
+        r"capricorn|aquarius|pisces|navamsa|lagna|kundali|kundli|dasha|gochara)\b|\bD9\b|नवांश",
+        re.IGNORECASE,
+    ),
+)
+_DEGREE_ONLY = re.compile(r"""^[\d\s°.'"+\-]+$""")
 
 
 class LLMClientProtocol(Protocol):
@@ -672,6 +691,18 @@ def _reject_extra_placements(text: str, facts: str) -> None:
         raise GuardrailViolation("ungrounded-house")
 
 
+def _instruction(lang: str, voice: str) -> str:
+    table = _TODAY_PROMPT if voice == "today" else _PROMPT
+    return table.get(lang, table["en"])
+
+
+def _technical_verdict(text: str) -> bool:
+    stripped = text.strip()
+    if not stripped or _DEGREE_ONLY.fullmatch(stripped):
+        return True
+    return any(pattern.search(stripped) for pattern in _TECHNICAL_VERDICT)
+
+
 def polish_statement(
     rephraser: SafeRephraser,
     client: LLMClientProtocol | None,
@@ -679,9 +710,17 @@ def polish_statement(
     facts: str,
     lang: str,
 ) -> ExplainedStatement:
+    today = statement.category == "daily_insight" or statement.statement_id.startswith("DAILY_")
     focus = statement.why_this.placement_evidence.strip()
-    packet = f"{facts}\nfocus placement: {focus}" if focus else facts
-    text = rephraser.interpret(statement.simple_text, facts=packet, lang=lang, client=client)
+    if today:
+        packet = facts
+        voice = "today"
+    else:
+        packet = f"{facts}\nfocus placement: {focus}" if focus else facts
+        voice = "placement"
+    text = rephraser.interpret(
+        statement.simple_text, facts=packet, lang=lang, client=client, voice=voice
+    )
     if text == statement.simple_text:
         return statement
     return statement.model_copy(update={"simple_text": text})
@@ -718,8 +757,11 @@ class SafeRephraser:
         facts: str,
         lang: str,
         client: LLMClientProtocol | None = None,
+        voice: str = "placement",
     ) -> str:
-        return self.interpret_detailed(deterministic, facts=facts, lang=lang, client=client).text
+        return self.interpret_detailed(
+            deterministic, facts=facts, lang=lang, client=client, voice=voice
+        ).text
 
     def interpret_detailed(
         self,
@@ -728,11 +770,14 @@ class SafeRephraser:
         facts: str,
         lang: str,
         client: LLMClientProtocol | None = None,
+        voice: str = "placement",
     ) -> RephraseResult:
         model_token = _active_model.set(None)
         resume_token = _resume_at.set(0)
         try:
-            return self._interpret_locked(deterministic, facts=facts, lang=lang, client=client)
+            return self._interpret_locked(
+                deterministic, facts=facts, lang=lang, client=client, voice=voice
+            )
         finally:
             _active_model.reset(model_token)
             _resume_at.reset(resume_token)
@@ -744,6 +789,7 @@ class SafeRephraser:
         facts: str,
         lang: str,
         client: LLMClientProtocol | None,
+        voice: str,
     ) -> RephraseResult:
         if not self._s.llm_enabled or not self._key_ready() or client is None:
             return RephraseResult(
@@ -767,7 +813,9 @@ class SafeRephraser:
                 fallback_reason="monthly_cap_reached",
             )
         self._calls_used += 1
-        prompt = f"{_PROMPT.get(lang, _PROMPT['en'])}\n{facts}"
+        spoken = voice if voice == "today" else "placement"
+        version = "today-reflection-v1" if spoken == "today" else "life-impact-v1"
+        prompt = f"{_instruction(lang, spoken)}\n{facts}"
         candidate = ""
         guardrail_retries = 0
         blocked: GuardrailViolation | None = None
@@ -786,6 +834,8 @@ class SafeRephraser:
                     candidate = follow(prompt)
                 _reject_commitment(candidate, lang)
                 _reject_extra_placements(candidate, facts)
+                if spoken == "today" and _technical_verdict(candidate):
+                    raise GuardrailViolation("technical-verdict")
             except GuardrailViolation as exc:
                 if (
                     guardrail_retries >= 1
@@ -798,7 +848,7 @@ class SafeRephraser:
                         output=candidate,
                         fallback_reason=str(exc),
                         model=_client_model(client, self._s),
-                        prompt_version="life-impact-v1",
+                        prompt_version=version,
                     )
                     return RephraseResult(
                         deterministic, attempted=True, accepted=False, fallback_reason=str(exc)
@@ -819,7 +869,7 @@ class SafeRephraser:
                     output=candidate,
                     fallback_reason=reason,
                     model=_client_model(client, self._s),
-                    prompt_version="life-impact-v1",
+                    prompt_version=version,
                 )
                 return RephraseResult(
                     deterministic, attempted=True, accepted=False, fallback_reason=reason
@@ -830,7 +880,7 @@ class SafeRephraser:
                 prompt=prompt,
                 output=candidate,
                 model=_client_model(client, self._s),
-                prompt_version="life-impact-v1",
+                prompt_version=version,
             )
             return RephraseResult(candidate, attempted=True, accepted=True, fallback_reason=None)
 

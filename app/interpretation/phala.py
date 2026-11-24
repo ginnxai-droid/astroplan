@@ -588,6 +588,157 @@ def _transit_moon_lagna_house(chart: ChartResponse, transits: dict[str, object])
     return ((t_idx - chart.lagna_sign_index) % 12) + 1
 
 
+def _behavior(planet: str, lang: str) -> str:
+    return _tpl("behavior", planet, lang)
+
+
+def _spoken(house: int, lang: str) -> str:
+    return _tpl("spoken", str(house), lang)
+
+
+def _lean_phrase(primary: int, secondary: int, lang: str, *, hide_secondary: bool = False) -> str:
+    lean = _spoken(primary, lang)
+    if hide_secondary or primary == secondary:
+        return lean
+    return _line("today_lean_two", lang, lean=lean, other=_spoken(secondary, lang))
+
+
+def _support_phrase(house: int, easy: bool, lang: str) -> str:
+    key = "today_support_easy" if easy else "today_support_hard"
+    return _line(key, lang, matter=_spoken(house, lang))
+
+
+def _care_house(
+    houses: list[int],
+    saturn_house: int,
+    saturn_easy: bool,
+    *,
+    avoid: set[int],
+) -> int | None:
+    pressure = next((house for house in houses if house in _PRESSURE and house not in avoid), None)
+    if pressure is not None:
+        return pressure
+    if not saturn_easy and saturn_house not in avoid:
+        return saturn_house
+    return None
+
+
+def _care_phrase(house: int | None, lang: str, *, slow: bool) -> str:
+    if house is None:
+        return _line("today_care_plain", lang)
+    key = "today_care_slow" if slow else "today_care_pressure"
+    return _line(key, lang, matter=_spoken(house, lang))
+
+
+def _reflection(
+    lang: str,
+    *,
+    lean: str,
+    support: str,
+    care: str,
+    step: str,
+    area: str | None = None,
+) -> str:
+    if area is None:
+        return _line("today_human", lang, lean=lean, support=support, care=care, step=step)
+    return _line(
+        "today_area_human", lang, area=area, lean=lean, support=support, care=care, step=step
+    )
+
+
+def daily_human_reading(
+    chart: ChartResponse,
+    panchang: dict[str, object],
+    transits: dict[str, object],
+    lang: LanguageCode,
+    dasha: dict[str, object] | None = None,
+) -> str:
+    """Ordinary-life reflection for today. No sign, nakshatra, house number, or degree."""
+    moon_house = int(str(transits["moon_house_from_natal_moon"]))
+    lagna_house = _transit_moon_lagna_house(chart, transits)
+    vara_lord_name = _VARA_LORDS.get(str(panchang["vara"]), "Sun")
+    vara_lord = _planet(chart, vara_lord_name)
+    jupiter_house = int(str(transits["jupiter_house_from_moon"]))
+    saturn_house = int(str(transits["saturn_house_from_moon"]))
+    if dasha is not None:
+        step = _behavior(str(dasha["active_mahadasha"]), lang)
+    else:
+        step = _behavior(vara_lord_name, lang)
+    if jupiter_house in _JUPITER_EASY and jupiter_house != moon_house:
+        support_house = jupiter_house
+        support_easy = True
+    elif vara_lord.house != moon_house:
+        support_house = vara_lord.house
+        support_easy = False
+    else:
+        support_house = lagna_house
+        support_easy = lagna_house not in _PRESSURE
+    cared = _care_house(
+        [moon_house, lagna_house, vara_lord.house],
+        saturn_house,
+        saturn_house in _SATURN_EASY,
+        avoid={moon_house},
+    )
+    text = _reflection(
+        lang,
+        lean=_lean_phrase(moon_house, lagna_house, lang, hide_secondary=cared == lagna_house),
+        support=_support_phrase(support_house, support_easy, lang),
+        care=_care_phrase(cared, lang, slow=cared == saturn_house and cared not in _PRESSURE),
+        step=step,
+    )
+    return _check(text, lang)
+
+
+_AREA_VOICE: dict[str, tuple[int, str, str]] = {
+    "relationships": (7, "Venus", "today_area_relationships"),
+    "career": (10, "Sun", "today_area_career"),
+    "finances": (2, "Jupiter", "today_area_finances"),
+    "home": (4, "Moon", "today_area_home"),
+}
+
+
+def daily_area_human(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    panchang: dict[str, object],
+    lang: LanguageCode,
+    area: str,
+) -> str:
+    """Today's note for one part of ordinary life, without a placement catalog."""
+    del dasha, panchang
+    house_num, karaka_name, area_key = _AREA_VOICE[area]
+    _, lord = _lord(chart, house_num)
+    moon_house = int(str(transits["moon_house_from_natal_moon"]))
+    if area == "finances":
+        _, gain_lord = _lord(chart, 11)
+        lean_house = lord.house
+        support_house = gain_lord.house
+    else:
+        lean_house = lord.house
+        support_house = _planet(chart, karaka_name).house
+    if support_house == lean_house:
+        support_house = moon_house
+    saturn_house = int(str(transits["saturn_house_from_moon"]))
+    jupiter_house = int(str(transits["jupiter_house_from_moon"]))
+    easy = jupiter_house in _JUPITER_EASY if area == "finances" else support_house not in _PRESSURE
+    cared = _care_house(
+        [lean_house, support_house, moon_house],
+        saturn_house,
+        saturn_house in _SATURN_EASY,
+        avoid={lean_house},
+    )
+    text = _reflection(
+        lang,
+        area=_line(area_key, lang),
+        lean=_lean_phrase(lean_house, moon_house, lang, hide_secondary=cared == moon_house),
+        support=_support_phrase(support_house, easy, lang),
+        care=_care_phrase(cared, lang, slow=cared == saturn_house and cared not in _PRESSURE),
+        step=_behavior(karaka_name, lang),
+    )
+    return _check(text, lang)
+
+
 def daily_reading(
     chart: ChartResponse,
     panchang: dict[str, object],

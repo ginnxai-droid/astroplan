@@ -13,6 +13,7 @@ from app.core.panchang import calculate_daily_panchang
 from app.core.transits import evaluate_current_transits
 from app.db.session import make_engine_and_session
 from app.interpretation.audit import LLMAuditLog
+from app.interpretation.language import Catalog
 from app.interpretation.llm import (
     SafeRephraser,
     configured_provider_names,
@@ -20,6 +21,7 @@ from app.interpretation.llm import (
     polish_statement,
     reading_facts,
 )
+from app.interpretation.readings import generate_daily_insight
 
 pytestmark = pytest.mark.s16
 
@@ -649,3 +651,67 @@ def test_openrouter_guarantee_tries_one_later_model_then_stops(
     assert seen == models[:2]
     assert audit.events[-1].accepted is False
     assert audit.events[-1].fallback_reason == "commitment-language"
+
+
+_PLAIN_TODAY = (
+    "You may notice today leaning toward quiet time with people you trust. "
+    "What can feel supportive is a slower pace. "
+    "What needs care is answering too fast. "
+    "A gentle next step: finish one small thing, then pause."
+)
+
+
+def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
+    inp = BirthDetailsInput(
+        birth_date=date(1992, 5, 10),
+        birth_time=time(14, 30),
+        name="Test Person",
+        place_name="Pune",
+        country="India",
+        latitude=18.5204,
+        longitude=73.8567,
+        language="en",
+    )
+    chart = calculate_chart(inp, 18.5204, 73.8567, "Asia/Kolkata")
+    moon = next(p for p in chart.planets if p.planet == "Moon")
+    target = date(2026, 11, 15)
+    dasha = calculate_vimshottari_dasha(inp.birth_date, moon.longitude, target)
+    transits = evaluate_current_transits(chart, target)
+    panchang = calculate_daily_panchang(target, 18.5204, 73.8567, "Asia/Kolkata")
+    statement = generate_daily_insight(
+        chart, panchang, transits, Catalog("i18n"), "en", dasha=dasha
+    )
+    assert "nakshatra" not in statement.simple_text.lower()
+    assert "house 7" not in statement.simple_text.lower()
+    facts = reading_facts(chart, dasha=dasha, transits=transits, panchang=panchang)
+    sun = next(p for p in chart.planets if p.planet == "Sun")
+    rephraser, audit = _enabled()
+    client = _FakeLLM(_PLAIN_TODAY)
+    polished = polish_statement(rephraser, client, statement, facts, "en")
+    assert polished.simple_text == _PLAIN_TODAY
+    prompt = client.prompts[0]
+    assert "ordinary life" in prompt
+    assert "gentle next step" in prompt
+    assert "what needs care" in prompt
+    assert f"Sun {sun.sign_name} house {sun.house}" in prompt
+    assert f"dasha {dasha['active_mahadasha']}-" in prompt
+    assert "transit jupiter" in prompt
+    assert f"panchang {panchang['date']}" in prompt
+    assert "focus placement:" not in prompt
+    assert "Test Person" not in prompt
+    assert "1992-05-10" not in prompt
+    assert audit.events[-1].accepted is True
+    assert audit.events[-1].prompt_version == "today-reflection-v1"
+
+    verdict = _FakeLLM("A technical note: nakshatra and 23.4°.")
+    blocked = polish_statement(rephraser, verdict, statement, facts, "en")
+    assert blocked.simple_text == statement.simple_text
+    assert "nakshatra" not in blocked.simple_text.lower()
+    assert audit.events[-1].accepted is False
+    assert audit.events[-1].fallback_reason == "technical-verdict"
+
+    off = SafeRephraser(Settings(env="test", llm_enabled=False), LLMAuditLog())
+    silent = _FakeLLM(_PLAIN_TODAY)
+    kept = polish_statement(off, silent, statement, facts, "en")
+    assert kept.simple_text == statement.simple_text
+    assert silent.prompts == []

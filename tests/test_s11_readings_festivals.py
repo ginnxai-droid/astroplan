@@ -1,3 +1,4 @@
+import re
 from datetime import date, time
 
 import pytest
@@ -18,6 +19,17 @@ from app.interpretation.readings import (
 from app.interpretation.rules import load_rules
 
 pytestmark = pytest.mark.s11
+
+_TECHNICAL_TODAY = re.compile(
+    r"\bnakshatras?\b|नक्षत्र|\bhouse\s+\d|\b\d{1,2}(?:st|nd|rd|th)?\s+houses?\b|"
+    r"भाव\s*\d|\d+(?:\.\d+)?\s*°",
+    re.IGNORECASE,
+)
+
+
+def _assert_human_today(text: str) -> None:
+    assert _TECHNICAL_TODAY.search(text) is None
+    assert re.fullmatch(r"[\d\s°.'\"+-]+", text.strip()) is None
 
 
 def test_all_four_life_areas_daily_insight_yogas_and_astronomical_vrats() -> None:
@@ -46,6 +58,8 @@ def test_all_four_life_areas_daily_insight_yogas_and_astronomical_vrats() -> Non
     daily = generate_daily_insight(chart, panchang, transits, cat, "mr")
     assert daily.why_this.rule_id == "RULE_GOCHARA_CHANDRA_DAILY"
     assert daily.safety_verified is True
+    _assert_human_today(daily.simple_text)
+    assert "झुक" in daily.simple_text
 
     yogas = detect_yogas_and_doshas(chart, cat, "mr", rules=rules)
     assert isinstance(yogas, list)
@@ -97,9 +111,14 @@ def test_personalized_today_and_chart_differ_by_kundali() -> None:
 
     day1 = generate_daily_insight(c1, pan1, t1, cat, "en", dasha=d1)
     day2 = generate_daily_insight(c2, pan2, t2, cat, "en", dasha=d2)
-    assert "Aarav" in day1.simple_text and "Meera" in day2.simple_text
     assert day1.simple_text != day2.simple_text
     assert "Steady professional progress" not in day1.simple_text
+    for day in (day1, day2):
+        _assert_human_today(day.simple_text)
+        assert "leaning toward" in day.simple_text
+        assert "What can feel supportive" in day.simple_text
+        assert "What needs care" in day.simple_text
+        assert "A gentle next step" in day.simple_text
 
     areas1 = generate_life_area_readings(c1, d1, t1, rules, cat, "en")
     areas2 = generate_life_area_readings(c2, d2, t2, rules, cat, "en")
@@ -109,7 +128,10 @@ def test_personalized_today_and_chart_differ_by_kundali() -> None:
 
     d_areas1 = generate_daily_area_readings(c1, d1, t1, pan1, rules, "en")
     assert d_areas1["career"][0].simple_text != areas1["career"][0].simple_text
-    assert "2026-11-22" in d_areas1["relationships"][0].simple_text
+    assert "2026-11-22" in d_areas1["relationships"][0].time_window
+    for area in d_areas1.values():
+        _assert_human_today(area[0].simple_text)
+        assert "What helps:" not in area[0].simple_text
 
     impact = areas1["career"][0].simple_text
     for planet in ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"):
