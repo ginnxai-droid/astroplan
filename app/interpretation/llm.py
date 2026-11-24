@@ -2,10 +2,11 @@
 
 Off by default. Hard-capped by llm_monthly_call_cap. The enabled path sends
 this birth's houses, dasha, transits, and panchang or quarter-month notes.
-Today follows the jyotish voice guide: several ordinary sentences about
-work, money, home, conversation, and energy. That same reading remains when
-the model is off, keyless, rate-limited, blocked, or when it answers with
-chart jargon, a guarantee, or a one-line slogan.
+Today follows the jyotish voice guide: two short spoken paragraphs. The
+second names a supportive planet only when the facts say so. That same
+reading remains when the model is off, keyless, rate-limited, blocked, or
+when it answers with chart jargon, a guarantee, a rejected shape, or a
+grace the facts do not support.
 Providers run in order. A missing key is skipped. When ASTRO_LLM_PROVIDERS is
 unset, an OpenRouter key tries ASTRO_OPENROUTER_MODELS first, then Gemini,
 Gemma, and Anthropic when those keys exist. Rate limits, unknown-model 404s,
@@ -34,6 +35,7 @@ from app.config import Settings
 from app.interpretation.audit import LLMAuditLog
 from app.interpretation.errors import GuardrailViolation
 from app.interpretation.guardrails import validate_rephrase, verify_text
+from app.interpretation.phala import today_support_fact
 from app.interpretation.voice import today_instruction, today_voice_problem
 
 _PROMPT: dict[str, str] = json.loads(
@@ -676,6 +678,8 @@ def reading_facts(
             f"transit jupiter {jup_sign} house {jup_house}; "
             f"saturn {sat_sign} house {sat_house}; {moon_bit}"
         )
+        if "jupiter_house_from_moon" in transits:
+            parts.append(f"supportive_today: {today_support_fact(chart, transits, dasha)}")
     if panchang is not None:
         parts.append(
             "panchang "
@@ -730,6 +734,18 @@ def _instruction(lang: str, voice: str) -> str:
     if voice == "today":
         return today_instruction(lang)
     return _PROMPT.get(lang, _PROMPT["en"])
+
+
+_GRACE = ("कृपादृष्टी", "कृपादृष्टि", "jupiter's kindness", "guru's grace")
+
+
+def unsupported_grace(text: str, facts: str) -> bool:
+    """Guru grace only when a Jupiter transit is supportive."""
+    lowered = text.lower()
+    named = any(phrase in lowered if phrase.isascii() else phrase in text for phrase in _GRACE)
+    if not named:
+        return False
+    return "supportive_today: jupiter transit" not in facts.lower()
 
 
 def _technical_verdict(text: str) -> bool:
@@ -850,7 +866,7 @@ class SafeRephraser:
             )
         self._calls_used += 1
         spoken = voice if voice == "today" else "placement"
-        version = "today-spoken-v3" if spoken == "today" else "life-impact-v1"
+        version = "today-spoken-v4" if spoken == "today" else "life-impact-v1"
         prompt = f"{_instruction(lang, spoken)}\n{facts}"
         candidate = ""
         guardrail_retries = 0
@@ -876,6 +892,8 @@ class SafeRephraser:
                     problem = today_voice_problem(candidate)
                     if problem is not None:
                         raise GuardrailViolation(problem)
+                    if unsupported_grace(candidate, facts):
+                        raise GuardrailViolation("ungrounded-grace")
             except GuardrailViolation as exc:
                 if (
                     guardrail_retries >= 1

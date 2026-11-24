@@ -654,10 +654,9 @@ def test_openrouter_guarantee_tries_one_later_model_then_stops(
 
 
 _PLAIN_TODAY = (
-    "You may notice today leaning toward quiet time with people you trust. "
-    "What can feel supportive is a slower pace. "
-    "What needs care is answering too fast. "
-    "A gentle next step: finish one small thing, then pause."
+    "It is a quiet day, and you may want to stay near people you trust. "
+    "Give that talk a little time.\n\n"
+    "A slower pace may help you. You may finish one small thing, then pause."
 )
 
 
@@ -691,9 +690,12 @@ def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
     assert polished.simple_text == _PLAIN_TODAY
     prompt = client.prompts[0]
     assert "experienced jyotish" in prompt
-    assert "work, money, home, conversations, and energy" in prompt
+    assert "two short paragraphs" in prompt
+    assert "money, news, home, or stuck work" in prompt
     assert "120 words" in prompt
+    assert "राग येऊ शकतो" in prompt
     assert "do not name a sign" in prompt.lower()
+    assert "supportive_today" in prompt
     assert f"Sun {sun.sign_name} house {sun.house}" in prompt
     assert f"dasha {dasha['active_mahadasha']}-" in prompt
     assert "transit jupiter" in prompt
@@ -702,7 +704,16 @@ def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
     assert "Test Person" not in prompt
     assert "1992-05-10" not in prompt
     assert audit.events[-1].accepted is True
-    assert audit.events[-1].prompt_version == "today-spoken-v3"
+    assert audit.events[-1].prompt_version == "today-spoken-v4"
+
+    heated = _FakeLLM(
+        "Tuesday carries Mars, so your speech can heat up faster than you mean.\n\n"
+        "Pause, then put that heat into one ordinary task."
+    )
+    robotic = polish_statement(rephraser, heated, statement, facts, "en")
+    assert robotic.simple_text == statement.simple_text
+    assert "heat up" not in robotic.simple_text.lower()
+    assert "ordinary task" not in robotic.simple_text.lower()
 
     verdict = _FakeLLM("A technical note: nakshatra and 23.4°.")
     blocked = polish_statement(rephraser, verdict, statement, facts, "en")
@@ -719,9 +730,9 @@ def test_today_returns_plain_model_text_and_hides_a_technical_verdict() -> None:
 
 
 _PLAIN_TODAY_MR = (
-    "आज काम शांत ठेवा. धनात जुने वचन पुरे. "
-    "कुटुंबात थोडा वेळ द्या. ऊर्जा एका कामासाठी ठेवा. "
-    "एक सौम्य पुढचे पाऊल म्हणजे एक छोटे काम पूर्ण करा."
+    "आज दिवस शांत आहे, आणि तुम्हाला जवळच्या लोकांकडे वेळ द्यावासा वाटू शकतो. "
+    "थोडा धीर धरा.\n\n"
+    "एक छोटे काम शांतपणे पुढे जाऊ शकतं. मोठं वचन देऊ नका."
 )
 
 
@@ -758,6 +769,8 @@ def test_today_marathi_returns_plain_model_text_and_hides_jargon() -> None:
     assert "ज्योतिषी" in client.prompts[0]
     assert "धीर मागतो" in client.prompts[0]
     assert "बाबतीत" in client.prompts[0]
+    assert "राग येऊ शकतो" in client.prompts[0]
+    assert "कृपादृष्टी" in client.prompts[0]
     assert "Test Person" not in client.prompts[0]
     slogan = _FakeLLM("आज मंगळ संभाषणात धीर मागतो, विशेषतः आवडीचे काम बाबतीत.")
     rejected = polish_statement(rephraser, slogan, statement, facts, "mr")
@@ -772,3 +785,13 @@ def test_today_marathi_returns_plain_model_text_and_hides_jargon() -> None:
     assert blocked.simple_text == statement.simple_text
     assert "गोचर" not in blocked.simple_text
     assert "भाव 3" not in blocked.simple_text
+    grace = _FakeLLM(
+        "आज तुमच्यावर गुरूची कृपादृष्टी आहे. तुम्हाला धनलाभ संभवतो.\n\nएक छोटे काम शांतपणे पुढे जाऊ शकतं."
+    )
+    ungrounded = polish_statement(rephraser, grace, statement, facts, "mr")
+    assert ungrounded.simple_text == statement.simple_text
+    assert "कृपादृष्टी" not in ungrounded.simple_text
+    certain = _FakeLLM("आज हे निश्चित होईल.\n\nतुम्हाला एक छोटी वार्ता मिळू शकते.")
+    promised = polish_statement(rephraser, certain, statement, facts, "mr")
+    assert promised.simple_text == statement.simple_text
+    assert "निश्चित" not in promised.simple_text

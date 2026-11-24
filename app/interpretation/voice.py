@@ -1,8 +1,8 @@
-"""How a jyotish explains today to the person sitting with them.
+"""How a jyotish speaks to the person sitting with them.
 
-The model prompt and the deterministic fallback both follow this guide.
-A planet is named only inside a life sentence. The simple text stays in
-ordinary life: work, money, home, conversation, and energy.
+Simple Today is two short paragraphs: the weekday, then one supportive
+planet when the engine names one. The model prompt and the fallback
+both follow this guide. A planet is named only inside a life sentence.
 """
 
 from __future__ import annotations
@@ -19,8 +19,15 @@ _SENTENCE_END = re.compile(r"[.!?।॥]+")
 _ROBOTIC = (
     "धीर मागतो",
     "बाबतीत",
+    "तापू शकते",
+    "नक्की",
+    "निश्चित",
     "asks for patience",
     "today asks",
+    "ordinary task",
+    "heat up",
+    "carries mars",
+    "supportive_today",
 )
 _LORDS = ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn")
 _STEPS = (*_LORDS, "Rahu", "Ketu")
@@ -34,7 +41,7 @@ _DOMAIN = {
 
 
 def today_instruction(lang: str) -> str:
-    """Skill text for the model: sit with the person and explain the day."""
+    """Model skill text explaining Today."""
     guide: dict[str, str] = _DATA["guide"]
     return str(guide.get(lang) or guide["en"])
 
@@ -44,7 +51,7 @@ def sentence_count(text: str) -> int:
 
 
 def today_voice_problem(text: str) -> str | None:
-    """Reject a slogan or a stiff calque so the human fallback is used."""
+    """Reject a slogan or stiff calque, then use fallback text."""
     stripped = text.strip()
     lowered = stripped.lower()
     for phrase in _ROBOTIC:
@@ -53,13 +60,14 @@ def today_voice_problem(text: str) -> str | None:
                 return "robotic-voice"
         elif phrase in stripped:
             return "robotic-voice"
-    if sentence_count(stripped) < 2:
+    paragraphs = [part for part in stripped.splitlines() if part.strip()]
+    if len(paragraphs) < 2 or sentence_count(stripped) < 2:
         return "one-line-slogan"
     return None
 
 
 def spoken_lines() -> list[str]:
-    """Every fallback sentence. The guide itself is an instruction, not speech."""
+    """Fallback sentences only. Guide text is an instruction, not speech."""
     found: list[str] = []
 
     def walk(node: Any) -> None:
@@ -97,37 +105,13 @@ def _join(parts: list[str]) -> str:
     return " ".join(part for part in parts if part)
 
 
-def compose_today(
-    *,
-    lang: str,
-    weekday_lord: str,
-    pressured: bool,
-    money_easy: bool,
-    saturn_easy: bool,
-    work_house: int,
-    money_house: int,
-    home_house: int,
-    talk_house: int,
-    step_planet: str,
-) -> str:
-    """Several connected sentences for this weekday lord and these life themes."""
-    mood = "care" if pressured else "support"
+def compose_today(*, lang: str, weekday_lord: str, supportive: str | None) -> str:
+    """Weekday paragraph, then one supportive planet when named."""
     lord = weekday_lord if weekday_lord in _LORDS else "Sun"
-    step = step_planet if step_planet in _STEPS else lord
-    tone = "easy" if money_easy else "tight"
-    energy = "easy" if saturn_easy else "quiet"
-    return _join(
-        [
-            _lang(_DATA["opening"][lord][mood], lang),
-            _house("work", work_house, lang),
-            _house("money", money_house, lang),
-            _named("money_tone", tone, lang, default="tight"),
-            _house("home", home_house, lang),
-            _house("talk", talk_house, lang),
-            _named("energy", energy, lang, default="quiet"),
-            _named("step", step, lang, default="Sun"),
-        ]
-    )
+    first = _lang(_DATA["weekday"][lord], lang)
+    block = _DATA["support"].get(supportive) if supportive else None
+    second = _lang(block, lang) if isinstance(block, dict) else _lang(_DATA["careful"], lang)
+    return f"{first}\n\n{second}"
 
 
 def compose_area(
@@ -139,19 +123,20 @@ def compose_area(
     house: int,
     step_planet: str,
 ) -> str:
-    """One part of the day, in the same sitting voice."""
+    """One life-area part, same sitting voice."""
     mood = "easy" if easy else "narrow"
     domain = _DOMAIN[area]
     care_key = care if care in ("strain", "slow", "hurry") else "hurry"
     step = step_planet if step_planet in _STEPS else "Sun"
-    return _join(
+    head = _lang(_DATA["area_open"][area][mood], lang)
+    tail = _join(
         [
-            _lang(_DATA["area_open"][area][mood], lang),
             _house(domain, house, lang),
             _named("care_line", care_key, lang, default="hurry"),
             _named("step", step, lang, default="Sun"),
         ]
     )
+    return f"{head}\n\n{tail}"
 
 
 def _words(text: str) -> int:
@@ -159,32 +144,10 @@ def _words(text: str) -> int:
 
 
 def max_today_words(lang: str) -> int:
-    openings = [
-        _words(_lang(_DATA["opening"][lord][mood], lang))
-        for lord in _LORDS
-        for mood in ("support", "care")
-    ]
-
-    def section_max(name: str) -> int:
-        return max(_words(_house(name, house, lang)) for house in range(1, 13))
-
-    tones = max(
-        _words(_named("money_tone", key, lang, default="tight")) for key in ("easy", "tight")
-    )
-    energies = max(
-        _words(_named("energy", key, lang, default="quiet")) for key in ("easy", "quiet")
-    )
-    steps = max(_words(_named("step", name, lang, default="Sun")) for name in _STEPS)
-    return (
-        max(openings)
-        + section_max("work")
-        + section_max("money")
-        + tones
-        + section_max("home")
-        + section_max("talk")
-        + energies
-        + steps
-    )
+    weekdays = max(_words(_lang(_DATA["weekday"][lord], lang)) for lord in _LORDS)
+    supports = max(_words(_lang(block, lang)) for block in _DATA["support"].values())
+    careful = _words(_lang(_DATA["careful"], lang))
+    return weekdays + max(supports, careful)
 
 
 def max_area_words(lang: str) -> int:

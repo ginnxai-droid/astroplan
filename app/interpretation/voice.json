@@ -1,94 +1,87 @@
 {
   "guide": {
-    "en": "Speak to this person as you, the way a calm experienced jyotish speaks while sitting with them. Explain the life effect of today's real facts — the weekday lord, the Moon's movement, the season now running, and the panchang — in ordinary life: work, money, home, conversations, and energy. Write several connected sentences, with enough detail to feel like a real sitting, and stay under about 120 words. Do not write one clipped slogan. Use natural English, in a fluent shape, not a word-by-word gloss of a template. Do not name a sign, nakshatra, house number, gochar, or D9. Do not say dasha, transit, or lagna. A planet may be named only inside a sentence about their day. Do not promise a result, and do not make a medical, legal, or financial promise. Use only the facts below.",
-    "hi": "इस व्यक्ति से ऐसे बोलें जैसे एक शांत अनुभवी ज्योतिषी उनके सामने बैठा हो। उन्हें आप कहकर संबोधित करें। आज के असली तथ्य — वार का स्वामी, चंद्र की चाल, अभी चल रहा काल, और पंचांग — इनका असर साधारण जीवन में समझाएँ: काम, धन, घर, बातचीत, और ऊर्जा। कई जुड़े हुए वाक्य लिखें, इतने कि एक असली बैठक का एहसास हो, और लगभग 120 शब्दों के अंदर रहें। एक कटी हुई घोषणा न लिखें। हिंदी स्वाभाविक हो, किसी साँचे का शब्द-ब-शब्द अनुवाद नहीं। राशि, नक्षत्र, भाव संख्या, गोचर या नवांश का नाम न लें। दशा, गोचर या लग्न शब्द न कहें। ग्रह का नाम केवल उनके दिन वाले वाक्य में लें। फल का वचन न दें, और चिकित्सा, कानूनी या धन का वचन न दें। केवल नीचे दिए तथ्यों का उपयोग करें।",
-    "mr": "या व्यक्तीशी असे बोला जणू एक शांत अनुभवी ज्योतिषी त्यांच्या समोर बसला आहे. त्यांना तुम्ही म्हणून संबोधित करा. आजची खरी तथ्ये — वाराचा स्वामी, चंद्राची चाल, सध्या चाललेला काळ, आणि पंचांग — यांचा परिणाम साध्या जीवनात समजावून सांगा: काम, धन, घर, संभाषण, आणि जोम. अनेक जोडलेली वाक्ये लिहा, एवढी की खऱ्या बैठकीसारखे वाटेल, आणि सुमारे 120 शब्दांच्या आत रहा. एक छाटलेली घोषणा लिहू नका. मराठी नैसर्गिक असावी, साच्याचे शब्दशः भाषांतर नको. धीर मागतो आणि बाबतीत हे इंग्रजीचे ओढून आणलेले शब्द वापरू नका. राशी, नक्षत्र, भाव क्रमांक, गोचर किंवा नवांश सांगू नका. दशा, गोचर किंवा लग्न हे शब्द म्हणू नका. ग्रहाचे नाव फक्त त्यांच्या दिवसाच्या वाक्यात घ्या. फलाचे वचन देऊ नका, आणि वैद्यकीय, कायदेशीर किंवा धनाचे वचन देऊ नका. फक्त खालील तथ्यांचा वापर करा."
+    "en": "Speak to this person as you, the way a calm experienced jyotish speaks while sitting with a client. Write the answer in English, in exactly two short paragraphs, and stay under about 120 words. Paragraph 1 names the weekday in plain speech and the life effect of that day's lord — anger, patience, speech, work, travel, or rest, only what the facts support — then one practical line. Tuesday sounds like: \"It is Tuesday, and you may get angry sooner than usual. Hold your temper a little and give more attention to your work.\" Paragraph 2 uses only the facts below, for money, news, home, or stuck work. The line supportive_today is the only support you may mention. Jupiter transit means kindness for money, news, or stuck work. Moon transit means home and a message. Saturn transit means steady work. Moon season, Venus season, Mercury season, or Sun season means that planet's time, as a possibility, not a grace the line does not name. none means one careful line and no planet's grace. If Jupiter is not supportive_today, do not invent Guru's grace. Match the spoken register of this Marathi, and do not turn it into stiff English: \"आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो. थोडा धीर धरा आणि कामात जास्त लक्ष द्या.\nआज तुमच्यावर गुरूची कृपादृष्टी आहे. तुम्हाला धनलाभ संभवतो. आज तुम्हाला लवकरच एखादी चांगली वार्ता मिळेल किंवा तुमचं अडकलेलं काम मार्गी लागू शकतं.\" Do not write: \"आज मंगळ संभाषणात धीर मागतो, विशेषतः आवडीचे काम बाबतीत.\" \"आज मंगळवार मंगळाचा दिवस आहे, म्हणून तुमचे बोलणे लवकर तापू शकते. थांबून उत्तर द्या, आणि तो जोर साध्या कामात लावा.\" \"Tuesday carries Mars, so your speech can heat up faster than you mean. Pause, then put that heat into one ordinary task.\" Do not name a sign, nakshatra, house number, gochar, or D9. Do not say dasha, transit, lagna, season, or supportive_today. A planet may be named only inside a sentence about their day. Possibility only: may, can, शकतो, संभवतो. Do not say guaranteed, will definitely, 100%, assured, destined, certainly will, नक्की, or निश्चित. Do not make a medical, legal, or financial promise. Use only the facts below.",
+    "hi": "इस व्यक्ति से ऐसे बोलें जैसे एक शांत अनुभवी ज्योतिषी उनके सामने क्लाइंट से बात कर रहा हो। उत्तर हिंदी में लिखें, ठीक दो छोटे पैराग्राफ में, लगभग 120 शब्दों के अंदर। पहला पैराग्राफ: वार सादी बोली में, और उस दिन के स्वामी का जीवन पर असर — गुस्सा, धीरज, बोलना, काम, यात्रा या आराम — केवल जो तथ्य साथ दें। फिर एक व्यावहारिक पंक्ति। मंगलवार ऐसा बोला जाता है: \"आज मंगलवार है, और आपको जल्दी गुस्सा आ सकता है। थोड़ा धीर रखें और काम में ज्यादा ध्यान दें।\" दूसरा पैराग्राफ केवल नीचे दिए तथ्यों से, धन, खबर, घर या अटके काम के बारे में। supportive_today वाली पंक्ति ही एकमात्र साथ है। Jupiter transit हो तो धन, खबर या अटका काम। Moon transit हो तो घर और खबर। Saturn transit हो तो स्थिर काम। Moon season, Venus season, Mercury season या Sun season हो तो उस ग्रह का समय, संभावना के रूप में, कृपा नहीं यदि पंक्ति उसे न कहे। none हो तो एक सावधान पंक्ति, किसी ग्रह की कृपा नहीं। गुरु की कृपादृष्टि तभी जब supportive_today Jupiter transit हो। यह मराठी बोलचाल का नमूना है, इसका शब्द-ब-शब्द अनुवाद न लिखें: \"आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो. थोडा धीर धरा आणि कामात जास्त लक्ष द्या.\nआज तुमच्यावर गुरूची कृपादृष्टी आहे. तुम्हाला धनलाभ संभवतो. आज तुम्हाला लवकरच एखादी चांगली वार्ता मिळेल किंवा तुमचं अडकलेलं काम मार्गी लागू शकतं.\" ये आकार न लिखें: \"आज मंगळ संभाषणात धीर मागतो, विशेषतः आवडीचे काम बाबतीत.\" \"आज मंगळवार मंगळाचा दिवस आहे, म्हणून तुमचे बोलणे लवकर तापू शकते. थांबून उत्तर द्या, आणि तो जोर साध्या कामात लावा.\" \"Tuesday carries Mars, so your speech can heat up faster than you mean. Pause, then put that heat into one ordinary task.\" राशि, नक्षत्र, भाव संख्या, गोचर या नवांश का नाम न लें। दशा, गोचर, लग्न, season या supportive_today न कहें। ग्रह का नाम केवल जीवन वाले वाक्य में लें। संभव, सकता है — वचन नहीं। नक्की, निश्चित, गारंटी, 100% न कहें। चिकित्सा, कानूनी या धन का वचन न दें। केवल नीचे दिए तथ्यों का उपयोग करें।",
+    "mr": "या व्यक्तीशी असे बोला जणू एक ज्योतिषी क्लायंटसमोर बसला आहे. उत्तर मराठीत लिहा, नेमक्या दोन छोट्या परिच्छेदांत, सुमारे 120 शब्दांच्या आत. पहिला परिच्छेद: आजचा वार साध्या बोलण्यात, आणि त्या दिवसाच्या स्वामीचा जीवनातला परिणाम — राग, धीर, बोलणं, काम, प्रवास किंवा विश्रांती — फक्त जे तथ्ये साथ देतात ते. मग एक व्यावहारिक ओळ. मंगळवार असा बोलला जातो: \"आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो. थोडा धीर धरा आणि कामात जास्त लक्ष द्या.\" दुसरा परिच्छेद फक्त खालील तथ्यांतून, धन, वार्ता, घर किंवा अडकलेलं काम. supportive_today ही ओळच एकमेव साथ आहे. Jupiter transit असेल तर धन, वार्ता किंवा अडकलेलं काम. Moon transit असेल तर घर आणि वार्ता. Saturn transit असेल तर स्थिर काम. Moon season, Venus season, Mercury season किंवा Sun season असेल तर त्या ग्रहाचा काळ, शक्यता म्हणून, कृपादृष्टी नाही जर ती ओळ तसे म्हणत नसेल. none असेल तर एक सावध ओळ, आणि कोणत्याच ग्रहाची कृपा नाही. गुरूची कृपादृष्टी फक्त तेव्हा जेव्हा supportive_today Jupiter transit असेल. हा बोलण्याचा नमुना आहे, तो कडक भाषांतरात बदलू नका: \"आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो. थोडा धीर धरा आणि कामात जास्त लक्ष द्या.\nआज तुमच्यावर गुरूची कृपादृष्टी आहे. तुम्हाला धनलाभ संभवतो. आज तुम्हाला लवकरच एखादी चांगली वार्ता मिळेल किंवा तुमचं अडकलेलं काम मार्गी लागू शकतं.\" हे आकार लिहू नका: \"आज मंगळ संभाषणात धीर मागतो, विशेषतः आवडीचे काम बाबतीत.\" \"आज मंगळवार मंगळाचा दिवस आहे, म्हणून तुमचे बोलणे लवकर तापू शकते. थांबून उत्तर द्या, आणि तो जोर साध्या कामात लावा.\" \"Tuesday carries Mars, so your speech can heat up faster than you mean. Pause, then put that heat into one ordinary task.\" राशी, नक्षत्र, भाव क्रमांक, गोचर किंवा नवांश सांगू नका. दशा, गोचर, लग्न, season किंवा supportive_today म्हणू नका. ग्रहाचे नाव फक्त जीवनाच्या वाक्यात घ्या. शकतो, संभवतो, शकतं — वचन नाही. नक्की, निश्चित, हमी किंवा 100% म्हणू नका. वैद्यकीय, कायदेशीर किंवा धनाचे वचन देऊ नका. फक्त खालील तथ्यांचा वापर करा."
   },
-  "opening": {
+  "weekday": {
     "Sun": {
-      "support": {
-        "en": "Sunday carries the Sun, so you may want the day to see you. Let the work show, and do not ask for praise.",
-        "hi": "आज रविवार सूर्य का दिन है, इसलिए आप चाहेंगे कि दिन आपको देखे। काम दिखने दें, तारीफ न माँगें।",
-        "mr": "आज रविवार सूर्याचा दिवस आहे, म्हणून तुम्हाला दिसायचे वाटेल. काम दिसावे, पण स्तुती मागू नका."
-      },
-      "care": {
-        "en": "Sunday carries the Sun, so being seen feels tender for you today. Do the visible work, and leave the praise aside.",
-        "hi": "आज रविवार सूर्य का दिन है, इसलिए आपको दिखना थोड़ा कोमल लगेगा। दिखने वाला काम करें, और तारीफ छोड़ दें।",
-        "mr": "आज रविवार सूर्याचा दिवस आहे, म्हणून तुम्हाला दिसण्याची इच्छा नाजूक वाटेल. काम लोकांसमोर करा, आणि स्तुतीला राहू द्या."
-      }
+      "en": "It is Sunday, and you may want to be seen more than usual. Do the work properly, and do not wait for praise.",
+      "hi": "आज रविवार है, और आपको दिखने की इच्छा ज्यादा हो सकती है। काम ठीक से करें, तारीफ का इंतजार न करें।",
+      "mr": "आज रविवार आहे, आणि तुम्हाला लोकांसमोर दिसावंसं वाटू शकते. काम नीट करा, पण स्तुती मागू नका."
     },
     "Moon": {
-      "support": {
-        "en": "Monday follows the Moon, so your mood colors home and the people in it. Keep the pace easy, and save a hard talk.",
-        "hi": "आज सोमवार चंद्र के साथ है, इसलिए आपका मूड घर पर छा जाएगा। चाल धीमी रखें, और कठिन बात बाद के लिए छोड़ें।",
-        "mr": "आज सोमवार चंद्राबरोबर येतो, म्हणून तुमचा मूड घरावर पसरेल. चाल सावकाश ठेवा, आणि कठीण बोलणे नंतर ठेवा."
-      },
-      "care": {
-        "en": "Monday follows the Moon, so home can change mood on you. Give the people you live with a quiet hour, and delay a hard matter.",
-        "hi": "आज सोमवार चंद्र के साथ है, इसलिए घर आप पर जल्दी मूड बदल सकता है। अपनों को एक शांत घंटा दें, और कठिन बात टालें।",
-        "mr": "आज सोमवार चंद्राबरोबर येतो, म्हणून घर तुमच्यावर लवकर मूड बदलू शकते. जवळच्यांना एक शांत तास द्या, आणि कठीण विषय थांबवा."
-      }
+      "en": "It is Monday, and your mind may pull toward home. Give the people close to you a little time, and leave a hard talk for later.",
+      "hi": "आज सोमवार है, और आपका मन घर की ओर खिंच सकता है। अपनों को थोड़ा समय दें, और कठिन बात बाद में रखें।",
+      "mr": "आज सोमवार आहे, आणि तुमचं मन घराकडे ओढू शकतं. जवळच्यांना थोडा वेळ द्या, आणि कठीण बोलणे नंतर ठेवा."
     },
     "Mars": {
-      "support": {
-        "en": "Tuesday carries Mars, so a little heat can enter the way you speak. Let the first answer wait, and use that heat on one shared task.",
-        "hi": "आज मंगलवार मंगल का दिन है, इसलिए आपकी बात में थोड़ी गरमी आएगी। पहला उत्तर रोकें, और जोश साझे काम में लगाएँ।",
-        "mr": "आज मंगळवार मंगळाचा दिवस आहे, म्हणून तुमच्या बोलण्यात थोडी उष्णता येईल. पहिले उत्तर थांबवा, आणि ती उष्णता सामायिक कामात लावा."
-      },
-      "care": {
-        "en": "Tuesday carries Mars, so your speech can heat up faster than you mean. Pause, then put that heat into one ordinary task.",
-        "hi": "आज मंगलवार मंगल का दिन है, इसलिए आपकी बात जल्दी तीखी हो सकती है। रुककर उत्तर दें, और जोश एक साधारण काम में लगाएँ।",
-        "mr": "आज मंगळवार मंगळाचा दिवस आहे, म्हणून तुमचे बोलणे लवकर तापू शकते. थांबून उत्तर द्या, आणि तो जोर साध्या कामात लावा."
-      }
+      "en": "It is Tuesday, and you may get angry sooner than usual. Hold your temper a little and give more attention to your work.",
+      "hi": "आज मंगलवार है, और आपको जल्दी गुस्सा आ सकता है। थोड़ा धीर रखें और काम में ज्यादा ध्यान दें।",
+      "mr": "आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो. थोडा धीर धरा आणि कामात जास्त लक्ष द्या."
     },
     "Mercury": {
-      "support": {
-        "en": "Wednesday belongs to Mercury, so you need one plain sentence. Say the practical point, and do not win by being clever.",
-        "hi": "आज बुधवार बुध का दिन है, इसलिए आपको एक सीधा वाक्य चाहिए। व्यावहारिक बात कहें, चतुराई से न जीतें।",
-        "mr": "आज बुधवार बुधाचा दिवस आहे, म्हणून तुम्हाला एक सरळ वाक्य उपयोगी पडेल. व्यावहारिक मुद्दा सांगा, हुशारीने जिंकू नका."
-      },
-      "care": {
-        "en": "Wednesday belongs to Mercury, so words will come at you quickly. Say one plain thing and then stop.",
-        "hi": "आज बुधवार बुध का दिन है, इसलिए शब्द आपके पास जल्दी आएँगे। एक सीधी बात कहकर रुक जाएँ।",
-        "mr": "आज बुधवार बुधाचा दिवस आहे, म्हणून शब्द तुमच्याकडे लवकर येतील. एक सरळ गोष्ट सांगून थांबा."
-      }
+      "en": "It is Wednesday, and you may rush your words. Say one thing clearly, and do not try to win by being clever.",
+      "hi": "आज बुधवार है, और आपको बोलने में जल्दी हो सकती है। एक बात साफ कहें, और होशियारी से न जीतें।",
+      "mr": "आज बुधवार आहे, आणि तुम्हाला बोलण्याची घाई होऊ शकते. एक गोष्ट स्पष्ट सांगा, आणि जास्त हुशारी दाखवू नका."
     },
     "Jupiter": {
-      "support": {
-        "en": "Thursday carries Jupiter, so advice wants to come out of you. Offer it without a lecture, and keep a money promise small.",
-        "hi": "आज गुरुवार बृहस्पति का दिन है, इसलिए आप सलाह देना चाहेंगे। बिना उपदेश के कहें, और धन का वचन छोटा रखें।",
-        "mr": "आज गुरुवार गुरुचा दिवस आहे, म्हणून तुम्हाला सल्ला द्यावासा वाटेल. उपदेशाशिवाय सांगा, आणि धनाचे वचन छोटे ठेवा."
-      },
-      "care": {
-        "en": "Thursday carries Jupiter, so you may want to offer a large assurance. Make the promise smaller than that feeling.",
-        "hi": "आज गुरुवार बृहस्पति का दिन है, इसलिए आपको बड़ा आश्वासन देना भाएगा। वचन उस भावना से छोटा रखें।",
-        "mr": "आज गुरुवार गुरुचा दिवस आहे, म्हणून तुम्हाला मोठे आश्वासन द्यावेसे वाटेल. वचन त्या इच्छेपेक्षा छोटे ठेवा."
-      }
+      "en": "It is Thursday, and you may want to give advice. Say it without a lecture, and do not make a large promise about money.",
+      "hi": "आज गुरुवार है, और आपको सलाह देने का मन हो सकता है। उपदेश किए बिना कहें, और धन का बड़ा वचन न दें।",
+      "mr": "आज गुरुवार आहे, आणि तुम्हाला सल्ला द्यावासा वाटू शकतो. उपदेश न करता सांगा, आणि धनाचं मोठं वचन देऊ नका."
     },
     "Venus": {
-      "support": {
-        "en": "Friday follows Venus, so courtesy matters more for you than being right. Keep it kind, and do not sweeten a disagreement.",
-        "hi": "आज शुक्रवार शुक्र के साथ है, इसलिए आपके लिए शिष्टता सही होने से बड़ी है। स्वर नरम रखें, मतभेद न ढकें।",
-        "mr": "आज शुक्रवार शुक्राबरोबर येतो, म्हणून तुमच्यासाठी सौजन्य बरोबर असण्यापेक्षा जास्त आहे. सूर मृदू ठेवा, मतभेद झाकू नका."
-      },
-      "care": {
-        "en": "Friday follows Venus, so you will want to smooth things over. Stay polite, and still say the disagreement simply.",
-        "hi": "आज शुक्रवार शुक्र के साथ है, इसलिए आप सब कुछ चिकना करना चाहेंगे। विनम्र रहें, और मतभेद सरल कहें।",
-        "mr": "आज शुक्रवार शुक्राबरोबर येतो, म्हणून तुम्हाला सगळे गुळगुळीत करायचे वाटेल. नम्र राहा, आणि मतभेद सोपे सांगा."
-      }
+      "en": "It is Friday, and you may want to make everything pleasant. Stay polite, and do not hide the real point.",
+      "hi": "आज शुक्रवार है, और आपको सब कुछ मीठा बनाने का मन हो सकता है। विनम्र रहें, पर असली बात न छिपाएँ।",
+      "mr": "आज शुक्रवार आहे, आणि तुम्हाला सगळं गोड करावंसं वाटू शकतं. नम्र राहा, पण खरा मुद्दा लपवू नका."
     },
     "Saturn": {
-      "support": {
-        "en": "Saturday carries Saturn, so the day wants a slower pace from you. One real duty, done properly, is enough.",
-        "hi": "आज शनिवार शनि का दिन है, इसलिए आपको धीमी चाल भाएगी। एक सच्चा काम ठीक से करें, वही काफी है।",
-        "mr": "आज शनिवार शनीचा दिवस आहे, म्हणून तुम्हाला सावकाश चाल बरी वाटेल. एक खरे काम नीट करा, तेवढे पुरे."
-      },
-      "care": {
-        "en": "Saturday carries Saturn, so hurry will cost you. Take the slow pace, finish one duty, and leave the rest.",
-        "hi": "आज शनिवार शनि का दिन है, इसलिए जल्दी आपको महँगी पड़ सकती है। धीरे एक कर्तव्य पूरा करें, बाकी छोड़ दें।",
-        "mr": "आज शनिवार शनीचा दिवस आहे, म्हणून घाई तुम्हाला महाग पडू शकते. सावकाश एक कर्तव्य संपवा, बाकी राहू द्या."
-      }
+      "en": "It is Saturday, and hurry may spoil the work for you. Finish one task quietly, and the rest can wait until tomorrow.",
+      "hi": "आज शनिवार है, और जल्दी से आपका काम बिगड़ सकता है। एक काम शांति से पूरा करें, बाकी कल देखा जा सकता है।",
+      "mr": "आज शनिवार आहे, आणि घाईने तुमचं काम बिघडू शकतं. एक काम शांतपणे संपवा, बाकी उद्या बघता येईल."
     }
+  },
+  "support": {
+    "Jupiter": {
+      "en": "Jupiter's kindness is with you today. You may gain some money. You may hear good news soon, or a piece of stuck work may start to move.",
+      "hi": "आज आप पर गुरु की कृपादृष्टि है। आपको धनलाभ संभव है। आज आपको जल्दी कोई अच्छी खबर मिल सकती है, या अटका हुआ काम मार्ग पर लग सकता है।",
+      "mr": "आज तुमच्यावर गुरूची कृपादृष्टी आहे. तुम्हाला धनलाभ संभवतो. आज तुम्हाला लवकरच एखादी चांगली वार्ता मिळेल किंवा तुमचं अडकलेलं काम मार्गी लागू शकतं."
+    },
+    "Moon": {
+      "en": "The Moon can be kind to you today. Home may feel a little lighter. You may hear news from home.",
+      "hi": "आज आप पर चंद्र की कृपा है। घर में मन थोड़ा हल्का रह सकता है। आपको घर से कोई खबर मिल सकती है।",
+      "mr": "आज तुमच्यावर चंद्राची कृपा आहे. घरात मन थोडं हलके राहू शकतं. तुम्हाला घराकडून एखादी वार्ता मिळू शकते."
+    },
+    "Saturn": {
+      "en": "Saturn can stand with the work you do steadily today. If you do not rush, a task that was stuck may slowly start to move.",
+      "hi": "आज शनि आपके स्थिर काम के साथ रह सकता है। जल्दी न करें तो अटका काम धीरे-धीरे मार्ग पर लग सकता है।",
+      "mr": "आज शनी तुमच्या स्थिर कामाची साथ देऊ शकतो. घाई केली नाही तर अडकलेलं काम हळूहळू मार्गी लागू शकतं."
+    },
+    "Moon_season": {
+      "en": "This is the Moon's time for you. If you give the house a little attention, your mind may settle. You may hear a word from home.",
+      "hi": "अभी चंद्र का समय आपके साथ है। घर पर थोड़ा ध्यान दें तो मन स्थिर रह सकता है। आपको घर से कोई बात मिल सकती है।",
+      "mr": "सध्या चंद्राचा काळ तुमच्यासोबत आहे. घराकडे थोडं लक्ष द्या, तर मन स्थिर राहू शकतं. तुम्हाला एखादी घरगुती वार्ता मिळू शकते."
+    },
+    "Venus": {
+      "en": "This is Venus's time for you. A kind word may come from someone close. A matter at home may ease.",
+      "hi": "अभी शुक्र का समय आपके साथ है। किसी अपने से मीठी बात संभव है। घर का कोई प्रश्न हल्का हो सकता है।",
+      "mr": "सध्या शुक्राचा काळ तुमच्यासोबत आहे. जवळच्या माणसाकडून गोड वार्ता संभवते. घरातला एखादा प्रश्न मोकळा होऊ शकतो."
+    },
+    "Mercury": {
+      "en": "This is Mercury's time for you. A clear message may reach you, or work that was stuck may start to move.",
+      "hi": "अभी बुध का समय आपके साथ है। कोई साफ खबर मिल सकती है, या अटका काम मार्ग पर लग सकता है।",
+      "mr": "सध्या बुधाचा काळ तुमच्यासोबत आहे. तुम्हाला एखादी स्पष्ट वार्ता मिळू शकते, किंवा अडकलेलं काम मार्गी लागू शकतं."
+    },
+    "Sun": {
+      "en": "This is the Sun's time for you. Work you do may be seen. Do not ask for praise. Let the work show.",
+      "hi": "अभी सूर्य का समय आपके साथ है। आपका किया काम दिख सकता है। तारीफ न माँगें, काम ठीक से दिखाएँ।",
+      "mr": "सध्या सूर्याचा काळ तुमच्यासोबत आहे. तुम्ही केलेलं काम दिसू शकतं. स्तुती मागू नका, काम नीट दाखवा."
+    }
+  },
+  "careful": {
+    "en": "Do not make a large promise today. Look quietly at the work you already have in hand.",
+    "hi": "आज आप बड़ा वचन न दें। जो काम हाथ में है उसे शांति से देखें।",
+    "mr": "आज तुम्ही मोठं वचन देऊ नका. जे काम हाती आहे ते शांतपणे पाहा."
   },
   "work": {
     "1": {
@@ -212,18 +205,6 @@
       "en": "With money, wait to spend until the necessary cost is clear.",
       "hi": "धन में आज जरूरी खर्च साफ होने तक रुकें।",
       "mr": "धनात आज गरजेचा खर्च स्पष्ट होईपर्यंत थांबा."
-    }
-  },
-  "money_tone": {
-    "easy": {
-      "en": "There is a little room if any new promise stays small.",
-      "hi": "नया वचन छोटा रहे तो यहाँ थोड़ी जगह है।",
-        "mr": "नवे वचन छोटे ठेवले तर आज थोडी मोकळीक आहे."
-    },
-    "tight": {
-      "en": "Keep this smaller than you hoped, with no new promise.",
-      "hi": "इसे चाह से छोटा रखें, नया वचन न जोड़ें।",
-        "mr": "आजची गोष्ट इच्छेपेक्षा छोटी ठेवा, आणि नवे वचन जोडू नका."
     }
   },
   "home": {
@@ -350,18 +331,6 @@
       "mr": "बोलताना आज आणखी एक मुद्द्यापेक्षा शांत शेवट बरा."
     }
   },
-  "energy": {
-    "easy": {
-      "en": "Your energy can hold one steady task, then the day can stay ordinary.",
-      "hi": "ऊर्जा आज एक सधे काम के लिए काफी है, फिर दिन साधारण रह सकता है।",
-      "mr": "जोम आज एका सलग कामासाठी पुरेसा आहे, मग दिवस साधा राहू द्या."
-    },
-    "quiet": {
-      "en": "Your energy is quieter today, so one real task is enough.",
-      "hi": "ऊर्जा आज शांत है, इसलिए एक सच्चा काम काफी है।",
-      "mr": "जोम आज शांत आहे, म्हणून एक खरे काम पुरे."
-    }
-  },
   "step": {
     "Sun": {
       "en": "Let one duty be seen, and do not ask for praise.",
@@ -404,7 +373,7 @@
       "mr": "वेगळी योजना आधी जवळच्या माणसाला सांगा."
     },
     "Ketu": {
-      "en": "Stay with an ordinary task at home.",
+      "en": "Stay with one quiet task at home.",
       "hi": "हटकर नहीं, घर का एक साधारण काम करें।",
       "mr": "बाजूला न होता घरी एक साधे काम करा."
     }

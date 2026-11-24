@@ -61,41 +61,65 @@ def _assert_spoken_today(text: str, *, lang: str) -> None:
         assert "आप" in text
 
 
+_TUESDAY_JUPITER_MR = (
+    "आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो. "
+    "थोडा धीर धरा आणि कामात जास्त लक्ष द्या.\n\n"
+    "आज तुमच्यावर गुरूची कृपादृष्टी आहे. तुम्हाला धनलाभ संभवतो. "
+    "आज तुम्हाला लवकरच एखादी चांगली वार्ता मिळेल किंवा तुमचं अडकलेलं काम मार्गी लागू शकतं."
+)
+_TUESDAY_JUPITER_EN = (
+    "It is Tuesday, and you may get angry sooner than usual. "
+    "Hold your temper a little and give more attention to your work.\n\n"
+    "Jupiter's kindness is with you today. You may gain some money. "
+    "You may hear good news soon, or a piece of stuck work may start to move."
+)
+
+
 def test_today_voice_sits_with_the_person_and_changes_with_the_day() -> None:
     for line in spoken_lines():
+        lowered = line.lower()
         assert "धीर मागतो" not in line
         assert "बाबतीत" not in line
-        assert "today asks" not in line.lower()
-        assert "asks for patience" not in line.lower()
+        assert "तापू शकते" not in line
+        assert "ordinary task" not in lowered
+        assert "heat up" not in lowered
+        assert "today asks" not in lowered
+        assert "asks for patience" not in lowered
         assert _TECHNICAL_TODAY.search(line) is None
     for lang in ("en", "hi", "mr"):
         assert max_today_words(lang) <= 120
         assert max_area_words(lang) <= 120
-    shared = dict(
-        pressured=True,
-        money_easy=False,
-        saturn_easy=False,
-        work_house=5,
-        money_house=2,
-        home_house=4,
-        talk_house=7,
-        step_planet="Jupiter",
-    )
-    open_day = {**shared, "pressured": False, "money_easy": True, "saturn_easy": True}
-    mars = compose_today(lang="mr", weekday_lord="Mars", **open_day)
-    sun = compose_today(lang="mr", weekday_lord="Sun", **open_day)
-    easy = compose_today(lang="en", weekday_lord="Mars", **open_day)
-    tight = compose_today(lang="en", weekday_lord="Mars", **shared)
+    mars = compose_today(lang="mr", weekday_lord="Mars", supportive="Jupiter")
+    sun = compose_today(lang="mr", weekday_lord="Sun", supportive="Jupiter")
+    moon = compose_today(lang="mr", weekday_lord="Mars", supportive="Moon")
+    easy = compose_today(lang="en", weekday_lord="Mars", supportive="Jupiter")
+    tight = compose_today(lang="en", weekday_lord="Mars", supportive=None)
+    hindi = compose_today(lang="hi", weekday_lord="Mars", supportive="Jupiter")
     assert mars != sun
+    assert mars != moon
     assert easy != tight
     _assert_spoken_today(mars, lang="mr")
     _assert_spoken_today(sun, lang="mr")
+    _assert_spoken_today(moon, lang="mr")
     _assert_spoken_today(easy, lang="en")
     _assert_spoken_today(tight, lang="en")
-    assert mars.startswith("आज मंगळवार")
-    assert "तुमच्या बोलण्यात" in mars
-    assert easy.startswith("Tuesday carries Mars")
-    assert "the way you speak" in easy
+    _assert_spoken_today(hindi, lang="hi")
+    assert mars == _TUESDAY_JUPITER_MR
+    assert "राग येऊ शकतो" in mars
+    assert "गुरूची कृपादृष्टी" in mars.split("\n\n")[1]
+    assert "गुरू" not in moon
+    assert "कृपादृष्टी" not in moon
+    assert easy == _TUESDAY_JUPITER_EN
+    paragraphs = [part for part in easy.splitlines() if part.strip()]
+    assert len(paragraphs) == 2
+    assert all(re.search(r"\byou\b", part, re.IGNORECASE) for part in paragraphs)
+    assert "Jupiter" in paragraphs[1]
+    assert "Jupiter" not in tight
+    assert "heat up" not in easy.lower()
+    assert "ordinary task" not in easy.lower()
+    assert "गुस्सा" in hindi
+    assert "कृपादृष्टि" in hindi.split("\n\n")[1]
+    assert "आप" in hindi
 
 
 def test_all_four_life_areas_daily_insight_yogas_and_astronomical_vrats() -> None:
@@ -129,10 +153,13 @@ def test_all_four_life_areas_daily_insight_yogas_and_astronomical_vrats() -> Non
     _assert_spoken_today(daily.simple_text, lang="mr")
     _assert_human_today(hindi.simple_text)
     _assert_spoken_today(hindi.simple_text, lang="hi")
-    assert "कामात" in daily.simple_text
-    assert "धनात" in daily.simple_text
-    assert "घरी" in daily.simple_text
-    assert "बोलताना" in daily.simple_text
+    assert "रविवार" in daily.simple_text
+    assert "चंद्र" in daily.simple_text
+    assert "गुरूची कृपादृष्टी" not in daily.simple_text
+    assert len([part for part in daily.simple_text.splitlines() if part.strip()]) == 2
+    assert "रविवार" in hindi.simple_text
+    assert "चंद्र" in hindi.simple_text
+    assert "कृपादृष्टि" not in hindi.simple_text
     assert "Test Person" not in daily.simple_text
     assert "नवांश" in daily.pro_text
 
@@ -191,11 +218,12 @@ def test_personalized_today_and_chart_differ_by_kundali() -> None:
     for day in (day1, day2):
         _assert_human_today(day.simple_text)
         _assert_spoken_today(day.simple_text, lang="en")
-        assert "At work" in day.simple_text
-        assert "With money" in day.simple_text
-        assert "At home" in day.simple_text
-        assert "In conversation" in day.simple_text
-        assert "Your energy" in day.simple_text
+        parts = [part for part in day.simple_text.splitlines() if part.strip()]
+        assert len(parts) == 2
+        assert all(re.search(r"\byou\b", part, re.IGNORECASE) for part in parts)
+        assert "heat up" not in day.simple_text.lower()
+        assert "ordinary task" not in day.simple_text.lower()
+        assert "Jupiter" not in day.simple_text
         assert "Aarav" not in day.simple_text
         assert "Meera" not in day.simple_text
         assert "D9" in day.pro_text

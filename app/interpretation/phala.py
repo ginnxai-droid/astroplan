@@ -43,6 +43,18 @@ _VARA_LORDS = {
 _PRESSURE = {6, 8, 12}
 _JUPITER_EASY = {2, 5, 7, 9, 11}
 _SATURN_EASY = {3, 6, 11}
+# Chandra gochara houses the daily grade already calls likely, except dusthana 6.
+_MOON_SUPPORT = {1, 3, 10, 11}
+_SEASON_SUPPORT = frozenset({"Venus", "Mercury", "Sun", "Moon"})
+_SUPPORT_FACT = {
+    "Jupiter": "Jupiter transit",
+    "Moon": "Moon transit",
+    "Saturn": "Saturn transit",
+    "Moon_season": "Moon season",
+    "Venus": "Venus season",
+    "Mercury": "Mercury season",
+    "Sun": "Sun season",
+}
 
 _MONTHS = {
     "January": ("January", "जनवरी", "जानेवारी"),
@@ -614,6 +626,43 @@ def _care_house(
     return None
 
 
+def today_support_key(
+    chart: ChartResponse,
+    transits: dict[str, object],
+    dasha: dict[str, object] | None,
+) -> str | None:
+    """Supportive planet for Simple Today, or none."""
+    jupiter_house = int(str(transits["jupiter_house_from_moon"]))
+    saturn_house = int(str(transits["saturn_house_from_moon"]))
+    moon_house = int(str(transits["moon_house_from_natal_moon"]))
+    if jupiter_house in _JUPITER_EASY:
+        return "Jupiter"
+    if moon_house in _MOON_SUPPORT:
+        return "Moon"
+    if saturn_house in _SATURN_EASY:
+        return "Saturn"
+    if dasha is None:
+        return None
+    lord = str(dasha.get("active_mahadasha") or "")
+    if lord not in _SEASON_SUPPORT or _planet(chart, lord).house in _PRESSURE:
+        return None
+    if lord == "Moon":
+        return "Moon_season"
+    return lord
+
+
+def today_support_fact(
+    chart: ChartResponse,
+    transits: dict[str, object],
+    dasha: dict[str, object] | None,
+) -> str:
+    """Model fact token, not spoken text."""
+    key = today_support_key(chart, transits, dasha)
+    if key is None:
+        return "none"
+    return _SUPPORT_FACT[key]
+
+
 def daily_human_reading(
     chart: ChartResponse,
     panchang: dict[str, object],
@@ -621,32 +670,12 @@ def daily_human_reading(
     lang: LanguageCode,
     dasha: dict[str, object] | None = None,
 ) -> str:
-    """A jyotish explaining today: weekday lord, moon, and the season, in ordinary life."""
-    moon_house = int(str(transits["moon_house_from_natal_moon"]))
-    lagna_house = _transit_moon_lagna_house(chart, transits)
+    """Weekday paragraph plus a supportive planet when one is named."""
     vara_lord_name = _VARA_LORDS.get(str(panchang["vara"]), "Sun")
-    vara_lord = _planet(chart, vara_lord_name)
-    jupiter_house = int(str(transits["jupiter_house_from_moon"]))
-    saturn_house = int(str(transits["saturn_house_from_moon"]))
-    natal_moon_house = _planet(chart, "Moon").house
-    used: set[int] = set()
-    work_house = _fresh_house([lagna_house, 10, 6], used)
-    money_house = _fresh_house([jupiter_house, 2, 11], used)
-    home_house = _fresh_house([natal_moon_house, 4, 5], used)
-    talk_house = _fresh_house([moon_house, vara_lord.house, 7], used)
-    step_planet = str(dasha["active_mahadasha"]) if dasha is not None else vara_lord_name
-    pressured = any(house in _PRESSURE for house in (moon_house, lagna_house, vara_lord.house))
     text = compose_today(
         lang=lang,
         weekday_lord=vara_lord_name,
-        pressured=pressured,
-        money_easy=jupiter_house in _JUPITER_EASY,
-        saturn_easy=saturn_house in _SATURN_EASY,
-        work_house=work_house,
-        money_house=money_house,
-        home_house=home_house,
-        talk_house=talk_house,
-        step_planet=step_planet,
+        supportive=today_support_key(chart, transits, dasha),
     )
     return _check(text, lang)
 
@@ -667,7 +696,7 @@ def daily_area_human(
     lang: LanguageCode,
     area: str,
 ) -> str:
-    """Today's note for one part of ordinary life, in the same sitting voice."""
+    """One life-area note for this day, same sitting voice."""
     del dasha, panchang
     house_num, karaka_name = _AREA_VOICE[area]
     _, lord = _lord(chart, house_num)
