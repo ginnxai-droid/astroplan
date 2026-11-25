@@ -439,10 +439,12 @@ def _chat_reading(text: str) -> httpx.Response:
     return httpx.Response(200, json={"choices": [{"message": {"content": text}}]})
 
 
-def test_default_openrouter_models_try_haiku_then_free() -> None:
+def test_default_openrouter_models_try_paid_then_free() -> None:
     settings = Settings(env="test", _env_file=None)
     assert _openrouter_models(settings) == [
-        "anthropic/claude-haiku-5.5",
+        "anthropic/claude-sonnet-5.5",
+        "openai/gpt-5.4",
+        "openai/gpt-6-luna",
         "nvidia/nemotron-3-ultra-550b-a55b:free",
         "google/gemma-4-31b-it:free",
         "openai/gpt-oss-120b:free",
@@ -459,6 +461,8 @@ def test_openrouter_key_runs_first_unless_providers_are_explicit(
     monkeypatch.setenv("ANTHROPIC_AUTH_TOKEN", "token-test")
     settings = Settings(env="test", llm_enabled=True, _env_file=None)
     assert configured_provider_names(settings) == [
+        "openrouter",
+        "openrouter",
         "openrouter",
         "openrouter",
         "openrouter",
@@ -618,7 +622,7 @@ def test_openrouter_exhausted_continues_to_direct_gemini(
             "A steady pace is supported.", facts="Sun Leo house 1", lang="en", client=client
         )
     assert text == _SAFE_READING
-    assert sum("openrouter.ai" in url for url in seen) == 4
+    assert sum("openrouter.ai" in url for url in seen) == 6
     assert settings.gemini_model in seen[-1]
     assert getattr(client, "model_name", None) == settings.gemini_model
 
