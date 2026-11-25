@@ -14,9 +14,9 @@ DEFAULT_DEV_SHARE_SECRET = "dev-share-secret-change-in-production"
 # Replace a retired id with ASTRO_OPENROUTER_MODELS.
 DEFAULT_OPENROUTER_MODELS = ",".join(
     (
-        "anthropic/claude-sonnet-5.5",
-        "openai/gpt-5.4",
         "openai/gpt-6-luna",
+        "anthropic/claude-sonnet-5.5",
+        "anthropic/claude-haiku-5.5",
         "nvidia/nemotron-3-ultra-550b-a55b:free",
         "google/gemma-4-31b-it:free",
         "openai/gpt-oss-120b:free",
