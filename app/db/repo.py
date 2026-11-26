@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, date, datetime, time, timedelta
+from enum import StrEnum
 from typing import Any, cast
 
 from sqlalchemy import CursorResult, delete, func, select
@@ -15,6 +16,17 @@ from app.db.models import (
     UserRow,
 )
 from app.db.session import make_engine_and_session
+
+# Free tier stays 7/week and 1/day after monetization.
+# A future paid plan may raise these two numbers.
+FREE_ASK_WEEKLY_QUOTA = 7
+FREE_ASK_DAILY_QUOTA = 1
+
+
+class AskQuotaStatus(StrEnum):
+    ALLOWED = "allowed"
+    DAILY_EXHAUSTED = "ask_daily_quota_exhausted"
+    WEEKLY_EXHAUSTED = "ask_quota_exhausted"
 
 
 class PrivacyRepo:
@@ -332,15 +344,46 @@ class PrivacyRepo:
             )
         return int(result.rowcount or 0)
 
-    def consume_ask_quota(self, *, user_id: str, week_start: date, limit: int) -> bool:
-        if limit <= 0:
-            return True
+    def consume_ask_quota(
+        self,
+        *,
+        user_id: str,
+        week_start: date,
+        asked_on: date,
+        weekly_limit: int,
+        daily_limit: int,
+    ) -> AskQuotaStatus:
+        """Count one answered question. A limit of 0 or below is unlimited.
+
+        Both limits unlimited writes nothing. ``asked_on`` is the same date
+        that produced ``week_start``.
+        """
+        weekly_open = weekly_limit <= 0
+        daily_open = daily_limit <= 0
+        if weekly_open and daily_open:
+            return AskQuotaStatus.ALLOWED
         with self._session_factory() as s, s.begin():
             row = s.get(AskUsageRow, (user_id, week_start))
             if row is None:
-                s.add(AskUsageRow(user_id=user_id, week_start_utc=week_start, questions_used=1))
-                return True
-            if row.questions_used >= limit:
-                return False
+                s.add(
+                    AskUsageRow(
+                        user_id=user_id,
+                        week_start_utc=week_start,
+                        questions_used=1,
+                        last_asked_on=asked_on,
+                        day_questions_used=1,
+                    )
+                )
+                return AskQuotaStatus.ALLOWED
+            if not weekly_open and row.questions_used >= weekly_limit:
+                return AskQuotaStatus.WEEKLY_EXHAUSTED
+            same_day = row.last_asked_on == asked_on
+            if not daily_open and same_day and row.day_questions_used >= daily_limit:
+                return AskQuotaStatus.DAILY_EXHAUSTED
             row.questions_used += 1
-            return True
+            if same_day:
+                row.day_questions_used += 1
+            else:
+                row.last_asked_on = asked_on
+                row.day_questions_used = 1
+            return AskQuotaStatus.ALLOWED

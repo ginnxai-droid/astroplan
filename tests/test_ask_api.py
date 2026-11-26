@@ -1,4 +1,5 @@
 import re
+from datetime import date
 
 import pytest
 from fastapi.testclient import TestClient
@@ -29,7 +30,8 @@ def ask_client():
         allow_draft_rules=True,
         geocode_provider="manual_only",
         ask_enabled=True,
-        ask_weekly_free_quota=3,
+        ask_weekly_free_quota=7,
+        ask_daily_free_quota=0,
     )
     return TestClient(create_app(settings))
 
@@ -93,7 +95,7 @@ def test_uncovered_question_costs_nothing(ask_client) -> None:
     }
     assert body["statement"] is None
     assert body["ledger_entry_id"] is None
-    # Two more uncovered questions must not consume the 3-answer quota.
+    # Two more uncovered questions must not consume an answered-question quota.
     for _ in range(2):
         assert ask_client.post("/v1/readings/ask", json=payload, headers=HEADERS).status_code == 200
     answered = ask_client.post(
@@ -168,18 +170,22 @@ def test_car_question_is_answered_without_a_life_area(ask_client) -> None:
     assert "?" not in text
 
 
-def test_quota_blocks_the_fourth_answer(ask_client) -> None:
+def test_eighth_answer_in_a_week_is_refused(ask_client) -> None:
     payload = {"details": DETAILS, "question": "Should I take a loan this year?"}
     responses = [
-        ask_client.post("/v1/readings/ask", json=payload, headers=HEADERS) for _ in range(4)
+        ask_client.post("/v1/readings/ask", json=payload, headers=HEADERS) for _ in range(8)
     ]
-    assert [r.status_code for r in responses] == [200, 200, 200, 429]
+    assert [r.status_code for r in responses] == [200] * 7 + [429]
     detail = responses[-1].json()["detail"]
     assert detail["error"] == "ask_quota_exhausted"
-    assert "three" not in str(detail["message"]).lower()
+    assert detail["message"] == (
+        "Your seven questions for this week are used. They reset on Monday."
+    )
 
 
-def test_default_weekly_quota_allows_repeated_personal_testing() -> None:
+def test_second_answer_same_day_waits_until_tomorrow(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     settings = Settings(
         env="test",
         database_url="sqlite+pysqlite:///:memory:",
@@ -187,10 +193,23 @@ def test_default_weekly_quota_allows_repeated_personal_testing() -> None:
         geocode_provider="manual_only",
         ask_enabled=True,
     )
-    assert settings.ask_weekly_free_quota == 100
+    assert settings.ask_weekly_free_quota == 7
+    assert settings.ask_daily_free_quota == 1
+    today = {"value": date(2026, 11, 16)}
+
+    def frozen_today(tz_name: str = "Asia/Kolkata") -> date:
+        return today["value"]
+
+    monkeypatch.setattr("app.api.routes._today_in_tz", frozen_today)
     client = TestClient(create_app(settings))
     payload = {"details": DETAILS, "question": "Should I take a loan this year?"}
-    codes = [
-        client.post("/v1/readings/ask", json=payload, headers=HEADERS).status_code for _ in range(4)
-    ]
-    assert codes == [200, 200, 200, 200]
+    first = client.post("/v1/readings/ask", json=payload, headers=HEADERS)
+    second = client.post("/v1/readings/ask", json=payload, headers=HEADERS)
+    assert first.status_code == 200
+    assert second.status_code == 429
+    detail = second.json()["detail"]
+    assert detail["error"] == "ask_daily_quota_exhausted"
+    assert detail["message"] == "You can ask one question a day. You can ask again tomorrow."
+    today["value"] = date(2026, 11, 17)
+    third = client.post("/v1/readings/ask", json=payload, headers=HEADERS)
+    assert third.status_code == 200

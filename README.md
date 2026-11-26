@@ -53,7 +53,7 @@ validates G0/G1/G2/G5 at startup when `ASTRO_ENV=production`).
 - **Ask** — routes a free-form question to one of the four life areas before any
   chart computation, answers only from approved statements, and abstains
   honestly when coverage is zero or ambiguous (HTTP 200, no quota consumed,
-  `matched_terms: []`). A per-user weekly quota applies to answered questions.
+  `matched_terms: []`). Answered questions are limited to one a day and seven per ISO week.
 - **Guardrailed LLM rewording** — off by default. When enabled, the model only
   ever sees the canonical statement (never the user's question), and every
   candidate passes the same deterministic validator before display; rejected
@@ -158,7 +158,8 @@ behavior most:
 | `ASTRO_AUTH_MODE` | `dev` | `firebase` required in production |
 | `ASTRO_FIELD_ENCRYPTION_KEYS` | empty | Required in production (Fernet keys) |
 | `ASTRO_ASK_ENABLED` | `false` | Dark-launch flag for the Ask endpoint |
-| `ASTRO_ASK_WEEKLY_FREE_QUOTA` | `100` | Answered questions per user per ISO week (`<=0` = unlimited). Enough for one person all month; still stops a runaway loop |
+| `ASTRO_ASK_WEEKLY_FREE_QUOTA` | `7` | Answered questions per user per ISO week (`<=0` = unlimited). Free tier stays at 7 after monetization |
+| `ASTRO_ASK_DAILY_FREE_QUOTA` | `1` | Answered questions per user per day, on the same date as the weekly quota (`<=0` = unlimited). Free tier stays at 1 after monetization |
 | `ASTRO_LLM_ENABLED` | `false` | Plain-language reading of this chart's structured facts |
 | `ASTRO_LLM_PROVIDERS` | `gemini,gemma,anthropic` | Locks attempt order when set. Unset: OpenRouter models first if that key exists, then this list |
 | `ASTRO_OPENROUTER_MODELS` | see `.env.example` | Comma-separated OpenRouter model ids. One `OPENROUTER_API_KEY` |

@@ -46,7 +46,7 @@ from app.core.share_token import ShareTokenManager
 from app.core.timeutil import load_zone
 from app.core.transits import evaluate_current_transits
 from app.core.yogas import detect_yogas_and_doshas
-from app.db.repo import PrivacyRepo
+from app.db.repo import AskQuotaStatus, PrivacyRepo
 from app.interpretation.ask import (
     AREA_ORDER,
     ask_ledger_entry_id,
@@ -481,16 +481,24 @@ def build_router(settings: Settings) -> APIRouter:
                 list(resolution.matched_terms),
             )
 
-        if not repo.consume_ask_quota(
+        quota = repo.consume_ask_quota(
             user_id=auth_user,
             week_start=iso_week_start(today),
-            limit=settings.ask_weekly_free_quota,
-        ):
+            asked_on=today,
+            weekly_limit=settings.ask_weekly_free_quota,
+            daily_limit=settings.ask_daily_free_quota,
+        )
+        if quota is not AskQuotaStatus.ALLOWED:
+            error_key = (
+                "error.ask_daily_quota_exhausted"
+                if quota is AskQuotaStatus.DAILY_EXHAUSTED
+                else "error.ask_quota_exhausted"
+            )
             raise HTTPException(
                 429,
                 {
-                    "error": "ask_quota_exhausted",
-                    "message": catalog.get("error.ask_quota_exhausted", lang),
+                    "error": quota.value,
+                    "message": catalog.get(error_key, lang),
                 },
             )
 

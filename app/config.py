@@ -8,6 +8,8 @@ from typing import Literal
 from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.db.repo import FREE_ASK_DAILY_QUOTA, FREE_ASK_WEEKLY_QUOTA
+
 DEFAULT_DEV_SHARE_SECRET = "dev-share-secret-change-in-production"
 # OpenRouter chat models. Paid ids go first so a question can be followed;
 # the free ids stay as fallback. :free only where that catalog entry exists.
@@ -72,10 +74,10 @@ class Settings(BaseSettings):
     llm_monthly_call_cap: int = 1000
 
     # Ask endpoint (routing over approved statements; off until the owner enables it).
-    # Weekly cap is per user. 100 covers a month of one person's testing.
-    # <=0 means unlimited; a positive cap still stops a runaway loop.
+    # <=0 on either cap means that cap is unlimited.
     ask_enabled: bool = False
-    ask_weekly_free_quota: int = 100
+    ask_weekly_free_quota: int = FREE_ASK_WEEKLY_QUOTA
+    ask_daily_free_quota: int = FREE_ASK_DAILY_QUOTA
     ask_lexicon_path: str = "rules/ask_lexicon.yaml"
 
     # Geocoding

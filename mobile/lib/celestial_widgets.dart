@@ -127,6 +127,7 @@ String friendlyError(AppLocalizations t, Object error) {
     'network_unavailable' => t.networkError,
     'invalid_response' => t.invalidResponseError,
     'ask_disabled' => t.askDisabledError,
+    'ask_daily_quota_exhausted' => t.dailyQuotaError,
     'ask_quota_exhausted' ||
     'ask_quota_exceeded' ||
     'quota_exceeded' =>

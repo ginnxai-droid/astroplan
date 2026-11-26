@@ -88,6 +88,9 @@ class AskUsageRow(Base):
     user_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     week_start_utc: Mapped[date] = mapped_column(Date, primary_key=True)
     questions_used: Mapped[int] = mapped_column(Integer, default=0)
+    # Same calendar date passed to consume_ask_quota (the ISO-week clock).
+    last_asked_on: Mapped[date | None] = mapped_column(Date, nullable=True)
+    day_questions_used: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
 
 class TelemetryEventRow(Base):

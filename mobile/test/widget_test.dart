@@ -476,8 +476,9 @@ void main() {
               .text,
           'How is my career?');
       expect(
-          find.textContaining(
-              status == 503 ? 'not enabled on this server' : 'reset on Monday'),
+          find.textContaining(status == 503
+              ? 'not enabled on this server'
+              : 'seven questions for this week'),
           findsOneWidget);
       await tester.pump(const Duration(seconds: 30));
       expect(h.at('/readings/ask'), hasLength(1));
@@ -499,10 +500,28 @@ void main() {
     await tester.enterText(
         find.byKey(const Key('ask_question')), 'How is my career?');
     await tapVisible(tester, find.byKey(const Key('ask_submit')));
-    expect(find.textContaining('reset on Monday'), findsNothing);
+    expect(find.textContaining('seven questions for this week'), findsNothing);
+    expect(find.textContaining('one question a day'), findsNothing);
     expect(find.textContaining('question limit'), findsNothing);
     expect(
         find.textContaining('No result has been substituted'), findsOneWidget);
+  });
+
+  testWidgets('Ask daily quota names one question a day', (tester) async {
+    final h = ApiHarness();
+    h.override = (request) => request.url.path.endsWith('/readings/ask')
+        ? Future.value(reply({
+            'detail': {'error': 'ask_daily_quota_exhausted'}
+          }, 429))
+        : null;
+    await startProfile(tester, h);
+    await tapVisible(tester, find.byKey(const Key('tab_2')));
+    await tester.enterText(
+        find.byKey(const Key('ask_question')), 'How is my career?');
+    await tapVisible(tester, find.byKey(const Key('ask_submit')));
+    expect(find.textContaining('one question a day'), findsOneWidget);
+    expect(find.textContaining('tomorrow'), findsOneWidget);
+    expect(find.textContaining('seven questions for this week'), findsNothing);
   });
 
   testWidgets(
