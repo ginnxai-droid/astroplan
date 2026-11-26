@@ -26,6 +26,7 @@ class AstroplanApiClient {
     Duration? timeout,
     int? wakeAttempts,
     Duration? wakeGap,
+    Duration? wakeBudget,
   })  : baseUrl = baseUrl ?? _defaultBaseUrl,
         _client = client ?? http.Client(),
         _userId = userId ?? _configuredUser,
@@ -33,14 +34,17 @@ class AstroplanApiClient {
         _tokenProvider = tokenProvider,
         _timeout = timeout ?? requestTimeout,
         _wakeAttempts = wakeAttempts ?? coldStartAttempts,
-        _wakeGap = wakeGap ?? coldStartGap;
+        _wakeGap = wakeGap ?? coldStartGap,
+        _wakeBudget = wakeBudget ?? coldStartBudget;
 
   static const requestTimeout = Duration(seconds: 90);
 
-  /// Fast 502/503 replies while a free instance boots are not a dead server.
-  /// Six gaps of six seconds cover a 30–50s wake; a held socket still uses [requestTimeout].
-  static const coldStartAttempts = 6;
-  static const coldStartGap = Duration(seconds: 6);
+  /// A free instance can return 502/503/504 or drop the socket for most of a
+  /// minute. Those stay inside this budget and are not a user-facing error.
+  /// A socket that stays open still uses [requestTimeout], capped to the budget.
+  static const coldStartBudget = Duration(seconds: 90);
+  static const coldStartAttempts = 8;
+  static const coldStartGap = Duration(seconds: 12);
 
   static const _configuredBase = String.fromEnvironment('ASTRO_API_BASE_URL');
   static const _configuredUser = String.fromEnvironment('ASTRO_DEV_USER');
@@ -61,6 +65,7 @@ class AstroplanApiClient {
   final Duration _timeout;
   final int _wakeAttempts;
   final Duration _wakeGap;
+  final Duration _wakeBudget;
 
   bool get _loopback => const {'localhost', '127.0.0.1', '10.0.2.2', '::1'}
       .contains(Uri.tryParse(baseUrl)?.host);
@@ -136,7 +141,8 @@ class AstroplanApiClient {
       error.status == 502 || error.status == 503 || error.status == 504;
 
   Future<http.Response> _exchange(String method, String path, Json? body,
-      Map<String, String> query, bool protected) async {
+      Map<String, String> query, bool protected,
+      {Duration? timeout}) async {
     final uri = _uri(path, query);
     final headers = await _headers(protected);
     final request = http.Request(method, uri)
@@ -146,27 +152,45 @@ class AstroplanApiClient {
     return _client
         .send(request)
         .then(http.Response.fromStream)
-        .timeout(_timeout);
+        .timeout(timeout ?? _timeout);
   }
 
   Future<Json> _send(String method, String path, Json? body,
       Map<String, String> query, bool protected) async {
-    final attempts = _ridesOutColdStart(path) ? _wakeAttempts : 1;
+    final ride = _ridesOutColdStart(path);
+    final attempts = ride ? _wakeAttempts : 1;
+    final started = DateTime.now();
     Object? last;
     for (var attempt = 0; attempt < attempts; attempt++) {
-      if (attempt > 0) await Future<void>.delayed(_wakeGap);
+      if (attempt > 0) {
+        final remaining = _wakeBudget - DateTime.now().difference(started);
+        if (!ride || remaining <= Duration.zero) break;
+        final pause = _wakeGap < remaining ? _wakeGap : remaining;
+        if (pause > Duration.zero) await Future<void>.delayed(pause);
+      }
+      final elapsed = DateTime.now().difference(started);
+      var attemptTimeout = _timeout;
+      if (ride) {
+        final remaining = _wakeBudget - elapsed;
+        if (remaining <= Duration.zero) break;
+        if (remaining < attemptTimeout) attemptTimeout = remaining;
+      }
       try {
-        return _decode(await _exchange(method, path, body, query, protected));
+        return _decode(await _exchange(method, path, body, query, protected,
+            timeout: attemptTimeout));
       } on ApiFailure catch (error) {
         last = error;
-        if (!_waking(error) || attempt == attempts - 1) rethrow;
+        if (!_waking(error) || !ride || attempt == attempts - 1) rethrow;
       } on http.ClientException {
         last = const ApiFailure('network_unavailable');
-        if (attempt == attempts - 1) {
+        if (!ride || attempt == attempts - 1) {
           throw const ApiFailure('network_unavailable');
         }
       } on TimeoutException {
-        throw const ApiFailure('network_unavailable');
+        last = const ApiFailure('network_unavailable');
+        if (!ride || attempt == attempts - 1) {
+          throw const ApiFailure('network_unavailable');
+        }
       }
     }
     if (last is ApiFailure) throw last;
@@ -291,10 +315,11 @@ class AstroplanApiClient {
         if (age.isNegative || age.inSeconds >= ttl) rethrow;
         return {...data, '_offline': true, '_cached_at': envelope['saved_at']};
       } on FormatException {
-        throw error;
+        // The saved envelope cannot be read. The network failure stands.
       } on TypeError {
-        throw error;
+        // The saved envelope cannot be read. The network failure stands.
       }
+      rethrow;
     }
   }
 

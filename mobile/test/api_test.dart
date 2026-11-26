@@ -277,6 +277,8 @@ void main() {
 
   test('default request timeout outlasts a free-tier cold start', () {
     expect(AstroplanApiClient.requestTimeout, const Duration(seconds: 90));
+    expect(AstroplanApiClient.coldStartBudget, const Duration(seconds: 90));
+    expect(AstroplanApiClient.coldStartAttempts, greaterThanOrEqualTo(6));
   });
 
   test('a server slower than the configured timeout is a network failure',
@@ -284,6 +286,7 @@ void main() {
     final api = AstroplanApiClient(
         baseUrl: 'https://example.test/v1',
         timeout: const Duration(milliseconds: 60),
+        wakeAttempts: 1,
         client: MockClient((_) async {
           await Future<void>.delayed(const Duration(milliseconds: 250));
           return http.Response('{"ok":true}', 200);
@@ -303,6 +306,41 @@ void main() {
           return http.Response('{"ok":true}', 200);
         }));
     expect((await api.get('/panchang'))['ok'], true);
+  });
+
+  test('a dropped connection during wake is retried until the server answers',
+      () async {
+    var calls = 0;
+    final api = AstroplanApiClient(
+        baseUrl: 'https://example.test/v1',
+        wakeAttempts: 3,
+        wakeGap: Duration.zero,
+        client: MockClient((_) async {
+          calls++;
+          if (calls < 3) throw http.ClientException('connection reset');
+          return http.Response('{"status":"ok"}', 200);
+        }));
+    expect((await api.get('/health'))['status'], 'ok');
+    expect(calls, 3);
+  });
+
+  test('a short timeout during wake is retried until the server answers',
+      () async {
+    var calls = 0;
+    final api = AstroplanApiClient(
+        baseUrl: 'https://example.test/v1',
+        timeout: const Duration(milliseconds: 40),
+        wakeAttempts: 3,
+        wakeGap: Duration.zero,
+        client: MockClient((_) async {
+          calls++;
+          if (calls < 3) {
+            await Future<void>.delayed(const Duration(milliseconds: 80));
+          }
+          return http.Response('{"status":"ok"}', 200);
+        }));
+    expect((await api.get('/health'))['status'], 'ok');
+    expect(calls, 3);
   });
 
   test('a cold 502 is retried until the server answers', () async {

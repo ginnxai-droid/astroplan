@@ -880,4 +880,80 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Begin with your birth details'), findsOneWidget);
   });
+
+  testWidgets(
+      'a cold 502 then a later 200 does not surface the did not answer copy',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'astroplan_profile_v1_test-user': jsonEncode({
+        'self': {
+          'name': 'Amit Sakhare',
+          'birth_date': '1980-03-17',
+          'birth_time': '09:12',
+          'place_name': 'Pune',
+          'country': 'India',
+          'latitude': 18.5204,
+          'longitude': 73.8567,
+          'timezone_override': 'Asia/Kolkata',
+          'uncertainty_minutes': 0,
+          'node_type': 'MEAN',
+        },
+        'adult': true,
+        'parental': false,
+        'consent_recorded': true,
+        'synced_to_server': true,
+        'account_id': 'test-user',
+      }),
+    });
+    final h = ApiHarness();
+    final healthGate = Completer<http.Response>();
+    var healthCalls = 0;
+    var chartCalls = 0;
+    h.override = (request) {
+      if (request.url.path == '/v1/health') {
+        healthCalls++;
+        if (healthCalls == 1) return reply({}, 502);
+        return healthGate.future;
+      }
+      if (request.url.path == '/v1/chart') {
+        chartCalls++;
+        if (chartCalls == 1) return reply({}, 502);
+      }
+      return null;
+    };
+    await tester.pumpWidget(
+        AstroplanApp(api: h.api, notifier: RecordingNotifier()));
+    for (var i = 0; i < 40; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+      if (find.text('Opening your chart.').evaluate().isNotEmpty &&
+          find.text('Amit Sakhare').evaluate().isNotEmpty) {
+        break;
+      }
+    }
+
+    expect(find.text('Amit Sakhare'), findsOneWidget);
+    expect(find.text('Opening your chart.'), findsOneWidget);
+    expect(find.textContaining('did not answer'), findsNothing);
+    expect(find.textContaining('Tap Refresh'), findsNothing);
+    expect(find.textContaining('asleep'), findsNothing);
+    expect(find.textContaining('Waking up'), findsNothing);
+    expect(find.textContaining('सर्व्हरने उत्तर दिले नाही'), findsNothing);
+    expect(find.textContaining('झोपलेला'), findsNothing);
+    expect(find.textContaining('रिफ्रेश दाबा'), findsNothing);
+    expect(find.textContaining('Something went wrong'), findsNothing);
+    expect(healthCalls, greaterThanOrEqualTo(2));
+
+    healthGate.complete(reply({'status': 'ok', 'version': '3.6.0'}));
+    await tester.pumpAndSettle();
+
+    expect(find.text('A verified daily reflection.'), findsOneWidget);
+    expect(find.text('Amit Sakhare'), findsOneWidget);
+    expect(find.textContaining('did not answer'), findsNothing);
+    expect(find.textContaining('Tap Refresh'), findsNothing);
+    expect(find.textContaining('asleep'), findsNothing);
+    expect(find.textContaining('सर्व्हरने उत्तर दिले नाही'), findsNothing);
+    expect(find.textContaining('Something went wrong'), findsNothing);
+    expect(chartCalls, greaterThanOrEqualTo(2));
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -368,11 +368,18 @@ class _CelestialHomeState extends State<CelestialHome> {
     }
   }
 
+  String _clock(dynamic value) {
+    final text = value?.toString().trim() ?? '';
+    final match = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(text);
+    if (match == null) return text;
+    return '${match.group(1)!.padLeft(2, '0')}:${match.group(2)}';
+  }
+
   bool _sameBirth(Json? left, Json? right) {
     if (left == null || right == null) return false;
     return left['name'] == right['name'] &&
         left['birth_date'] == right['birth_date'] &&
-        left['birth_time'] == right['birth_time'] &&
+        _clock(left['birth_time']) == _clock(right['birth_time']) &&
         left['place_name'] == right['place_name'];
   }
 
@@ -558,8 +565,19 @@ class _CelestialHomeState extends State<CelestialHome> {
     super.dispose();
   }
 
+  Object _peopleWakeError(Object error) {
+    if (error is ApiFailure &&
+        (error.code == 'network_unavailable' ||
+            error.status == 502 ||
+            error.status == 503 ||
+            error.status == 504)) {
+      return ApiFailure('network_unavailable', error.status);
+    }
+    return error;
+  }
+
   Future<Json?> load(String key, Future<Json> Function() request,
-      {bool keepPrevious = false}) async {
+      {bool keepPrevious = false, bool quietWake = false}) async {
     final generation = epoch;
     final version = (versions[key] ?? 0) + 1;
     versions[key] = version;
@@ -584,7 +602,7 @@ class _CelestialHomeState extends State<CelestialHome> {
         return null;
       }
       setState(() {
-        errors[key] = error;
+        errors[key] = quietWake ? _peopleWakeError(error) : error;
         pending.remove(key);
       });
       return null;
@@ -766,7 +784,7 @@ class _CelestialHomeState extends State<CelestialHome> {
       load('chart', () async {
         await api.waitUntilAwake();
         return _postDetails('/chart');
-      }).then((chart) {
+      }, quietWake: true).then((chart) {
         if (!mounted || chart == null) return;
         final query = targetQuery;
         load('dasha', () => _postDetails('/dasha', query: query));
@@ -983,19 +1001,21 @@ class _CelestialHomeState extends State<CelestialHome> {
   Widget gap([double height = 14]) => SizedBox(height: height);
   Widget note(String text) => Text(text,
       style: const TextStyle(color: muted, fontSize: 12, height: 1.6));
-  Widget status(String key, {List<String> hideWhenSameAs = const []}) {
+  Widget status(String key,
+      {List<String> hideWhenSameAs = const [], String? waiting}) {
     if (pending.contains(key)) {
+      final line = waiting ?? t.loadingLabel;
+      final slow = waiting ?? t.loadingSlowLabel;
       return Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Semantics(
-              label: t.loadingSlowLabel,
+              label: slow,
               liveRegion: true,
               child: Column(children: [
                 const LinearProgressIndicator(
                     minHeight: 2, color: gold, backgroundColor: panel),
                 const SizedBox(height: 8),
-                SlowLoadHint(
-                    label: t.loadingLabel, slowLabel: t.loadingSlowLabel),
+                SlowLoadHint(label: line, slowLabel: slow),
               ])));
     }
     if (errors[key] != null) {
@@ -1160,9 +1180,11 @@ class _CelestialHomeState extends State<CelestialHome> {
       else ...[
         savedProfileCard(keyPrefix: 'today'),
         gap(),
-        status('chart'),
-        if (errors['chart'] != null)
-          TextButton(onPressed: editBirth, child: Text(t.editDetailsLabel)),
+        status('chart', waiting: t.openingChartLabel),
+        if (errors['chart'] case final ApiFailure failure)
+          if (failure.code == 'ambiguous_location' ||
+              failure.code == 'geocoder_unavailable')
+            TextButton(onPressed: editBirth, child: Text(t.editDetailsLabel)),
         note(t.dayBasis),
         gap(),
         status('daily', hideWhenSameAs: const ['chart']),
@@ -1383,7 +1405,7 @@ class _CelestialHomeState extends State<CelestialHome> {
       else ...[
         savedProfileCard(keyPrefix: 'chart'),
         gap(),
-        status('chart'),
+        status('chart', waiting: t.openingChartLabel),
         if (c != null) ...[
           SegmentedButton<bool>(
               showSelectedIcon: false,
