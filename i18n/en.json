@@ -52,6 +52,6 @@
   "ask.coverage.uncovered_body": "Astroplan currently interprets four life areas from advisor-reviewed rules: {areas}. This question falls outside them, so we will not improvise an answer.",
   "ask.coverage.suggestion": "Try asking about career, money, home, or relationships.",
   "error.ask_question_invalid": "Please enter a question between 3 and 280 characters.",
-  "error.ask_quota_exhausted": "Your three free questions for this week are used. They reset on Monday.",
+  "error.ask_quota_exhausted": "Your questions for this week are used. They reset on Monday.",
   "error.ask_disabled": "Ask is not available right now."
 }

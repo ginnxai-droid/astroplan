@@ -158,7 +158,7 @@ behavior most:
 | `ASTRO_AUTH_MODE` | `dev` | `firebase` required in production |
 | `ASTRO_FIELD_ENCRYPTION_KEYS` | empty | Required in production (Fernet keys) |
 | `ASTRO_ASK_ENABLED` | `false` | Dark-launch flag for the Ask endpoint |
-| `ASTRO_ASK_WEEKLY_FREE_QUOTA` | `3` | Free answered questions per user per ISO week (`<=0` = unlimited) |
+| `ASTRO_ASK_WEEKLY_FREE_QUOTA` | `100` | Answered questions per user per ISO week (`<=0` = unlimited). Enough for one person all month; still stops a runaway loop |
 | `ASTRO_LLM_ENABLED` | `false` | Plain-language reading of this chart's structured facts |
 | `ASTRO_LLM_PROVIDERS` | `gemini,gemma,anthropic` | Locks attempt order when set. Unset: OpenRouter models first if that key exists, then this list |
 | `ASTRO_OPENROUTER_MODELS` | see `.env.example` | Comma-separated OpenRouter model ids. One `OPENROUTER_API_KEY` |

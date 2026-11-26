@@ -23,6 +23,13 @@ def test_ask_keys_exist_in_every_language(lang) -> None:
         assert catalog.get(key, lang).strip()
 
 
+def test_quota_copy_names_the_weekly_reset_without_the_old_allowance() -> None:
+    catalog = Catalog("i18n")
+    text = catalog.get("error.ask_quota_exhausted", "en")
+    assert "Monday" in text
+    assert "three" not in text.lower()
+
+
 def test_uncovered_body_formats_area_list() -> None:
     catalog = Catalog("i18n")
     text = catalog.format("ask.coverage.uncovered_body", "en", areas="Career, Finances")

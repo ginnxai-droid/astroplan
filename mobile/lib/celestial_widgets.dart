@@ -119,7 +119,6 @@ String gradeName(AppLocalizations t, dynamic grade) => switch (grade) {
     };
 String friendlyError(AppLocalizations t, Object error) {
   if (error is! ApiFailure) return t.serviceError;
-  if (error.status == 429) return t.quotaError;
   return switch (error.code) {
     'auth_required' ||
     'missing_bearer_token' ||
@@ -128,7 +127,10 @@ String friendlyError(AppLocalizations t, Object error) {
     'network_unavailable' => t.networkError,
     'invalid_response' => t.invalidResponseError,
     'ask_disabled' => t.askDisabledError,
-    'ask_quota_exceeded' || 'quota_exceeded' => t.quotaError,
+    'ask_quota_exhausted' ||
+    'ask_quota_exceeded' ||
+    'quota_exceeded' =>
+      t.quotaError,
     'ambiguous_location' || 'geocoder_unavailable' => t.locationError,
     'unknown_timezone' => t.timezoneError,
     _ => t.serviceError,

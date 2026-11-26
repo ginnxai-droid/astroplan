@@ -4,7 +4,7 @@ from app.config import Settings
 def test_ask_is_dark_by_default() -> None:
     settings = Settings(env="test")
     assert settings.ask_enabled is False
-    assert settings.ask_weekly_free_quota == 3
+    assert settings.ask_weekly_free_quota == 100
     assert settings.ask_lexicon_path == "rules/ask_lexicon.yaml"
 
 

@@ -71,9 +71,11 @@ class Settings(BaseSettings):
     openrouter_models: str = DEFAULT_OPENROUTER_MODELS
     llm_monthly_call_cap: int = 1000
 
-    # Ask endpoint (routing over approved statements; off until the owner enables it)
+    # Ask endpoint (routing over approved statements; off until the owner enables it).
+    # Weekly cap is per user. 100 covers a month of one person's testing.
+    # <=0 means unlimited; a positive cap still stops a runaway loop.
     ask_enabled: bool = False
-    ask_weekly_free_quota: int = 3
+    ask_weekly_free_quota: int = 100
     ask_lexicon_path: str = "rules/ask_lexicon.yaml"
 
     # Geocoding

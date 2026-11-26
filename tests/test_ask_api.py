@@ -170,8 +170,27 @@ def test_car_question_is_answered_without_a_life_area(ask_client) -> None:
 
 def test_quota_blocks_the_fourth_answer(ask_client) -> None:
     payload = {"details": DETAILS, "question": "Should I take a loan this year?"}
-    codes = [
-        ask_client.post("/v1/readings/ask", json=payload, headers=HEADERS).status_code
-        for _ in range(4)
+    responses = [
+        ask_client.post("/v1/readings/ask", json=payload, headers=HEADERS) for _ in range(4)
     ]
-    assert codes == [200, 200, 200, 429]
+    assert [r.status_code for r in responses] == [200, 200, 200, 429]
+    detail = responses[-1].json()["detail"]
+    assert detail["error"] == "ask_quota_exhausted"
+    assert "three" not in str(detail["message"]).lower()
+
+
+def test_default_weekly_quota_allows_repeated_personal_testing() -> None:
+    settings = Settings(
+        env="test",
+        database_url="sqlite+pysqlite:///:memory:",
+        allow_draft_rules=True,
+        geocode_provider="manual_only",
+        ask_enabled=True,
+    )
+    assert settings.ask_weekly_free_quota == 100
+    client = TestClient(create_app(settings))
+    payload = {"details": DETAILS, "question": "Should I take a loan this year?"}
+    codes = [
+        client.post("/v1/readings/ask", json=payload, headers=HEADERS).status_code for _ in range(4)
+    ]
+    assert codes == [200, 200, 200, 200]

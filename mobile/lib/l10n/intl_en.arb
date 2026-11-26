@@ -72,7 +72,7 @@
   "invalidResponseError": "The service did not return a verified result. It has not been displayed.",
   "authError": "Sign-in is unavailable in this build. Account features need an authenticated session.",
   "askDisabledError": "Ask is not enabled on this server. Your question has been kept.",
-  "quotaError": "The server's question limit has been reached. Your question has been kept; try again later.",
+  "quotaError": "Your questions for this week are used. They reset on Monday. Your question has been kept.",
   "locationError": "That place could not be matched. Choose a suggestion, or enter latitude and longitude.",
   "timezoneError": "The timezone was not recognized. Use an IANA identifier such as Asia/Kolkata.",
   "consentError": "Server consent could not be recorded. Account actions remain unavailable; session calculations may still be used.",

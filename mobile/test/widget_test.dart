@@ -465,7 +465,7 @@ void main() {
       expect(h.at('/readings/ask'), hasLength(1));
       response.complete(reply({
         'detail': {
-          'error': status == 503 ? 'ask_disabled' : 'ask_quota_exceeded'
+          'error': status == 503 ? 'ask_disabled' : 'ask_quota_exhausted'
         }
       }, status));
       await tester.pumpAndSettle();
@@ -477,7 +477,7 @@ void main() {
           'How is my career?');
       expect(
           find.textContaining(
-              status == 503 ? 'not enabled on this server' : 'question limit'),
+              status == 503 ? 'not enabled on this server' : 'reset on Monday'),
           findsOneWidget);
       await tester.pump(const Duration(seconds: 30));
       expect(h.at('/readings/ask'), hasLength(1));
@@ -485,6 +485,25 @@ void main() {
       expect(h.at('/ledger/calibration'), isEmpty);
     });
   }
+
+  testWidgets('Ask 429 without a quota code is not shown as a question limit',
+      (tester) async {
+    final h = ApiHarness();
+    h.override = (request) => request.url.path.endsWith('/readings/ask')
+        ? Future.value(reply({
+            'detail': {'error': 'request_failed'}
+          }, 429))
+        : null;
+    await startProfile(tester, h);
+    await tapVisible(tester, find.byKey(const Key('tab_2')));
+    await tester.enterText(
+        find.byKey(const Key('ask_question')), 'How is my career?');
+    await tapVisible(tester, find.byKey(const Key('ask_submit')));
+    expect(find.textContaining('reset on Monday'), findsNothing);
+    expect(find.textContaining('question limit'), findsNothing);
+    expect(
+        find.textContaining('No result has been substituted'), findsOneWidget);
+  });
 
   testWidgets(
       'Ask answer and ledger use server metrics, actual id and mark criteria',
