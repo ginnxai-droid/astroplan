@@ -84,6 +84,12 @@ from app.ledger.service import (
 
 logger = logging.getLogger(__name__)
 
+
+def _coverage_area(area: str | None) -> LifeAreaCategory | None:
+    if area in AREA_ORDER:
+        return area
+    return None
+
 _STRENGTH_ADAPTER: TypeAdapter[StrengthGrade] = TypeAdapter(StrengthGrade)
 
 
@@ -221,9 +227,12 @@ def build_router(settings: Settings) -> APIRouter:
     llm_client = make_llm_client(settings)
 
     def _spoken(
-        statement: ExplainedStatement, facts: str, lang: LanguageCode
+        statement: ExplainedStatement,
+        facts: str,
+        lang: LanguageCode,
+        voice: str | None = None,
     ) -> ExplainedStatement:
-        return polish_statement(rephraser, llm_client, statement, facts, lang)
+        return polish_statement(rephraser, llm_client, statement, facts, lang, voice=voice)
 
     current_user_dep = make_auth_dependency(settings)
 
@@ -367,7 +376,10 @@ def build_router(settings: Settings) -> APIRouter:
             facts = reading_facts(c, dasha=d, transits=t, panchang=p)
             for items in areas.values():
                 for index, statement in enumerate(items):
-                    items[index] = _spoken(statement, facts, details.language)
+                    items[index] = _spoken(statement, facts, details.language, voice="period")
+            for items in daily_areas.values():
+                for index, statement in enumerate(items):
+                    items[index] = _spoken(statement, facts, details.language, voice="period")
             yogas = detect_yogas_and_doshas(c, catalog, details.language, rules=rules)
             return {
                 "dasha_summary": d,
@@ -464,7 +476,10 @@ def build_router(settings: Settings) -> APIRouter:
             transits=t,
         )
         if resolution.canonical is None or resolution.display is None:
-            return uncovered(area, list(resolution.matched_terms))
+            return uncovered(
+                _coverage_area(area),
+                list(resolution.matched_terms),
+            )
 
         if not repo.consume_ask_quota(
             user_id=auth_user,
@@ -507,7 +522,7 @@ def build_router(settings: Settings) -> APIRouter:
             request_id=str(uuid4()),
             coverage=AskCoverage(
                 status="answered",
-                area=area,
+                area=_coverage_area(area),
                 matched_terms=list(resolution.matched_terms),
                 available_areas=list(AREA_ORDER),
             ),
@@ -594,13 +609,14 @@ def build_router(settings: Settings) -> APIRouter:
                                 extra=extra,
                             ),
                             details.language,
+                            voice="period",
                         )
                     }
                 )
             )
         return report.model_copy(
             update={
-                "overview": _spoken(report.overview, base, details.language),
+                "overview": _spoken(report.overview, base, details.language, voice="period"),
                 "quarters": quarters,
             }
         )

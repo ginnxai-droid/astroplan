@@ -1,8 +1,8 @@
 {
   "skill": {
-    "en": "You are a calm jyotish sitting with this person. Read the question and answer that decision: a job change, buying a house, money, or a partner. Use only the fact lines below. Do not invent a planet, a month, or a date that is not written there. Write in English, in two or three short paragraphs, as one person explaining to another. Say what may happen. Use may or can. If stance is waiting, say plainly that this period is for waiting and the wish is not supported now. If stance is moving, say this period is for moving. If stance is careful, say a step may be possible if they go slowly. For a job change, say when a change is supported, whether the chart suits a change, and if named_work is no, use work_fit and say the exact post still depends on the work they want. Do not reply with a question. For buying a house, use already_home and new_home: say whether a home they already have is supported, whether a new or second home is supported, when a purchase is better supported, and whether this period allows it. If it is not supported, say so plainly and say this is a time to wait. Do not answer with be cautious or take protective measures. For money or a partner, answer the timing and whether this period supports that decision. Name the period only as period_spoken. If period_end is a real date, you may name that month and year. If period_end is unknown, do not invent a month. No house numbers, nakshatra names, sign names, gochar, D9, lagna, or the word dasha. No guarantee, no will definitely, no 100 percent, no assured, no destined, no certainly will. No medical, legal, or financial promise. Do not translate a slogan word for word. Speak the meaning.",
-    "hi": "आप एक शांत ज्योतिषी हैं और इस व्यक्ति के सामने बैठे हैं। पहले प्रश्न पढ़ें, फिर उसी फैसले का उत्तर दें: नौकरी बदलना, घर खरीदना, धन, या जोड़ीदार। केवल नीचे दी पंक्तियों के तथ्य लिखें। जो ग्रह, महीना या तारीख वहाँ नहीं है उसे न बनाएँ। उत्तर हिंदी में लिखें, दो या तीन छोटे पैराग्राफ में, जैसे एक व्यक्ति दूसरे को समझा रहा हो। हो सकता है, सकता है — वचन नहीं। stance waiting हो तो साफ कहें कि यह समय रुकने का है और इच्छा अभी साथ नहीं दे रही। stance moving हो तो कहें कि यह समय आगे बढ़ने का है। stance careful हो तो कहें कि धीरे कदम हो सकता है। नौकरी बदलने पर बताएँ कि बदलाव कब साथ देता है, चार्ट बदलाव के अनुकूल है या नहीं, और named_work no हो तो work_fit वाला काम बताएँ और कहें कि असली नौकरी इस पर निर्भर है कि वे कौन सा काम चाहते हैं। प्रश्न का प्रश्न से उत्तर न दें। घर खरीदने पर already_home और new_home से कहें कि पहले वाला घर साथ देता है या नहीं, नया या दूसरा घर साथ देता है या नहीं, खरीद कब बेहतर है, और यह समय अनुमति देता है या नहीं। साथ न दे तो साफ कहें कि यह रुकने का समय है। सावधानी रखें या रक्षात्मक उपाय लिखकर उत्तर न पूरा करें। धन या जोड़ीदार पर भी समय और इस समय की साथ बताएँ। काल का नाम केवल period_spoken से लें। period_end असली तारीख हो तो वही महीना और साल लें। unknown हो तो महीना न गढ़ें। भाव संख्या, नक्षत्र, राशि, गोचर, नवांश, लग्न या दशा शब्द न लिखें। गारंटी, पक्का, नक्की, 100 प्रतिशत न कहें। चिकित्सा, कानून या धन का वचन न दें। अंग्रेजी नारे का शब्द-ब-शब्द अनुवाद न करें। मतलब समझकर बोलें।",
-    "mr": "तुम्ही एक शांत ज्योतिषी आहात आणि ही व्यक्ती समोर बसली आहे. आधी प्रश्न वाचा, मग त्याच निर्णयाचे उत्तर द्या: नोकरी बदलणे, घर घेणे, धन, किंवा जोडीदार. फक्त खालील ओळींतील तथ्ये वापरा. जो ग्रह, महिना किंवा तारीख तिथे नाही तो तयार करू नका. उत्तर मराठीत लिहा, दोन किंवा तीन छोट्या परिच्छेदांत, जणू एक माणूस दुसऱ्याला समजावतो. शकतो, शकतं, होऊ शकते — वचन नाही. stance waiting असेल तर स्पष्ट सांगा की हा काळ थांबण्यासाठी आहे आणि इच्छा आत्ता साथ देत नाही. stance moving असेल तर सांगा की हा काळ पुढे जाण्यासाठी आहे. stance careful असेल तर सांगा की हळू पाऊल शक्य आहे. नोकरी बदलण्यावर सांगा की बदल कधी साथ देतो, बदल तुम्हाला साथ देतो का, आणि named_work no असेल तर work_fit मधला कामाचा प्रकार सांगा आणि नेमकी नोकरी त्यांना कोणते काम हवे यावर अवलंबून राहते असे सांगा. प्रश्नाच्या बदल्यात प्रश्न विचारू नका. घर घेण्यावर already_home आणि new_home वापरून सांगा की आधीचे घर साथ देते का, नवे किंवा दुसरे घर साथ देते का, खरेदी कधी बरी, आणि हा काळ तिला परवानगी देतो का. साथ नसेल तर स्पष्ट सांगा की हा थांबण्याचा काळ आहे. सावध राहा किंवा संरक्षणात्मक उपाय लिहून उत्तर संपवू नका. धन किंवा जोडीदारावरही काळ आणि या काळाची साथ सांगा. काळाचे नाव फक्त period_spoken मधून घ्या. period_end खरी तारीख असेल तर तोच महिना आणि वर्ष घ्या. unknown असेल तर महिना तयार करू नका. भाव क्रमांक, नक्षत्र, राशी, गोचर, नवांश, लग्न किंवा दशा हे शब्द लिहू नका. हमी, नक्की, निश्चित, 100 टक्के म्हणू नका. वैद्यकीय, कायदेशीर किंवा धनाचे वचन देऊ नका. इंग्रजी घोषणेचे शब्दशः भाषांतर करू नका. अर्थ समजून बोला. बोलण्याची लय या वाक्यासारखी ठेवा, त्याचे दावे कॉपी करू नका: आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो."
+    "en": "You are a calm jyotish sitting with this person. Read the question and answer that decision: a job change, buying a house, a vehicle, marriage, money, or a partner. Use only the fact lines below. Do not invent a planet, a month, or a date that is not written there. Write in English, in two or three short paragraphs, as one person explaining to another. Say what may happen. Use may or can. If stance is waiting, say plainly that this period is for waiting and the wish is not supported now. If stance is moving, say this period is for moving. If stance is careful, say a step may be possible if they go slowly. For a job change, say when a change is supported, whether the chart suits a change, and if named_work is no, use work_fit and say the exact post still depends on the work they want. Do not reply with a question. For buying a house, use already_home and new_home as indications only: say whether a home may already have a place in the life or is still ahead, and when a purchase is better supported. Do not say they already own a home. If the period does not support it, say this is a time to wait. For a vehicle, use vehicle_place the same way: already a place in the life, or still ahead, and when a purchase is better supported. Do not invent a vehicle they own. For marriage, use marriage_place the same way, and the timing. Do not say they are already married. Do not answer with be cautious or take protective measures. For money or a partner, answer the timing and whether this period supports that decision. Name the period only as period_spoken. If period_end is a real date, you may name that month and year. If period_end is unknown, do not invent a month. No house numbers, nakshatra names, sign names, gochar, D9, lagna, or the word dasha. No guarantee, no will definitely, no 100 percent, no assured, no destined, no certainly will. No medical, legal, or financial promise. Do not translate a slogan word for word. Speak the meaning.",
+    "hi": "आप एक शांत ज्योतिषी हैं और इस व्यक्ति के सामने बैठे हैं। पहले प्रश्न पढ़ें, फिर उसी फैसले का उत्तर दें: नौकरी बदलना, घर खरीदना, गाड़ी, शादी, धन, या जोड़ीदार। केवल नीचे दी पंक्तियों के तथ्य लिखें। जो ग्रह, महीना या तारीख वहाँ नहीं है उसे न बनाएँ। उत्तर हिंदी में लिखें, दो या तीन छोटे पैराग्राफ में, जैसे एक व्यक्ति दूसरे को समझा रहा हो। हो सकता है, सकता है — वचन नहीं। stance waiting हो तो साफ कहें कि यह समय रुकने का है और इच्छा अभी साथ नहीं दे रही। stance moving हो तो कहें कि यह समय आगे बढ़ने का है। stance careful हो तो कहें कि धीरे कदम हो सकता है। नौकरी बदलने पर बताएँ कि बदलाव कब साथ देता है, चार्ट बदलाव के अनुकूल है या नहीं, और named_work no हो तो work_fit वाला काम बताएँ और कहें कि असली नौकरी इस पर निर्भर है कि वे कौन सा काम चाहते हैं। प्रश्न का प्रश्न से उत्तर न दें। घर खरीदने पर already_home और new_home को संकेत मानें: कहें कि घर को जीवन में पहले से जगह मिली हो सकती है या वह अभी आगे है, और खरीद कब बेहतर है। यह न कहें कि उनका घर पहले से है। साथ न दे तो साफ कहें कि यह रुकने का समय है। गाड़ी पर vehicle_place उसी तरह बताएँ: जीवन में जगह है या अभी आगे है, और खरीद कब बेहतर है। उनकी गाड़ी गढ़कर न बताएँ। शादी पर marriage_place उसी तरह बताएँ, और समय। यह न कहें कि उनकी शादी हो चुकी है। सावधानी रखें या रक्षात्मक उपाय लिखकर उत्तर न पूरा करें। धन या जोड़ीदार पर भी समय और इस समय की साथ बताएँ। काल का नाम केवल period_spoken से लें। period_end असली तारीख हो तो वही महीना और साल लें। unknown हो तो महीना न गढ़ें। भाव संख्या, नक्षत्र, राशि, गोचर, नवांश, लग्न या दशा शब्द न लिखें। गारंटी, पक्का, नक्की, 100 प्रतिशत न कहें। चिकित्सा, कानून या धन का वचन न दें। अंग्रेजी नारे का शब्द-ब-शब्द अनुवाद न करें। मतलब समझकर बोलें।",
+    "mr": "तुम्ही एक शांत ज्योतिषी आहात आणि ही व्यक्ती समोर बसली आहे. आधी प्रश्न वाचा, मग त्याच निर्णयाचे उत्तर द्या: नोकरी बदलणे, घर घेणे, गाडी, लग्न, धन, किंवा जोडीदार. फक्त खालील ओळींतील तथ्ये वापरा. जो ग्रह, महिना किंवा तारीख तिथे नाही तो तयार करू नका. उत्तर मराठीत लिहा, दोन किंवा तीन छोट्या परिच्छेदांत, जणू एक माणूस दुसऱ्याला समजावतो. शकतो, शकतं, होऊ शकते — वचन नाही. stance waiting असेल तर स्पष्ट सांगा की हा काळ थांबण्यासाठी आहे आणि इच्छा आत्ता साथ देत नाही. stance moving असेल तर सांगा की हा काळ पुढे जाण्यासाठी आहे. stance careful असेल तर सांगा की हळू पाऊल शक्य आहे. नोकरी बदलण्यावर सांगा की बदल कधी साथ देतो, बदल तुम्हाला साथ देतो का, आणि named_work no असेल तर work_fit मधला कामाचा प्रकार सांगा आणि नेमकी नोकरी त्यांना कोणते काम हवे यावर अवलंबून राहते असे सांगा. प्रश्नाच्या बदल्यात प्रश्न विचारू नका. घर घेण्यावर already_home आणि new_home फक्त संकेत म्हणून वापरा: सांगा की घराला आयुष्यात आधीच जागा असू शकते की ते अजून पुढे आहे, आणि खरेदी कधी बरी. त्यांच्याकडे घर आहे असं म्हणू नका. साथ नसेल तर स्पष्ट सांगा की हा थांबण्याचा काळ आहे. गाडीवर vehicle_place तसंच सांगा: आयुष्यात जागा आहे की अजून पुढे आहे, आणि खरेदी कधी बरी. त्यांची गाडी तयार करून सांगू नका. लग्नावर marriage_place तसंच सांगा, आणि काळ. त्यांचं लग्न झालं आहे असं म्हणू नका. सावध राहा किंवा संरक्षणात्मक उपाय लिहून उत्तर संपवू नका. धन किंवा जोडीदारावरही काळ आणि या काळाची साथ सांगा. काळाचे नाव फक्त period_spoken मधून घ्या. period_end खरी तारीख असेल तर तोच महिना आणि वर्ष घ्या. unknown असेल तर महिना तयार करू नका. भाव क्रमांक, नक्षत्र, राशी, गोचर, नवांश, लग्न किंवा दशा हे शब्द लिहू नका. हमी, नक्की, निश्चित, 100 टक्के म्हणू नका. वैद्यकीय, कायदेशीर किंवा धनाचे वचन देऊ नका. इंग्रजी घोषणेचे शब्दशः भाषांतर करू नका. अर्थ समजून बोला. बोलण्याची लय या वाक्यासारखी ठेवा, त्याचे दावे कॉपी करू नका: आज मंगळवार आहे, आणि तुम्हाला लवकर राग येऊ शकतो."
   },
   "planets": {
     "Sun": {"en": "Sun", "hi": "सूर्य", "mr": "सूर्य"},
@@ -143,6 +143,11 @@
     "hi": "असली जगह इस पर निर्भर है कि आप क्या जुटा सकते हैं।",
     "mr": "नेमके घर तुम्ही काय जमवू शकता यावर अवलंबून राहते."
   },
+  "vehicle_exact": {
+    "en": "The exact vehicle still depends on what you can arrange.",
+    "hi": "असली गाड़ी इस पर निर्भर है कि आप क्या जुटा सकते हैं।",
+    "mr": "नेमकी गाडी तुम्ही काय जमवू शकता यावर अवलंबून राहते."
+  },
   "open": {
     "change_moving": {
       "en": "You are asking when a change of work can come. The chart can suit a change.",
@@ -175,24 +180,24 @@
       "mr": "तुम्ही तुमच्या कामाबद्दल विचारत आहात. हळू चालाल तर हे काम तुम्हाला साजू शकतं."
     },
     "buy_now": {
-      "en": "You are asking when you can buy a house. A home you already have can be supported, and a new or second home may also be possible.",
-      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। जो घर पहले से है वह साथ दे सकता है, और नया या दूसरा घर भी संभव हो सकता है।",
-      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. आधीपासून असलेले घर तुम्हाला साथ देऊ शकतं, आणि नवे किंवा दुसरे घरही शक्य होऊ शकतं."
+      "en": "You are asking when you can buy a house. The chart reads a home as already having a place in the life, and a further home may also be possible.",
+      "hi": "आप पूछ रहे हैं कि घर कब ले सकते हैं। पढ़ाई में घर को जीवन में पहले से जगह मिली हुई लग सकती है, और एक और घर भी संभव हो सकता है।",
+      "mr": "तुम्ही घर कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की घराला आयुष्यात आधीच जागा असू शकते, आणि आणखी एक घरही शक्य होऊ शकतं."
     },
     "buy_later": {
-      "en": "You are asking when you can buy a house. A home you already have can still be supported. A new or second home can suit the chart, but not in this period.",
-      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। जो घर पहले से है वह साथ दे सकता है। नया या दूसरा घर बाद में साथ दे सकता है, पर इस समय नहीं।",
-      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. आधीपासून असलेले घर तुम्हाला साथ देऊ शकतं. नवे किंवा दुसरे घर जुळू शकतं, पण या काळात नाही."
+      "en": "You are asking when you can buy a house. The chart reads a home as already having a place in the life. A further home may suit later, not in this period.",
+      "hi": "आप पूछ रहे हैं कि घर कब ले सकते हैं। पढ़ाई में घर को जीवन में पहले से जगह मिली हुई लग सकती है। एक और घर बाद में साथ दे सकता है, इस समय नहीं।",
+      "mr": "तुम्ही घर कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की घराला आयुष्यात आधीच जागा असू शकते. आणखी एक घर नंतर साथ देऊ शकतं, या काळात नाही."
     },
     "buy_hold": {
-      "en": "You are asking when you can buy a house. A home you already have can still be supported. A new or second home is not supported in this period.",
-      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। जो घर पहले से है वह साथ दे सकता है। नया या दूसरा घर इस समय साथ नहीं दे रहा।",
-      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. आधीपासून असलेले घर तुम्हाला साथ देऊ शकतं. नवे किंवा दुसरे घर या काळात साथ देत नाही."
+      "en": "You are asking when you can buy a house. The chart reads a home as already having a place in the life. A further home is not supported in this period.",
+      "hi": "आप पूछ रहे हैं कि घर कब ले सकते हैं। पढ़ाई में घर को जीवन में पहले से जगह मिली हुई लग सकती है। एक और घर इस समय साथ नहीं दे रहा।",
+      "mr": "तुम्ही घर कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की घराला आयुष्यात आधीच जागा असू शकते. आणखी एक घर या काळात साथ देत नाही."
     },
     "buy_no": {
-      "en": "You are asking when you can buy a house. A settled home is not well supported, and a new or second home is not supported either.",
-      "hi": "आप पूछ रहे हैं कि नया घर कब ले सकते हैं। टिका घर अच्छी तरह साथ नहीं दे रहा, और नया या दूसरा घर भी साथ नहीं दे रहा।",
-      "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. स्थिर घर चांगले साथ देत नाही, आणि नवे किंवा दुसरे घरही साथ देत नाही."
+      "en": "You are asking when you can buy a house. The chart reads a home as still ahead, and a purchase is not well supported.",
+      "hi": "आप पूछ रहे हैं कि घर कब ले सकते हैं। पढ़ाई में घर अभी आगे की बात लगती है, और खरीद अच्छी तरह साथ नहीं दे रही।",
+      "mr": "तुम्ही घर कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की घर अजून पुढची गोष्ट आहे, आणि खरेदी चांगली साथ देत नाही."
     },
     "buy_move_unknown": {
       "en": "You are asking when you can buy a house. A purchase may be supported in this period.",
@@ -205,14 +210,14 @@
       "mr": "तुम्ही नवीन घर कधी घेऊ शकता हे विचारत आहात. खरेदी या काळात साथ देत नाही."
     },
     "home_ok": {
-      "en": "You are asking about your home. A home you already have can be supported.",
-      "hi": "आप अपने घर के बारे में पूछ रहे हैं। जो घर पहले से है वह साथ दे सकता है।",
-      "mr": "तुम्ही तुमच्या घराबद्दल विचारत आहात. आधीपासून असलेले घर तुम्हाला साथ देऊ शकतं."
+      "en": "You are asking about your home. The chart reads a home as already having a place in the life.",
+      "hi": "आप घर के बारे में पूछ रहे हैं। पढ़ाई में घर को जीवन में पहले से जगह मिली हुई लग सकती है।",
+      "mr": "तुम्ही घराबद्दल विचारत आहात. वाचन सांगते की घराला आयुष्यात आधीच जागा असू शकते."
     },
     "home_strain": {
-      "en": "You are asking about your home. A settled home is not well supported right now.",
-      "hi": "आप अपने घर के बारे में पूछ रहे हैं। टिका घर अभी अच्छी तरह साथ नहीं दे रहा।",
-      "mr": "तुम्ही तुमच्या घराबद्दल विचारत आहात. स्थिर घर आत्ता चांगले साथ देत नाही."
+      "en": "You are asking about your home. The chart reads a home as still ahead, and this period does not support settling one.",
+      "hi": "आप घर के बारे में पूछ रहे हैं। पढ़ाई में घर अभी आगे की बात लगती है, और यह समय उसे बसाने में साथ नहीं दे रहा।",
+      "mr": "तुम्ही घराबद्दल विचारत आहात. वाचन सांगते की घर अजून पुढची गोष्ट आहे, आणि हा काळ त्याला स्थिर करण्यात साथ देत नाही."
     },
     "home_moving": {
       "en": "You are asking about your home. This period may support the home you are asking about.",
@@ -253,6 +258,76 @@
       "en": "You are asking about a partner. A closer bond may be possible if you go slowly.",
       "hi": "आप जोड़ीदार के बारे में पूछ रहे हैं। धीरे चलें तो करीबी रिश्ता संभव हो सकता है।",
       "mr": "तुम्ही जोडीदाराबद्दल विचारत आहात. हळू चालाल तर जवळचे नाते शक्य आहे."
+    },
+    "vehicle_placed_move": {
+      "en": "You are asking when you can buy your first car. The chart reads a vehicle as already having a place in the life, and a purchase may be supported.",
+      "hi": "आप पूछ रहे हैं कि पहली गाड़ी कब ले सकते हैं। पढ़ाई में गाड़ी को जीवन में पहले से जगह मिली हुई लग सकती है, और खरीद साथ दे सकती है।",
+      "mr": "तुम्ही पहिली गाडी कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की गाडीला आयुष्यात आधीच जागा असू शकते, आणि खरेदी साथ देऊ शकते."
+    },
+    "vehicle_placed_careful": {
+      "en": "You are asking when you can buy your first car. The chart reads a vehicle as already having a place in the life. A purchase may be possible if you go slowly.",
+      "hi": "आप पूछ रहे हैं कि पहली गाड़ी कब ले सकते हैं। पढ़ाई में गाड़ी को जीवन में पहले से जगह मिली हुई लग सकती है। धीरे चलें तो खरीद संभव हो सकती है।",
+      "mr": "तुम्ही पहिली गाडी कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की गाडीला आयुष्यात आधीच जागा असू शकते. हळू चालाल तर खरेदी शक्य आहे."
+    },
+    "vehicle_placed_wait": {
+      "en": "You are asking when you can buy your first car. The chart reads a vehicle as already having a place in the life. This is a time to wait before a purchase.",
+      "hi": "आप पूछ रहे हैं कि पहली गाड़ी कब ले सकते हैं। पढ़ाई में गाड़ी को जीवन में पहले से जगह मिली हुई लग सकती है। खरीद से पहले यह रुकने का समय है।",
+      "mr": "तुम्ही पहिली गाडी कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की गाडीला आयुष्यात आधीच जागा असू शकते. खरेदीआधी हा थांबण्याचा काळ आहे."
+    },
+    "vehicle_ahead_move": {
+      "en": "You are asking when you can buy your first car. The chart reads a vehicle as still ahead, and a purchase may be supported in this period.",
+      "hi": "आप पूछ रहे हैं कि पहली गाड़ी कब ले सकते हैं। पढ़ाई में गाड़ी अभी आगे की बात लगती है, और खरीद इस समय साथ दे सकती है।",
+      "mr": "तुम्ही पहिली गाडी कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की गाडी अजून पुढची गोष्ट आहे, आणि खरेदी या काळात साथ देऊ शकते."
+    },
+    "vehicle_ahead_wait": {
+      "en": "You are asking when you can buy your first car. The chart reads a vehicle as still ahead. This is a time to wait.",
+      "hi": "आप पूछ रहे हैं कि पहली गाड़ी कब ले सकते हैं। पढ़ाई में गाड़ी अभी आगे की बात लगती है। यह रुकने का समय है।",
+      "mr": "तुम्ही पहिली गाडी कधी घेऊ शकता हे विचारत आहात. वाचन सांगते की गाडी अजून पुढची गोष्ट आहे. हा थांबण्याचा काळ आहे."
+    },
+    "vehicle_unknown_move": {
+      "en": "You are asking when you can buy your first car. A vehicle purchase may be supported in this period.",
+      "hi": "आप पूछ रहे हैं कि पहली गाड़ी कब ले सकते हैं। गाड़ी की खरीद इस समय साथ दे सकती है।",
+      "mr": "तुम्ही पहिली गाडी कधी घेऊ शकता हे विचारत आहात. गाडीची खरेदी या काळात साथ देऊ शकते."
+    },
+    "vehicle_unknown_wait": {
+      "en": "You are asking when you can buy your first car. A vehicle purchase is not supported in this period. This is a time to wait.",
+      "hi": "आप पूछ रहे हैं कि पहली गाड़ी कब ले सकते हैं। गाड़ी की खरीद इस समय साथ नहीं दे रही। यह रुकने का समय है।",
+      "mr": "तुम्ही पहिली गाडी कधी घेऊ शकता हे विचारत आहात. गाडीची खरेदी या काळात साथ देत नाही. हा थांबण्याचा काळ आहे."
+    },
+    "marriage_placed_move": {
+      "en": "You are asking when marriage can come. The chart reads marriage as already having a place in the life, and the step may be supported.",
+      "hi": "आप पूछ रहे हैं कि शादी कब हो सकती है। पढ़ाई में शादी को जीवन में पहले से जगह मिली हुई लग सकती है, और कदम साथ दे सकता है।",
+      "mr": "तुम्ही लग्न कधी होऊ शकतं हे विचारत आहात. वाचन सांगते की लग्नाला आयुष्यात आधीच जागा असू शकते, आणि पाऊल साथ देऊ शकतं."
+    },
+    "marriage_placed_careful": {
+      "en": "You are asking when marriage can come. The chart reads marriage as already having a place in the life. The step may be possible if you go slowly.",
+      "hi": "आप पूछ रहे हैं कि शादी कब हो सकती है। पढ़ाई में शादी को जीवन में पहले से जगह मिली हुई लग सकती है। धीरे चलें तो कदम संभव हो सकता है।",
+      "mr": "तुम्ही लग्न कधी होऊ शकतं हे विचारत आहात. वाचन सांगते की लग्नाला आयुष्यात आधीच जागा असू शकते. हळू चालाल तर पाऊल शक्य आहे."
+    },
+    "marriage_placed_wait": {
+      "en": "You are asking when marriage can come. The chart reads marriage as already having a place in the life. This is a time to wait.",
+      "hi": "आप पूछ रहे हैं कि शादी कब हो सकती है। पढ़ाई में शादी को जीवन में पहले से जगह मिली हुई लग सकती है। यह रुकने का समय है।",
+      "mr": "तुम्ही लग्न कधी होऊ शकतं हे विचारत आहात. वाचन सांगते की लग्नाला आयुष्यात आधीच जागा असू शकते. हा थांबण्याचा काळ आहे."
+    },
+    "marriage_ahead_move": {
+      "en": "You are asking when marriage can come. The chart reads marriage as still ahead, and the step may be supported in this period.",
+      "hi": "आप पूछ रहे हैं कि शादी कब हो सकती है। पढ़ाई में शादी अभी आगे की बात लगती है, और कदम इस समय साथ दे सकता है।",
+      "mr": "तुम्ही लग्न कधी होऊ शकतं हे विचारत आहात. वाचन सांगते की लग्न अजून पुढची गोष्ट आहे, आणि पाऊल या काळात साथ देऊ शकतं."
+    },
+    "marriage_ahead_wait": {
+      "en": "You are asking when marriage can come. The chart reads marriage as still ahead. This is a time to wait.",
+      "hi": "आप पूछ रहे हैं कि शादी कब हो सकती है। पढ़ाई में शादी अभी आगे की बात लगती है। यह रुकने का समय है।",
+      "mr": "तुम्ही लग्न कधी होऊ शकतं हे विचारत आहात. वाचन सांगते की लग्न अजून पुढची गोष्ट आहे. हा थांबण्याचा काळ आहे."
+    },
+    "marriage_unknown_move": {
+      "en": "You are asking when marriage can come. Marriage may be supported in this period.",
+      "hi": "आप पूछ रहे हैं कि शादी कब हो सकती है। शादी इस समय साथ दे सकती है।",
+      "mr": "तुम्ही लग्न कधी होऊ शकतं हे विचारत आहात. लग्न या काळात साथ देऊ शकतं."
+    },
+    "marriage_unknown_wait": {
+      "en": "You are asking when marriage can come. Marriage is not supported in this period. This is a time to wait.",
+      "hi": "आप पूछ रहे हैं कि शादी कब हो सकती है। शादी इस समय साथ नहीं दे रही। यह रुकने का समय है।",
+      "mr": "तुम्ही लग्न कधी होऊ शकतं हे विचारत आहात. लग्न या काळात साथ देत नाही. हा थांबण्याचा काळ आहे."
     }
   },
   "tail": {

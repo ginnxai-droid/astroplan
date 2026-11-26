@@ -55,14 +55,19 @@ def test_annual_forecast_offers_a_pdf() -> None:
     assert annual.delivery_format == "IN_APP_INTERACTIVE"
     assert annual.pdf_export_available is True
     assert len(annual.quarters) == 4
-    quarter = annual.quarters[0].theme_statement.simple_text
+    quarter = annual.quarters[0].theme_statement.pro_text
     assert "Career." in quarter
     assert "Relationships, marriage, and children." in quarter
     assert "Money." in quarter
     assert "Observance." in quarter
     assert "January." in quarter
     assert len(quarter) > 1500
-    assert chart.lagna_sign_name in annual.overview.simple_text
+    spoken = annual.quarters[0].theme_statement.simple_text
+    assert "On the 15th the Sun is in" not in spoken
+    assert "you" in spoken.lower()
+    assert chart.lagna_sign_name not in annual.overview.simple_text
+    assert "you" in annual.overview.simple_text.lower()
+    assert chart.lagna_sign_name in annual.overview.pro_text
 
 
 def test_annual_pdf_is_a_real_document(client) -> None:
@@ -124,8 +129,13 @@ def test_quarters_name_distinct_months_and_changes() -> None:
         ("July", "August", "September"),
         ("October", "November", "December"),
     )
-    texts = [quarter.theme_statement.simple_text for quarter in annual.quarters]
+    texts = [quarter.theme_statement.pro_text for quarter in annual.quarters]
+    spoken = [quarter.theme_statement.simple_text for quarter in annual.quarters]
     assert len(set(texts)) == 4
+    assert len(set(spoken)) == 4
+    for text, months in zip(spoken, named, strict=True):
+        assert months[0] in text and months[2] in text
+        assert "On the 15th the Sun is in" not in text
     sun_signs: list[str] = []
     for text, months in zip(texts, named, strict=True):
         for month in months:

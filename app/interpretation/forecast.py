@@ -23,7 +23,13 @@ from app.core.ephemeris import sidereal_longitudes, sidereal_nodes
 from app.core.zodiac import sign_index_from_longitude
 from app.interpretation.guardrails import verify_text
 from app.interpretation.language import Catalog
-from app.interpretation.phala import quarter_reading, transit_note, year_reading
+from app.interpretation.phala import (
+    period_span_human,
+    period_year_human,
+    quarter_reading,
+    transit_note,
+    year_reading,
+)
 from app.interpretation.readings import generate_life_area_readings
 from app.interpretation.rules import Rule
 from app.interpretation.terms import gloss
@@ -213,16 +219,8 @@ def generate_annual_forecast_report(
     dasha, transits = snapshots[0]
     areas = generate_life_area_readings(chart, dasha, transits, rules, catalog, lang)
 
-    simple = year_reading(chart, dasha, transits, lang)
-    pro = catalog.format(
-        "annual_overview.pro",
-        lang,
-        lagna=chart.lagna_sign_name,
-        moon=chart.moon_sign_name,
-        md=str(dasha["active_mahadasha"]),
-        ad=str(dasha["active_antardasha"]),
-        sat_house=str(transits["saturn_house_from_moon"]),
-    )
+    simple = period_year_human(chart, dasha, transits, lang, year)
+    pro = year_reading(chart, dasha, transits, lang)
     verify_text(simple, languages=(lang,))
     verify_text(pro, languages=(lang,))
 
@@ -261,11 +259,18 @@ def generate_annual_forecast_report(
             months,
             month_text=month_text,
         )
+        spoken = period_span_human(
+            chart, q_dasha, q_transits, lang, year, months, category
+        )
         quarters.append(
             AnnualForecastQuarter(
                 quarter=label.format(year=year),
                 theme_statement=base.model_copy(
-                    update={"simple_text": reading, "time_window": label.format(year=year)}
+                    update={
+                        "simple_text": spoken,
+                        "pro_text": reading,
+                        "time_window": label.format(year=year),
+                    }
                 ),
                 active_dasha=(
                     f"{gloss(q_dasha['active_mahadasha'], lang)}-"

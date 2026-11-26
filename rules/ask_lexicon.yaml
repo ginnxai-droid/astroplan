@@ -93,6 +93,16 @@ home:
   - कुटुंब
   - आई
   - वडील
+others:
+  - car
+  - vehicle
+  - bike
+  - scooter
+  - automobile
+  - गाड़ी
+  - गाडी
+  - कार
+  - वाहन
 present_cues:
   - today
   - now

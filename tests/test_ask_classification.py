@@ -43,6 +43,13 @@ def test_unmapped_area_abstains(lexicon) -> None:
     assert classify_question("How is my health in 2027?", lexicon) == (None, [])
 
 
+def test_vehicle_routes_to_others(lexicon) -> None:
+    routed, matched = classify_question("When will I buy my first car?", lexicon)
+    assert routed == "others"
+    assert "car" in matched
+    assert classify_question("How is my career?", lexicon)[0] == "career"
+
+
 def test_negation_is_not_understood_and_routes_to_the_named_area(lexicon) -> None:
     # Documented v1 limitation: the router sees the noun, not the negation.
     assert classify_question("I am not worried about money, will my loan clear?", lexicon)[0] == (

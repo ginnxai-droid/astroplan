@@ -1,5 +1,5 @@
 /// Same area words as rules/ask_lexicon.yaml. The question is never sent to a model.
-const lifeAreaOrder = ['career', 'relationships', 'finances', 'home'];
+const lifeAreaOrder = ['career', 'relationships', 'finances', 'home', 'others'];
 
 const lifeAreaTerms = <String, List<String>>{
   'career': [
@@ -101,6 +101,17 @@ const lifeAreaTerms = <String, List<String>>{
     'आई',
     'वडील',
   ],
+  'others': [
+    'car',
+    'vehicle',
+    'bike',
+    'scooter',
+    'automobile',
+    'गाड़ी',
+    'गाडी',
+    'कार',
+    'वाहन',
+  ],
 };
 
 const presentTimeCues = [
@@ -130,15 +141,22 @@ bool _matches(String lowered, String term) {
 }
 
 /// One life area when a single area has the most matching words, otherwise none.
+/// Others is only used when none of the four life areas match, so "car" does not tie with "career".
 String? classifyLifeArea(String question) {
   final lowered = question.toLowerCase();
   final scores = <String, int>{};
   for (final area in lifeAreaOrder) {
+    if (area == 'others') continue;
     final hits =
         lifeAreaTerms[area]!.where((term) => _matches(lowered, term)).length;
     if (hits > 0) scores[area] = hits;
   }
-  if (scores.isEmpty) return null;
+  if (scores.isEmpty) {
+    final otherHits = lifeAreaTerms['others']!
+        .where((term) => _matches(lowered, term))
+        .length;
+    return otherHits > 0 ? 'others' : null;
+  }
   final best = scores.values.reduce((left, right) => left > right ? left : right);
   final winners = [
     for (final entry in scores.entries)

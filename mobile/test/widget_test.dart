@@ -96,6 +96,7 @@ class ApiHarness {
   late final api = AstroplanApiClient(
       baseUrl: 'http://localhost:8000/v1',
       userId: 'test-user',
+      wakeGap: Duration.zero,
       client: MockClient((request) async {
         requests.add(request);
         final custom = await override?.call(request);
@@ -178,6 +179,7 @@ class ApiHarness {
           '/v1/privacy/export' =>
             reply({'user_id': 'test-user', 'ledger_entries': []}),
           '/v1/privacy/delete' => reply({'deleted': true}),
+          '/v1/health' => reply({'status': 'ok', 'version': '3.6.0'}),
           _ => reply({}),
         };
       }));

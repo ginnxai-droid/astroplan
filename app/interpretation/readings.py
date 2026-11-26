@@ -16,12 +16,12 @@ from app.interpretation.guardrails import verify_text
 from app.interpretation.language import Catalog
 from app.interpretation.phala import (
     area_pro_reading,
-    area_reading,
     daily_area_human,
     daily_area_reading,
     daily_human_reading,
     daily_pro_reading,
     house_matter,
+    period_area_human,
 )
 from app.interpretation.rules import Rule
 from app.interpretation.terms import gloss
@@ -124,8 +124,8 @@ def generate_life_area_readings(
     for rule in rules:
         if rule.category not in out:
             continue
-        simple = f"{area_reading(chart, dasha, transits, lang, rule.category)} {impact}"
-        pro = area_pro_reading(chart, dasha, transits, lang, rule.category)
+        simple = period_area_human(chart, dasha, transits, lang, rule.category)
+        pro = f"{area_pro_reading(chart, dasha, transits, lang, rule.category)} {impact}"
         verify_text(simple, languages=(lang,))
         verify_text(pro, languages=(lang,))
         evidence = rule.evidence_template.format(

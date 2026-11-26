@@ -13,6 +13,7 @@ void main() {
   test('offline without cached panchang never invents astronomical data',
       () async {
     final api = AstroplanApiClient(
+        wakeAttempts: 1,
         client: MockClient((_) async => throw http.ClientException('offline')));
     await expectLater(
         api.fetchAndCacheDailyPanchang('2026-11-17'), throwsException);
@@ -20,7 +21,7 @@ void main() {
 
   test('an actual offline cache is explicitly labeled', () async {
     var offline = false;
-    final api = AstroplanApiClient(client: MockClient((_) async {
+    final api = AstroplanApiClient(wakeAttempts: 1, client: MockClient((_) async {
       if (offline) throw http.ClientException('offline');
       return http.Response(
           jsonEncode({
@@ -146,7 +147,7 @@ void main() {
 
   test('cache is scoped to selected coordinates', () async {
     var offline = false;
-    final api = AstroplanApiClient(client: MockClient((_) async {
+    final api = AstroplanApiClient(wakeAttempts: 1, client: MockClient((_) async {
       if (offline) throw http.ClientException('offline');
       return http.Response('{"tithi":"Original"}', 200);
     }));
@@ -186,7 +187,7 @@ void main() {
 
   test('expired cache is not presented as today data', () async {
     var offline = false;
-    final api = AstroplanApiClient(client: MockClient((_) async {
+    final api = AstroplanApiClient(wakeAttempts: 1, client: MockClient((_) async {
       if (offline) throw http.ClientException('offline');
       return http.Response('{"tithi":"Original"}', 200);
     }));
@@ -268,6 +269,7 @@ void main() {
     await original.fetchAndCacheDailyPanchang('2026-11-17');
     final other = AstroplanApiClient(
         baseUrl: 'http://localhost:8001/v1',
+        wakeAttempts: 1,
         client: MockClient((_) async => throw http.ClientException('offline')));
     await expectLater(
         other.fetchAndCacheDailyPanchang('2026-11-17'), throwsException);
@@ -301,5 +303,55 @@ void main() {
           return http.Response('{"ok":true}', 200);
         }));
     expect((await api.get('/panchang'))['ok'], true);
+  });
+
+  test('a cold 502 is retried until the server answers', () async {
+    var calls = 0;
+    final api = AstroplanApiClient(
+        baseUrl: 'https://example.test/v1',
+        wakeAttempts: 3,
+        wakeGap: Duration.zero,
+        client: MockClient((_) async {
+          calls++;
+          if (calls < 3) return http.Response('{}', 502);
+          return http.Response('{"status":"ok"}', 200);
+        }));
+    expect((await api.get('/health'))['status'], 'ok');
+    expect(calls, 3);
+  });
+
+  test('a server that stays down is not marked connected', () async {
+    var calls = 0;
+    final api = AstroplanApiClient(
+        baseUrl: 'https://example.test/v1',
+        wakeAttempts: 2,
+        wakeGap: Duration.zero,
+        client: MockClient((_) async {
+          calls++;
+          return http.Response('{}', 502);
+        }));
+    await expectLater(
+        api.waitUntilAwake(),
+        throwsA(isA<ApiFailure>()
+            .having((e) => e.code, 'code', 'request_failed')));
+    expect(calls, 2);
+  });
+
+  test('Ask is not retried while the server is waking', () async {
+    var calls = 0;
+    final api = AstroplanApiClient(
+        baseUrl: 'http://localhost:8000/v1',
+        wakeAttempts: 4,
+        wakeGap: Duration.zero,
+        userId: 'qa-user',
+        client: MockClient((_) async {
+          calls++;
+          return http.Response('{}', 502);
+        }));
+    await expectLater(
+        api.post('/readings/ask', {}, protected: true),
+        throwsA(isA<ApiFailure>()
+            .having((e) => e.code, 'code', 'request_failed')));
+    expect(calls, 1);
   });
 }

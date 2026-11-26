@@ -444,5 +444,164 @@
       "hi": "जल्दी में जो फैसला आप लेते, वह आज ठीक नहीं पड़ सकता। उसे छोड़ दें।",
       "mr": "घाईत घेतलेला निर्णय आज तुम्हाला मानवणार नाही. तो सोडून द्या."
     }
+  },
+  "period_guide": {
+    "en": "Speak as a calm jyotish sitting with this person. Write in English, in exactly two short paragraphs, under 120 words. The facts are one part of life for this period, or a year. Paragraph 1 says how that part of life may feel. Paragraph 2 is one practical line. A planet may be named only inside a sentence about their life. Use may or can. If the period does not support a step, say this is a time to wait. Do not name a sign, nakshatra, house number, gochar, or D9. Do not say dasha, transit, lagna, or kundali. Do not say guaranteed, will definitely, 100%, assured, destined, or certainly will. No medical, legal, or financial promise. Use only the facts below.",
+    "hi": "इस व्यक्ति से ऐसे बोलें जैसे एक शांत ज्योतिषी सामने बैठा हो। उत्तर हिंदी में लिखें, ठीक दो छोटे पैराग्राफ में, लगभग 120 शब्दों के अंदर। तथ्य इस समय के जीवन के एक हिस्से या एक साल के बारे में हैं। पहला पैराग्राफ बताए कि वह हिस्सा कैसा लग सकता है। दूसरा एक व्यावहारिक पंक्ति हो। ग्रह का नाम केवल जीवन वाले वाक्य में लें। सकता है, हो सकता है। समय साथ न दे तो कहें कि यह रुकने का समय है। राशि, नक्षत्र, भाव संख्या, गोचर या नवांश न लिखें। दशा, गोचर, लग्न न कहें। गारंटी, पक्का, 100% न कहें। चिकित्सा, कानून या धन का वचन न दें। केवल दिए तथ्यों का उपयोग करें।",
+    "mr": "या व्यक्तीशी असे बोला जणू एक ज्योतिषी समोर बसला आहे. उत्तर मराठीत लिहा, नेमक्या दोन छोट्या परिच्छेदांत, सुमारे 120 शब्दांच्या आत. तथ्ये या काळातील जीवनाच्या एका भागाबद्दल किंवा एका वर्षाबद्दल आहेत. पहिला परिच्छेद सांगो की तो भाग कसा वाटू शकतो. दुसरा एक व्यावहारिक ओळ असो. ग्रहाचे नाव फक्त जीवनाच्या वाक्यात घ्या. शकतो, शकतं. काळ साथ देत नसेल तर सांगा की हा थांबण्याचा काळ आहे. राशी, नक्षत्र, भाव क्रमांक, गोचर किंवा नवांश लिहू नका. दशा, गोचर, लग्न म्हणू नका. हमी, नक्की, 100% म्हणू नका. वैद्यकीय, कायदेशीर किंवा धनाचे वचन देऊ नका. फक्त दिलेली तथ्ये वापरा."
+  },
+  "period_open": {
+    "career": {
+      "easy": {
+        "en": "In this period, one piece of your work can move if you stay with it. Finish that piece, and leave the rest.",
+        "hi": "इस समय आपके काम का एक हिस्सा आगे बढ़ सकता है, अगर आप उसी पर टिके रहें। उसे पूरा करें, बाकी रह सकता है।",
+        "mr": "या काळात तुमच्या कामाचा एक तुकडा पुढे जाऊ शकतो, जर तुम्ही त्याचवर राहिलात. तो संपवा, बाकी राहू दे."
+      },
+      "narrow": {
+        "en": "In this period, your work may feel heavier than it is. You can finish one piece, and you do not have to prove yourself.",
+        "hi": "इस समय आपका काम जितना है उससे भारी लग सकता है। आप एक हिस्सा पूरा कर सकते हैं, खुद को साबित करने की जरूरत नहीं।",
+        "mr": "या काळात तुमचं काम खरं आहे त्यापेक्षा जड वाटू शकतं. तुम्ही एक तुकडा संपवू शकता, स्वतःला सिद्ध करायची गरज नाही."
+      }
+    },
+    "relationships": {
+      "easy": {
+        "en": "In this period, a kind word with someone close may come more easily. Say the real point in a few words.",
+        "hi": "इस समय किसी अपने से मीठा बोलना आसान पड़ सकता है। असली बात थोड़े शब्दों में कह दें।",
+        "mr": "या काळात जवळच्या माणसाशी गोड बोलणं सोपं पडू शकतं. खरा मुद्दा थोड्या शब्दांत सांगून टाका."
+      },
+      "narrow": {
+        "en": "In this period, a disagreement with someone close may come up. You can say it plainly, without covering it.",
+        "hi": "इस समय किसी अपने से अनबन निकल सकती है। आप उसे सीधे कह सकते हैं, ऊपर से ढकने की जरूरत नहीं।",
+        "mr": "या काळात जवळच्या माणसाशी मतभेद निघू शकतो. तुम्ही तो सरळ सांगू शकता, वरून झाकण्याची गरज नाही."
+      }
+    },
+    "finances": {
+      "easy": {
+        "en": "In this period, you can keep a small promise with money. Stay inside what you already understand.",
+        "hi": "इस समय धन में एक छोटा वचन निभ सकता है। जो आप समझते हैं उसी में रहें।",
+        "mr": "या काळात धनात एक छोटे वचन निभू शकतं. जे तुम्हाला समजते त्याच्या आत राहा."
+      },
+      "narrow": {
+        "en": "In this period, the hope around money may be larger than what you can keep. Promise only what you can actually do.",
+        "hi": "इस समय धन की उम्मीद उस बात से बड़ी हो सकती है जिसे आप निभा सकें। केवल वही वचन दें जो आप सच में कर सकते हैं।",
+        "mr": "या काळात धनाची आशा त्या गोष्टीपेक्षा मोठी होऊ शकते जी तुम्ही निभावू शकता. फक्त ते वचन द्या जे तुम्ही खरोखर करू शकता."
+      }
+    },
+    "home": {
+      "easy": {
+        "en": "In this period, home may feel a little softer. Give yourself a quiet hour.",
+        "hi": "इस समय घर पर मन थोड़ा नरम रह सकता है। अपने लिए एक शांत घंटा रखें।",
+        "mr": "या काळात घरी मन थोडं मऊ राहू शकतं. स्वतःला एक शांत तास द्या."
+      },
+      "narrow": {
+        "en": "In this period, the mood at home may shift. Do not settle a hard matter while you feel unsettled.",
+        "hi": "इस समय घर पर मन बदल सकता है। बेचैनी में कोई कठिन बात न सुलझाएँ।",
+        "mr": "या काळात घरी मन बदलू शकतं. अस्वस्थ असताना कठीण विषय मिटवू नका."
+      }
+    }
+  },
+  "year_open": {
+    "moving": {
+      "en": "In {year}, this year can open a step you have been holding. You may move while this period is running.",
+      "hi": "{year} में यह साल एक रुका कदम खोल सकता है। यह समय चल रहा हो तो आप आगे बढ़ सकते हैं।",
+      "mr": "{year} मध्ये हे वर्ष एक थांबलेले पाऊल उघडू शकतं. हा काळ चालू असताना तुम्ही पुढे जाऊ शकता."
+    },
+    "waiting": {
+      "en": "In {year}, this year reads as a time to wait. A large new step is not well supported now.",
+      "hi": "{year} में यह साल रुकने का समय है। बड़ा नया कदम अभी साथ नहीं दे रहा।",
+      "mr": "{year} मध्ये हे वर्ष थांबण्याचा काळ आहे. मोठे नवे पाऊल आत्ता साथ देत नाही."
+    },
+    "careful": {
+      "en": "In {year}, a step may be possible if you go slowly. The year can support a small move, and it can also wait.",
+      "hi": "{year} में धीरे चलें तो एक कदम संभव हो सकता है। साल एक छोटी चाल को साथ दे सकता है, और वह रुक भी सकती है।",
+      "mr": "{year} मध्ये हळू चालाल तर एक पाऊल शक्य आहे. वर्ष एका छोट्या चालीला साथ देऊ शकतं, आणि ती थांबवताही येते."
+    }
+  },
+  "year_close": {
+    "moving": {
+      "en": "{step} This is a chance, not a promise.",
+      "hi": "{step} यह एक संभावना है, वचन नहीं।",
+      "mr": "{step} ही एक शक्यता आहे, वचन नाही."
+    },
+    "waiting": {
+      "en": "{step} You can keep ordinary life steady.",
+      "hi": "{step} रोजमर्रा की जिंदगी स्थिर रख सकते हैं।",
+      "mr": "{step} नेहमीचे आयुष्य स्थिर ठेवू शकता."
+    },
+    "careful": {
+      "en": "{step} Do not rush the year.",
+      "hi": "{step} साल को जल्दी में न धकेलें।",
+      "mr": "{step} वर्षाला घाईने ढकलू नका."
+    }
+  },
+  "span_open": {
+    "career": {
+      "moving": {
+        "en": "From {start} through {end} of {year}, your work may move if you stay with one piece.",
+        "hi": "{year} में {start} से {end} तक आपका काम एक हिस्से पर टिके रहने से आगे बढ़ सकता है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत तुमचं काम एका तुकड्यावर राहिल्यास पुढे जाऊ शकतं."
+      },
+      "waiting": {
+        "en": "From {start} through {end} of {year}, work is better left steady. This is a time to wait before a large change.",
+        "hi": "{year} में {start} से {end} तक काम स्थिर रखना बेहतर है। बड़े बदलाव से पहले यह रुकने का समय है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत काम स्थिर ठेवणे बरे. मोठ्या बदलाआधी हा थांबण्याचा काळ आहे."
+      },
+      "careful": {
+        "en": "From {start} through {end} of {year}, a work step may be possible if you go slowly.",
+        "hi": "{year} में {start} से {end} तक धीरे चलें तो काम का एक कदम संभव हो सकता है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत हळू चालाल तर कामाचे एक पाऊल शक्य आहे."
+      }
+    },
+    "relationships": {
+      "moving": {
+        "en": "From {start} through {end} of {year}, a closer word with someone may be possible.",
+        "hi": "{year} में {start} से {end} तक किसी अपने से नजदीकी बात संभव हो सकती है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत जवळच्या माणसाशी जवळचे बोलणे शक्य होऊ शकतं."
+      },
+      "waiting": {
+        "en": "From {start} through {end} of {year}, a new bond is not well supported. This is a time to wait.",
+        "hi": "{year} में {start} से {end} तक नया रिश्ता अच्छी तरह साथ नहीं दे रहा। यह रुकने का समय है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत नवे नाते चांगले साथ देत नाही. हा थांबण्याचा काळ आहे."
+      },
+      "careful": {
+        "en": "From {start} through {end} of {year}, a closer bond may be possible if you go slowly.",
+        "hi": "{year} में {start} से {end} तक धीरे चलें तो करीबी रिश्ता संभव हो सकता है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत हळू चालाल तर जवळचे नाते शक्य आहे."
+      }
+    },
+    "finances": {
+      "moving": {
+        "en": "From {start} through {end} of {year}, a small step with money may be supported.",
+        "hi": "{year} में {start} से {end} तक धन का एक छोटा कदम साथ पा सकता है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत धनाचे एक छोटे पाऊल साथ मिळवू शकतं."
+      },
+      "waiting": {
+        "en": "From {start} through {end} of {year}, a large step with money is not supported. This is a time to wait.",
+        "hi": "{year} में {start} से {end} तक धन का बड़ा कदम साथ नहीं दे रहा। यह रुकने का समय है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत धनाचे मोठे पाऊल साथ देत नाही. हा थांबण्याचा काळ आहे."
+      },
+      "careful": {
+        "en": "From {start} through {end} of {year}, a small money step may be possible if you go slowly.",
+        "hi": "{year} में {start} से {end} तक धीरे चलें तो धन का छोटा कदम संभव हो सकता है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत हळू चालाल तर धनाचे छोटे पाऊल शक्य आहे."
+      }
+    },
+    "home": {
+      "moving": {
+        "en": "From {start} through {end} of {year}, time at home may feel more supported.",
+        "hi": "{year} में {start} से {end} तक घर का समय ज्यादा साथ दे सकता है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत घराचा वेळ जास्त साथ देऊ शकतो."
+      },
+      "waiting": {
+        "en": "From {start} through {end} of {year}, a hard step at home is not supported. This is a time to wait.",
+        "hi": "{year} में {start} से {end} तक घर का कठिन कदम साथ नहीं दे रहा। यह रुकने का समय है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत घरातील कठीण पाऊल साथ देत नाही. हा थांबण्याचा काळ आहे."
+      },
+      "careful": {
+        "en": "From {start} through {end} of {year}, a step at home may be possible if you go slowly.",
+        "hi": "{year} में {start} से {end} तक धीरे चलें तो घर का कदम संभव हो सकता है।",
+        "mr": "{year} मध्ये {start} ते {end} पर्यंत हळू चालाल तर घरातील पाऊल शक्य आहे."
+      }
+    }
   }
 }

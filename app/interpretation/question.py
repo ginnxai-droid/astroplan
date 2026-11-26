@@ -27,6 +27,7 @@ _NAMED_WORK = re.compile(
 )
 _CHANGE = ("change", "switch", "quit", "resign", "desperate", "बदल", "छोड़", "सोड")
 _BUY = ("buy", "purchase", "new house", "new home", "second home", "खरेदी", "खरीद")
+_MARRY = ("marry", "marriage", "wedding", "विवाह", "शादी", "लग्न")
 _PRESSURE = {6, 8, 12}
 _JUPITER_EASY = {2, 5, 7, 9, 11}
 _SATURN_EASY = {3, 6, 11}
@@ -46,7 +47,7 @@ _LORDS = {
     "Aquarius": "Saturn",
     "Pisces": "Jupiter",
 }
-_AREA_HOUSE = {"career": 10, "relationships": 7, "finances": 2, "home": 4}
+_AREA_HOUSE = {"career": 10, "relationships": 7, "finances": 2, "home": 4, "others": 4}
 _GLOSSES = (
     "अहंकारापेक्षा छोटे",
     "आरोपेक्षा छोटे",
@@ -67,7 +68,11 @@ _TOPIC = {
     "career": (r"\b(?:work|job|career)\b", ("काम", "नोकरी", "नौकरी", "करियर", "करिअर")),
     "home": (r"\b(?:home|house)\b", ("घर", "मकान")),
     "finances": (r"\b(?:money|loan)\b", ("धन", "पैसे", "पैसा", "कर्ज")),
-    "relationships": (r"\b(?:partner|bond)\b", ("जोडीदार", "जोड़ीदार", "रिश्ता", "नाते")),
+    "relationships": (
+        r"\b(?:partner|bond|marriage|marry)\b",
+        ("जोडीदार", "जोड़ीदार", "रिश्ता", "नाते", "लग्न", "शादी", "विवाह"),
+    ),
+    "others": (r"\b(?:car|vehicle)\b", ("गाड़ी", "गाडी", "कार", "वाहन")),
 }
 
 
@@ -136,6 +141,7 @@ def answer_question(
         jupiter = ""
         saturn = ""
     already, fresh = _home_flags(chart, jupiter_house)
+    place = _seventh_placed(chart) if decision == "marriage" else already
     named = _NAMED_WORK.search(question) is not None
     fit = ""
     if area == "career" and chart is not None and not named:
@@ -147,7 +153,7 @@ def answer_question(
         area=area,
         decision=decision,
         stance=stance,
-        already=already,
+        already=place,
         fresh=fresh,
         fit=fit,
         named=named,
@@ -166,6 +172,7 @@ def answer_question(
         stance=stance,
         already=already,
         fresh=fresh,
+        place=place,
         fit=fit,
         named=named,
         jupiter=jupiter,
@@ -202,11 +209,18 @@ def _render(
         head.append(_piece(_DATA["career_exact"], lang))
     if decision == "buy_house" and stance != "waiting":
         head.append(_piece(_DATA["house_exact"], lang))
+    if decision == "vehicle" and stance != "waiting":
+        head.append(_piece(_DATA["vehicle_exact"], lang))
     if period:
         period_line = _piece(_DATA["period_line"], lang).format(period=period, until=until)
     else:
         period_line = _piece(_DATA["period_unknown"], lang)
-    tail_group = "buy" if decision == "buy_house" else area
+    if decision == "marriage":
+        tail_group = "relationships"
+    elif decision in {"buy_house", "vehicle"}:
+        tail_group = "buy"
+    else:
+        tail_group = area
     tail = [
         period_line,
         _transit(jupiter, saturn, lang),
@@ -226,6 +240,7 @@ def _facts(
     stance: str,
     already: bool | None,
     fresh: bool | None,
+    place: bool | None,
     fit: str,
     named: bool,
     jupiter: str,
@@ -249,6 +264,10 @@ def _facts(
     if area == "home":
         lines.append(f"already_home: {_flag(already)}")
         lines.append(f"new_home: {_flag(fresh)}")
+    if decision == "vehicle":
+        lines.append(f"vehicle_place: {_place_word(place)}")
+    if decision == "marriage":
+        lines.append(f"marriage_place: {_place_word(place)}")
     if jupiter:
         lines.append(f"jupiter: {jupiter}")
     if saturn:
@@ -258,6 +277,8 @@ def _facts(
 
 def _decision(question: str, area: str) -> str:
     lowered = question.lower()
+    if area == "others":
+        return "vehicle"
     if area == "career":
         if any(token in lowered for token in _CHANGE):
             return "job_change"
@@ -268,6 +289,8 @@ def _decision(question: str, area: str) -> str:
         return "home"
     if area == "finances":
         return "money"
+    if any(token in lowered for token in _MARRY):
+        return "marriage"
     return "partner"
 
 
@@ -285,6 +308,10 @@ def _open_key(
         return f"money_{stance}"
     if decision == "partner":
         return f"bond_{stance}"
+    if decision == "vehicle":
+        return _place_key("vehicle", stance, already)
+    if decision == "marriage":
+        return _place_key("marriage", stance, already)
     if decision == "home":
         if already is None:
             return "home_waiting" if stance == "waiting" else "home_moving"
@@ -407,6 +434,30 @@ def _allowed_planets(md: str, ad: str, jupiter: str, saturn: str) -> list[str]:
         if name and name not in names:
             names.append(name)
     return names
+
+
+def _seventh_placed(chart: ChartResponse | None) -> bool | None:
+    if chart is None:
+        return None
+    return _lord_house(chart, 7) not in _PRESSURE
+
+
+def _place_word(value: bool | None) -> str:
+    if value is None:
+        return "unknown"
+    return "placed" if value else "ahead"
+
+
+def _place_key(prefix: str, stance: str, placed: bool | None) -> str:
+    if placed is None:
+        return f"{prefix}_unknown_wait" if stance == "waiting" else f"{prefix}_unknown_move"
+    if not placed:
+        return f"{prefix}_ahead_wait" if stance == "waiting" else f"{prefix}_ahead_move"
+    if stance == "waiting":
+        return f"{prefix}_placed_wait"
+    if stance == "moving":
+        return f"{prefix}_placed_move"
+    return f"{prefix}_placed_careful"
 
 
 def _flag(value: bool | None) -> str:

@@ -58,6 +58,12 @@ def today_instruction(lang: str) -> str:
     return str(guide.get(lang) or guide["en"])
 
 
+def period_instruction(lang: str) -> str:
+    """Same sitting voice for a life area, a day, or a year."""
+    guide: dict[str, str] = _DATA["period_guide"]
+    return str(guide.get(lang) or guide["en"])
+
+
 def sentence_count(text: str) -> int:
     return len([part for part in _SENTENCE_END.split(text) if part.strip()])
 
@@ -87,7 +93,7 @@ def spoken_lines() -> list[str]:
             found.append(node)
         elif isinstance(node, dict):
             for key, value in node.items():
-                if key == "guide":
+                if key in {"guide", "period_guide"}:
                     continue
                 walk(value)
 
@@ -124,6 +130,60 @@ def compose_today(*, lang: str, weekday_lord: str, supportive: str | None) -> st
     block = _DATA["support"].get(supportive) if supportive else None
     second = _lang(block, lang) if isinstance(block, dict) else _lang(_DATA["careful"], lang)
     return f"{first}\n\n{second}"
+
+
+def compose_period_area(
+    *,
+    lang: str,
+    area: str,
+    easy: bool,
+    care: str,
+    house: int,
+    step_planet: str,
+) -> str:
+    """Kundali life-area note for this period, without a placement catalog."""
+    mood = "easy" if easy else "narrow"
+    domain = _DOMAIN[area]
+    care_key = care if care in ("strain", "slow", "hurry") else "hurry"
+    step = step_planet if step_planet in _STEPS else "Sun"
+    head = _lang(_DATA["period_open"][area][mood], lang)
+    tail = _join(
+        [
+            _house(domain, house, lang),
+            _named("care_line", care_key, lang, default="hurry"),
+            _named("step", step, lang, default="Sun"),
+        ]
+    )
+    return f"{head}\n\n{tail}"
+
+
+def compose_year(*, lang: str, year: int, stance: str, planet: str) -> str:
+    """Spoken year. Stance is moving, careful, or waiting."""
+    key = stance if stance in ("moving", "careful", "waiting") else "waiting"
+    step = planet if planet in _STEPS else "Sun"
+    head = _lang(_DATA["year_open"][key], lang).format(year=year)
+    close = _lang(_DATA["year_close"][key], lang).format(
+        step=_named("step", step, lang, default="Sun")
+    )
+    return f"{head}\n\n{close}"
+
+
+def compose_span(
+    *,
+    lang: str,
+    year: int,
+    start: str,
+    end: str,
+    area: str,
+    stance: str,
+    planet: str,
+) -> str:
+    """Spoken quarter. Month names only, no sign catalog."""
+    key = stance if stance in ("moving", "careful", "waiting") else "waiting"
+    step = planet if planet in _STEPS else "Sun"
+    head = _lang(_DATA["span_open"][area][key], lang).format(start=start, end=end, year=year)
+    close = _named("step", step, lang, default="Sun")
+    return f"{head}\n\n{close}"
 
 
 def compose_area(

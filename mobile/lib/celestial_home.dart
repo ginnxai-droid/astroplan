@@ -368,6 +368,44 @@ class _CelestialHomeState extends State<CelestialHome> {
     }
   }
 
+  bool _sameBirth(Json? left, Json? right) {
+    if (left == null || right == null) return false;
+    return left['name'] == right['name'] &&
+        left['birth_date'] == right['birth_date'] &&
+        left['birth_time'] == right['birth_time'] &&
+        left['place_name'] == right['place_name'];
+  }
+
+  void _applyRestoredProfile({
+    required Json selfMap,
+    required Json? partnerMap,
+    required bool consent,
+    required bool adult,
+    required bool parental,
+    required bool syncedToServer,
+  }) {
+    final same = _sameBirth(profile, selfMap);
+    if (!same && profile != null) {
+      epoch++;
+      data.clear();
+      errors.clear();
+      pending.clear();
+      versions.clear();
+      answers.clear();
+      chatThread.clear();
+    }
+    setState(() {
+      profile = selfMap;
+      partner = partnerMap ?? partner;
+      consentRecorded = consent;
+      _savedAdult = adult;
+      _savedParental = parental;
+    });
+    unawaited(_saveLocalSnapshot(syncedToServer: syncedToServer));
+    if (!same || data['chart'] == null) _loadProfile();
+    if (partnerMap != null && (!same || data['match'] == null)) _loadMatch();
+  }
+
   Future<void> _reconcileAfterAccountSignIn({
     Json? previousProfile,
     Json? previousPartner,
@@ -393,17 +431,14 @@ class _CelestialHomeState extends State<CelestialHome> {
             partnerMap = await _resolveSaved(rawPartner) ?? rawPartner;
             if (!mounted || epoch != generation) return;
           }
-          clearSession();
-          setState(() {
-            profile = selfMap;
-            partner = partnerMap;
-            consentRecorded = saved['dpdp_consent_granted'] == true;
-            _savedAdult = saved['age_verified_18_plus'] != false;
-            _savedParental = saved['parental_consent_verified'] == true;
-          });
-          await _saveLocalSnapshot(syncedToServer: true);
-          _loadProfile();
-          if (partnerMap != null) _loadMatch();
+          _applyRestoredProfile(
+            selfMap: selfMap,
+            partnerMap: partnerMap,
+            consent: saved['dpdp_consent_granted'] == true,
+            adult: saved['age_verified_18_plus'] != false,
+            parental: saved['parental_consent_verified'] == true,
+            syncedToServer: true,
+          );
           return;
         }
       } catch (_) {
@@ -421,16 +456,14 @@ class _CelestialHomeState extends State<CelestialHome> {
         partnerMap = await _resolveSaved(local.partner!) ?? local.partner;
         if (!mounted || epoch != generation) return;
       }
-      clearSession();
-      setState(() {
-        profile = selfMap;
-        partner = partnerMap;
-        consentRecorded = local.consentRecorded;
-        _savedAdult = local.adult;
-        _savedParental = local.parental;
-      });
-      _loadProfile();
-      if (partnerMap != null) _loadMatch();
+      _applyRestoredProfile(
+        selfMap: selfMap,
+        partnerMap: partnerMap,
+        consent: local.consentRecorded,
+        adult: local.adult,
+        parental: local.parental,
+        syncedToServer: false,
+      );
       final synced = await _syncProfileToServer(
         self: selfMap,
         partnerChart: partnerMap,
@@ -530,10 +563,11 @@ class _CelestialHomeState extends State<CelestialHome> {
     final generation = epoch;
     final version = (versions[key] ?? 0) + 1;
     versions[key] = version;
+    final retain = keepPrevious || data.containsKey(key);
     setState(() {
       pending.add(key);
       errors.remove(key);
-      if (!keepPrevious) data.remove(key);
+      if (!retain) data.remove(key);
     });
     try {
       final result = await request();
@@ -729,7 +763,10 @@ class _CelestialHomeState extends State<CelestialHome> {
         await _saveLocalSnapshot(syncedToServer: false);
       }
       if (!mounted) return;
-      load('chart', () => _postDetails('/chart')).then((chart) {
+      load('chart', () async {
+        await api.waitUntilAwake();
+        return _postDetails('/chart');
+      }).then((chart) {
         if (!mounted || chart == null) return;
         final query = targetQuery;
         load('dasha', () => _postDetails('/dasha', query: query));
@@ -951,10 +988,15 @@ class _CelestialHomeState extends State<CelestialHome> {
       return Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Semantics(
-              label: t.loadingLabel,
+              label: t.loadingSlowLabel,
               liveRegion: true,
-              child: const LinearProgressIndicator(
-                  minHeight: 2, color: gold, backgroundColor: panel)));
+              child: Column(children: [
+                const LinearProgressIndicator(
+                    minHeight: 2, color: gold, backgroundColor: panel),
+                const SizedBox(height: 8),
+                SlowLoadHint(
+                    label: t.loadingLabel, slowLabel: t.loadingSlowLabel),
+              ])));
     }
     if (errors[key] != null) {
       final message = friendlyError(t, errors[key]!);
@@ -1488,15 +1530,6 @@ class _CelestialHomeState extends State<CelestialHome> {
                   StatementPanel(
                       statement: jsonMap(q['theme_statement']),
                       title: shown(q['quarter'])),
-                  if (q['active_dasha'] != null)
-                    Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: note(
-                            '${t.dashaLabel}: ${shown(q['active_dasha'])}')),
-                  if (q['key_transit_note'] != null)
-                    Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
-                        child: note(shown(q['key_transit_note']))),
                 ],
               ],
             ]),
@@ -1552,6 +1585,7 @@ class _CelestialHomeState extends State<CelestialHome> {
       'relationships': t.relationshipsLabel,
       'finances': t.financesLabel,
       'home': t.homeLabel,
+      'others': t.othersLabel,
     };
     final statements =
         jsonRows(jsonMap(data['areas']?['life_areas'])[selectedArea]);
@@ -1565,7 +1599,11 @@ class _CelestialHomeState extends State<CelestialHome> {
                 GoldPanel(key: const Key('ask_hold'), child: note(t.askHold))),
       if (askUnmatched && response == null)
         GoldPanel(child: note(t.uncoveredLabel)),
-      if (selectedArea != null) ...[
+      if (selectedArea == 'others') ...[
+        Eyebrow(t.askFromKundali),
+        gap(8),
+        GoldPanel(child: note(t.othersHint)),
+      ] else if (selectedArea != null) ...[
         Eyebrow(t.askFromKundali),
         gap(8),
         if (birth != null) note(t.askBirthNakshatra(birth)),
@@ -1597,6 +1635,7 @@ class _CelestialHomeState extends State<CelestialHome> {
       'relationships': t.relationshipsLabel,
       'finances': t.financesLabel,
       'home': t.homeLabel,
+      'others': t.othersLabel,
     };
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       PageHeading(t.tabAsk, t.chatTitle, t.chatDescription),

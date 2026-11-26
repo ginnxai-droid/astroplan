@@ -128,6 +128,8 @@
   "relationshipsLabel": "Relationships",
   "financesLabel": "Finances",
   "homeLabel": "Home",
+  "othersLabel": "Others",
+  "othersHint": "Ask in your own words, for example a vehicle. The chart can say whether that may already have a place in your life or is still ahead, and whether this period supports it. It will not invent something you own.",
   "yogasLabel": "Chart patterns",
   "annualTitle": "A year in perspective.",
   "yearLabel": "Forecast year",
@@ -135,11 +137,11 @@
   "annualPdfAction": "Download yearly PDF",
   "annualCaution": "Each quarter follows your dasha and that quarter's Jupiter and Saturn. It describes career, partnership, children, money, and home. It does not name an exact event date.",
   "askTitle": "Your question, with evidence.",
-  "askDescription": "Ask about career, relationships, finances or home. Only covered, safety-verified rule statements are shown.",
+  "askDescription": "Ask about career, relationships, finances, home, or something else in your life. The answer comes from your chart.",
   "questionLabel": "Your question",
   "askAction": "Ask the chart",
   "askEmpty": "No answer yet. Send a question to request a reading from the service.",
-  "askHold": "This reading stays closed until you choose Career, Relationships, Finances or Home, or send your question.",
+  "askHold": "This reading stays closed until you choose Career, Relationships, Finances, Home or Others, or send your question.",
   "askFromKundali": "From your kundali",
   "askBirthNakshatra": "Birth Moon nakshatra: {nakshatra}",
   "@askBirthNakshatra": {
@@ -250,10 +252,10 @@
   "occupationStudent": "Student",
   "occupationOther": "Other",
   "chatTitle": "Ask your kundli",
-  "chatDescription": "Ask about career, relationships, money, or home. Answers use your birth chart, dasha, and today's planets.",
+  "chatDescription": "Ask about career, relationships, money, home, or something else such as a vehicle. Answers use your birth chart and the current period.",
   "chatEmpty": "Ask a question about your life. The reply is built from your kundli and current planetary motion.",
   "chatSend": "Send",
   "chatYou": "You",
   "chatAstroplan": "Astroplan",
-  "chatUncovered": "That question is outside career, relationships, money, and home. Try one of those areas."
+  "chatUncovered": "That question is outside what this chart can read. Ask about work, a bond, money, home, or another life matter such as a vehicle."
 }

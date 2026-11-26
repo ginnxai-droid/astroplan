@@ -148,6 +148,26 @@ def test_job_change_answers_work_not_the_catalog(ask_client) -> None:
     assert not text.startswith("Lagna")
 
 
+def test_car_question_is_answered_without_a_life_area(ask_client) -> None:
+    r = ask_client.post(
+        "/v1/readings/ask",
+        json={"details": DETAILS, "question": "When will I buy my first car?"},
+        headers=HEADERS,
+    )
+    assert r.status_code == 200
+    body = r.json()
+    text = body["statement"]["simple_text"]
+    assert body["coverage"]["status"] == "answered"
+    assert body["coverage"]["area"] is None
+    assert body["statement"]["category"] == "others"
+    assert body["ledger_entry_id"] is None
+    assert re.search(r"car|vehicle", text, re.IGNORECASE)
+    assert re.search(r"may|can|wait|period", text, re.IGNORECASE)
+    assert "Lagna is" not in text
+    assert "नक्षत्र" not in text
+    assert "?" not in text
+
+
 def test_quota_blocks_the_fourth_answer(ask_client) -> None:
     payload = {"details": DETAILS, "question": "Should I take a loan this year?"}
     codes = [

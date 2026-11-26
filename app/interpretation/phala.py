@@ -10,7 +10,13 @@ from app.api.schemas import ChartResponse, LanguageCode, PlanetPosition
 from app.core.constants import RASHI_NAMES
 from app.interpretation.guardrails import verify_text
 from app.interpretation.terms import gloss
-from app.interpretation.voice import compose_area, compose_today
+from app.interpretation.voice import (
+    compose_area,
+    compose_period_area,
+    compose_span,
+    compose_today,
+    compose_year,
+)
 
 _DATA: dict[str, Any] = json.loads(
     Path(__file__).with_name("phala_text.json").read_text(encoding="utf-8")
@@ -734,6 +740,110 @@ def daily_area_human(
         step_planet=karaka_name,
     )
     return _check(text, lang)
+
+
+def _period_stance(
+    chart: ChartResponse, dasha: dict[str, object], transits: dict[str, object]
+) -> str:
+    lord = str(dasha.get("active_mahadasha") or "Sun")
+    if lord not in {"Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"}:
+        lord = "Sun"
+    lord_house = _planet(chart, lord).house
+    jupiter_house = int(str(transits["jupiter_house_from_moon"]))
+    saturn_house = int(str(transits["saturn_house_from_moon"]))
+    lord_ok = lord_house not in _PRESSURE
+    jupiter_easy = jupiter_house in _JUPITER_EASY
+    saturn_hard = saturn_house not in _SATURN_EASY
+    if lord_ok and jupiter_easy and not saturn_hard:
+        return "moving"
+    if lord_ok and jupiter_easy and saturn_hard:
+        return "careful"
+    return "waiting"
+
+
+def period_area_human(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    lang: LanguageCode,
+    area: str,
+) -> str:
+    """Spoken Kundali area for this period. Not the placement catalog."""
+    house_num, karaka_name = _AREA_VOICE[area]
+    _, lord = _lord(chart, house_num)
+    moon_house = int(str(transits["moon_house_from_natal_moon"]))
+    if area == "finances":
+        _, gain_lord = _lord(chart, 11)
+        lean_house = lord.house
+        support_house = gain_lord.house
+    else:
+        lean_house = lord.house
+        support_house = _planet(chart, karaka_name).house
+    if support_house == lean_house:
+        support_house = moon_house
+    saturn_house = int(str(transits["saturn_house_from_moon"]))
+    jupiter_house = int(str(transits["jupiter_house_from_moon"]))
+    easy = jupiter_house in _JUPITER_EASY if area == "finances" else support_house not in _PRESSURE
+    cared = _care_house(
+        [lean_house, support_house, moon_house],
+        saturn_house,
+        saturn_house in _SATURN_EASY,
+        avoid={lean_house},
+    )
+    if cared is None:
+        care = "hurry"
+    elif cared == saturn_house and cared not in _PRESSURE:
+        care = "slow"
+    else:
+        care = "strain"
+    text = compose_period_area(
+        lang=lang,
+        area=area,
+        easy=easy,
+        care=care,
+        house=lean_house,
+        step_planet=karaka_name,
+    )
+    return _check(text, lang)
+
+
+def period_year_human(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    lang: LanguageCode,
+    year: int,
+) -> str:
+    stance = _period_stance(chart, dasha, transits)
+    planet = str(dasha.get("active_mahadasha") or "Sun")
+    return _check(compose_year(lang=lang, year=year, stance=stance, planet=planet), lang)
+
+
+def period_span_human(
+    chart: ChartResponse,
+    dasha: dict[str, object],
+    transits: dict[str, object],
+    lang: LanguageCode,
+    year: int,
+    months: tuple[str, str, str],
+    area: str,
+) -> str:
+    stance = _period_stance(chart, dasha, transits)
+    planet = str(dasha.get("active_mahadasha") or "Sun")
+    start = _MONTHS[months[0]][_LANG_IDX[lang]]
+    end = _MONTHS[months[2]][_LANG_IDX[lang]]
+    return _check(
+        compose_span(
+            lang=lang,
+            year=year,
+            start=start,
+            end=end,
+            area=area,
+            stance=stance,
+            planet=planet,
+        ),
+        lang,
+    )
 
 
 def daily_reading(

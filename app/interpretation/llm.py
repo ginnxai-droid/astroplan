@@ -37,7 +37,7 @@ from app.interpretation.errors import GuardrailViolation
 from app.interpretation.guardrails import validate_rephrase, verify_text
 from app.interpretation.phala import today_support_fact
 from app.interpretation.question import question_instruction, question_voice_problem
-from app.interpretation.voice import today_instruction, today_voice_problem
+from app.interpretation.voice import period_instruction, today_instruction, today_voice_problem
 
 _PROMPT: dict[str, str] = json.loads(
     Path(__file__).with_name("llm_prompt.json").read_text(encoding="utf-8")
@@ -734,6 +734,8 @@ def _reject_extra_placements(text: str, facts: str) -> None:
 def _instruction(lang: str, voice: str) -> str:
     if voice == "today":
         return today_instruction(lang)
+    if voice == "period":
+        return period_instruction(lang)
     if voice == "question":
         return question_instruction(lang)
     return _PROMPT.get(lang, _PROMPT["en"])
@@ -764,15 +766,18 @@ def polish_statement(
     statement: ExplainedStatement,
     facts: str,
     lang: str,
+    voice: str | None = None,
 ) -> ExplainedStatement:
-    today = statement.category == "daily_insight" or statement.statement_id.startswith("DAILY_")
+    today = statement.category == "daily_insight" or (
+        voice is None and statement.statement_id.startswith("DAILY_")
+    )
     focus = statement.why_this.placement_evidence.strip()
-    if today:
-        packet = facts
-        voice = "today"
-    else:
+    if voice is None:
+        voice = "today" if today else "placement"
+    if voice == "placement":
         packet = f"{facts}\nfocus placement: {focus}" if focus else facts
-        voice = "placement"
+    else:
+        packet = facts
     text = rephraser.interpret(
         statement.simple_text, facts=packet, lang=lang, client=client, voice=voice
     )
@@ -868,10 +873,11 @@ class SafeRephraser:
                 fallback_reason="monthly_cap_reached",
             )
         self._calls_used += 1
-        spoken = voice if voice in {"today", "question"} else "placement"
+        spoken = voice if voice in {"today", "question", "period"} else "placement"
         version = {
             "today": "today-spoken-v4",
             "question": "ask-question-v1",
+            "period": "period-spoken-v1",
         }.get(voice, "life-impact-v1")
         prompt = f"{_instruction(lang, spoken)}\n{facts}"
         candidate = ""
@@ -892,9 +898,9 @@ class SafeRephraser:
                     candidate = follow(prompt)
                 _reject_commitment(candidate, lang)
                 _reject_extra_placements(candidate, facts)
-                if spoken in {"today", "question"} and _technical_verdict(candidate):
+                if spoken in {"today", "question", "period"} and _technical_verdict(candidate):
                     raise GuardrailViolation("technical-verdict")
-                if spoken == "today":
+                if spoken in {"today", "period"}:
                     problem = today_voice_problem(candidate)
                     if problem is not None:
                         raise GuardrailViolation(problem)

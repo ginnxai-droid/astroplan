@@ -24,14 +24,23 @@ class AstroplanApiClient {
     String? Function()? userIdProvider,
     Future<String?> Function()? tokenProvider,
     Duration? timeout,
+    int? wakeAttempts,
+    Duration? wakeGap,
   })  : baseUrl = baseUrl ?? _defaultBaseUrl,
         _client = client ?? http.Client(),
         _userId = userId ?? _configuredUser,
         _userIdProvider = userIdProvider,
         _tokenProvider = tokenProvider,
-        _timeout = timeout ?? requestTimeout;
+        _timeout = timeout ?? requestTimeout,
+        _wakeAttempts = wakeAttempts ?? coldStartAttempts,
+        _wakeGap = wakeGap ?? coldStartGap;
 
   static const requestTimeout = Duration(seconds: 90);
+
+  /// Fast 502/503 replies while a free instance boots are not a dead server.
+  /// Six gaps of six seconds cover a 30–50s wake; a held socket still uses [requestTimeout].
+  static const coldStartAttempts = 6;
+  static const coldStartGap = Duration(seconds: 6);
 
   static const _configuredBase = String.fromEnvironment('ASTRO_API_BASE_URL');
   static const _configuredUser = String.fromEnvironment('ASTRO_DEV_USER');
@@ -50,6 +59,8 @@ class AstroplanApiClient {
   final String? Function()? _userIdProvider;
   final Future<String?> Function()? _tokenProvider;
   final Duration _timeout;
+  final int _wakeAttempts;
+  final Duration _wakeGap;
 
   bool get _loopback => const {'localhost', '127.0.0.1', '10.0.2.2', '::1'}
       .contains(Uri.tryParse(baseUrl)?.host);
@@ -116,11 +127,13 @@ class AstroplanApiClient {
     return decoded;
   }
 
-  bool _retryConnection(String path, bool protected) =>
-      !protected &&
+  bool _ridesOutColdStart(String path) =>
       path != '/readings/ask' &&
       !path.startsWith('/privacy/') &&
       !path.startsWith('/ledger/');
+
+  bool _waking(ApiFailure error) =>
+      error.status == 502 || error.status == 503 || error.status == 504;
 
   Future<http.Response> _exchange(String method, String path, Json? body,
       Map<String, String> query, bool protected) async {
@@ -138,21 +151,32 @@ class AstroplanApiClient {
 
   Future<Json> _send(String method, String path, Json? body,
       Map<String, String> query, bool protected) async {
-    try {
-      return _decode(await _exchange(method, path, body, query, protected));
-    } on http.ClientException {
-      if (!_retryConnection(path, protected)) {
+    final attempts = _ridesOutColdStart(path) ? _wakeAttempts : 1;
+    Object? last;
+    for (var attempt = 0; attempt < attempts; attempt++) {
+      if (attempt > 0) await Future<void>.delayed(_wakeGap);
+      try {
+        return _decode(await _exchange(method, path, body, query, protected));
+      } on ApiFailure catch (error) {
+        last = error;
+        if (!_waking(error) || attempt == attempts - 1) rethrow;
+      } on http.ClientException {
+        last = const ApiFailure('network_unavailable');
+        if (attempt == attempts - 1) {
+          throw const ApiFailure('network_unavailable');
+        }
+      } on TimeoutException {
         throw const ApiFailure('network_unavailable');
       }
-    } on TimeoutException {
-      throw const ApiFailure('network_unavailable');
     }
-    await Future<void>.delayed(const Duration(seconds: 4));
-    try {
-      return _decode(await _exchange(method, path, body, query, protected));
-    } on http.ClientException {
-      throw const ApiFailure('network_unavailable');
-    } on TimeoutException {
+    if (last is ApiFailure) throw last;
+    throw const ApiFailure('network_unavailable');
+  }
+
+  /// True only when /health answers status ok. A cold instance is retried first.
+  Future<void> waitUntilAwake() async {
+    final health = await get('/health');
+    if (health['status'] != 'ok') {
       throw const ApiFailure('network_unavailable');
     }
   }

@@ -231,8 +231,13 @@ def test_personalized_today_and_chart_differ_by_kundali() -> None:
     areas1 = generate_life_area_readings(c1, d1, t1, rules, cat, "en")
     areas2 = generate_life_area_readings(c2, d2, t2, rules, cat, "en")
     assert areas1["career"][0].simple_text != areas2["career"][0].simple_text
-    assert "Navamsa" in areas1["career"][0].simple_text
+    assert "Navamsa" not in areas1["career"][0].simple_text
+    assert "D9" not in areas1["career"][0].simple_text
+    assert "What helps:" not in areas1["career"][0].simple_text
     assert "Steady professional progress" not in areas1["career"][0].simple_text
+    _assert_human_today(areas1["career"][0].simple_text)
+    _assert_spoken_today(areas1["career"][0].simple_text, lang="en")
+    assert "D9" in areas1["career"][0].pro_text
 
     d_areas1 = generate_daily_area_readings(c1, d1, t1, pan1, rules, "en")
     assert d_areas1["career"][0].simple_text != areas1["career"][0].simple_text
@@ -242,7 +247,7 @@ def test_personalized_today_and_chart_differ_by_kundali() -> None:
         _assert_spoken_today(area[0].simple_text, lang="en")
         assert "What helps:" not in area[0].simple_text
 
-    impact = areas1["career"][0].simple_text
+    impact = areas1["career"][0].pro_text
     for planet in ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"):
         assert planet in impact
     assert "What helps:" in impact

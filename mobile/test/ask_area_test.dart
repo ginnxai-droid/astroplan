@@ -13,6 +13,11 @@ void main() {
     expect(classifyLifeArea('How is my health?'), isNull);
   });
 
+  test('a vehicle question is Others', () {
+    expect(classifyLifeArea('When will I buy my first car?'), 'others');
+    expect(classifyLifeArea('How is my career?'), 'career');
+  });
+
   test('a tie between two areas does not pick one', () {
     expect(classifyLifeArea('Should I move for a new job?'), isNull);
   });
